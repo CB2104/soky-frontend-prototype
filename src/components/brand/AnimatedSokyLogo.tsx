@@ -1,0 +1,162 @@
+"use client";
+
+import { SVGProps, useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { cn } from "@/lib/cn";
+import { useReducedMotion } from "motion/react";
+
+gsap.registerPlugin(useGSAP);
+
+type SokyLogoProps = Omit<SVGProps<SVGSVGElement>, "children"> & {
+  title?: string;
+  white?: string;
+  orange?: string;
+};
+
+export function AnimatedSokyLogo({
+  title = "SOKY",
+  white = "#F7F7F2",
+  orange = "#FF5A00",
+  ...props
+}: SokyLogoProps) {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  useGSAP(
+    () => {
+      const q = gsap.utils.selector(rootRef);
+      const letters = q(".soky-letter");
+
+      if (shouldReduceMotion) {
+        gsap.set(letters, {
+          autoAlpha: 1,
+          yPercent: 0,
+          scale: 1,
+        });
+
+        return;
+      }
+
+      gsap.fromTo(
+        letters,
+        {
+          autoAlpha: 0,
+          yPercent: 35,
+          scale: 0.96,
+          transformOrigin: "50% 50%",
+          transformBox: "fill-box",
+        },
+        {
+          autoAlpha: 1,
+          yPercent: 0,
+          scale: 1,
+          duration: 0.9,
+          ease: "power3.inOut",
+          stagger: 0.07,
+        },
+      );
+    },
+    {
+      scope: rootRef,
+      dependencies: [shouldReduceMotion],
+      revertOnUpdate: true,
+    },
+  );
+
+  return (
+    <div ref={rootRef} className={cn("inline-flex z-10 h-12 w-fit")}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 486 263"
+        role={title ? "img" : "presentation"}
+        aria-label={title || undefined}
+        aria-hidden={title ? undefined : true}
+        {...props}
+      >
+        <g
+          id="soky-letter-s"
+          className="soky-letter soky-letter-s"
+          data-letter="S"
+        >
+          <path
+            className="soky-letter-bg"
+            d="M 76 23 L 64 23 L 63 24 L 59 24 L 51 27 L 48 27 L 43 30 L 37 32 L 31 36 L 21 45 L 12 58 L 11 62 L 8 67 L 6 77 L 5 78 L 5 86 L 4 87 L 5 104 L 6 105 L 7 113 L 10 119 L 10 122 L 14 129 L 14 131 L 17 137 L 21 141 L 23 145 L 33 158 L 40 172 L 40 182 L 39 185 L 36 188 L 26 192 L 23 192 L 19 194 L 12 202 L 11 209 L 10 210 L 10 239 L 11 240 L 12 247 L 19 255 L 25 257 L 28 257 L 29 258 L 40 257 L 41 256 L 44 256 L 45 255 L 48 255 L 57 252 L 67 247 L 79 238 L 82 234 L 87 232 L 89 227 L 89 223 L 91 219 L 91 215 L 93 210 L 94 202 L 97 196 L 97 194 L 101 188 L 94 172 L 90 159 L 88 157 L 88 154 L 85 150 L 84 145 L 74 124 L 71 115 L 71 112 L 68 106 L 68 103 L 66 98 L 66 90 L 68 87 L 77 79 L 80 74 L 83 59 L 85 55 L 85 52 L 88 46 L 90 40 L 90 37 L 91 36 L 91 33 L 89 32 L 85 27 L 82 26 L 80 24 L 77 24 Z"
+            fill={white}
+            fillRule="evenodd"
+            clipRule="evenodd"
+          />
+          <path
+            className="soky-letter-fg"
+            d="M 72 42 L 64 42 L 63 43 L 59 43 L 53 46 L 51 46 L 44 50 L 33 60 L 26 72 L 25 78 L 24 79 L 24 84 L 23 85 L 23 96 L 24 97 L 24 103 L 25 104 L 25 107 L 26 108 L 26 112 L 34 128 L 36 130 L 38 134 L 42 138 L 42 139 L 52 153 L 58 165 L 58 170 L 59 171 L 59 181 L 58 182 L 58 188 L 54 196 L 46 204 L 38 208 L 36 208 L 35 209 L 31 209 L 29 211 L 29 237 L 31 239 L 34 239 L 35 238 L 39 238 L 40 237 L 46 236 L 62 228 L 73 217 L 73 216 L 77 211 L 81 203 L 82 197 L 84 193 L 84 188 L 85 187 L 85 166 L 84 165 L 83 156 L 81 154 L 80 148 L 76 140 L 73 137 L 72 133 L 67 127 L 61 117 L 57 113 L 56 110 L 54 108 L 53 104 L 51 101 L 51 98 L 50 97 L 50 86 L 51 85 L 52 81 L 59 74 L 61 74 L 64 72 L 72 71 L 73 70 L 73 43 Z"
+            fill={orange}
+            fillRule="evenodd"
+            clipRule="evenodd"
+          />
+        </g>
+        <g
+          id="soky-letter-o"
+          className="soky-letter soky-letter-o"
+          data-letter="O"
+        >
+          <path
+            className="soky-letter-bg"
+            d="M 118 16 L 103 26 L 97 32 L 93 34 L 92 33 L 91 40 L 84 59 L 81 74 L 78 79 L 71 86 L 70 86 L 67 90 L 67 98 L 68 99 L 69 106 L 71 109 L 75 124 L 85 145 L 86 150 L 89 154 L 89 157 L 91 159 L 95 172 L 102 187 L 98 194 L 98 196 L 95 202 L 94 210 L 92 215 L 92 219 L 90 223 L 90 227 L 88 233 L 91 234 L 93 237 L 98 241 L 101 241 L 106 243 L 230 243 L 231 242 L 238 241 L 244 237 L 245 217 L 246 216 L 246 213 L 245 212 L 245 209 L 246 208 L 245 205 L 245 198 L 241 187 L 243 184 L 243 182 L 245 179 L 246 174 L 248 171 L 251 162 L 251 159 L 253 154 L 253 150 L 254 149 L 254 145 L 255 144 L 255 140 L 256 139 L 256 129 L 258 123 L 258 95 L 257 94 L 257 85 L 256 84 L 256 79 L 254 75 L 253 64 L 251 60 L 251 57 L 246 42 L 246 34 L 239 31 L 235 27 L 221 17 L 219 17 L 208 11 L 199 8 L 196 8 L 192 6 L 184 5 L 183 4 L 154 4 L 153 5 L 149 5 L 148 6 L 137 8 L 134 10 L 129 11 L 122 15 Z"
+            fill={white}
+            fillRule="evenodd"
+            clipRule="evenodd"
+          />
+          <path
+            className="soky-letter-fg"
+            d="M 107 206 L 107 223 L 108 224 L 228 224 L 230 221 L 230 213 L 229 212 L 230 206 L 228 203 L 109 203 Z M 150 24 L 146 26 L 143 26 L 142 27 L 134 29 L 128 32 L 126 34 L 123 35 L 120 38 L 117 39 L 101 54 L 101 55 L 95 62 L 93 67 L 90 71 L 90 73 L 86 81 L 85 87 L 84 88 L 84 91 L 83 92 L 83 97 L 82 98 L 82 121 L 83 122 L 83 126 L 84 127 L 84 130 L 86 134 L 86 137 L 90 145 L 90 147 L 98 160 L 101 163 L 101 164 L 114 177 L 115 177 L 126 185 L 134 189 L 136 189 L 139 191 L 142 191 L 143 192 L 149 193 L 150 194 L 153 194 L 154 195 L 170 195 L 172 196 L 173 195 L 182 195 L 183 194 L 187 194 L 188 193 L 191 193 L 192 192 L 200 190 L 207 186 L 211 185 L 214 182 L 217 181 L 220 178 L 225 175 L 233 167 L 233 166 L 238 161 L 238 160 L 243 154 L 245 150 L 245 148 L 248 144 L 249 139 L 251 136 L 251 133 L 252 132 L 252 129 L 253 128 L 253 124 L 254 123 L 254 117 L 255 116 L 255 102 L 254 101 L 253 89 L 252 88 L 252 85 L 251 84 L 249 76 L 247 74 L 246 70 L 240 60 L 237 57 L 234 52 L 225 43 L 224 43 L 220 39 L 219 39 L 214 35 L 200 28 L 194 27 L 191 25 L 188 25 L 187 24 L 182 24 L 181 23 L 156 23 L 155 24 Z M 163 48 L 174 48 L 175 49 L 179 49 L 180 50 L 185 50 L 188 52 L 193 53 L 197 56 L 202 58 L 207 63 L 208 63 L 219 75 L 227 91 L 227 94 L 228 95 L 228 100 L 229 101 L 229 117 L 228 118 L 228 123 L 227 124 L 227 127 L 224 132 L 224 134 L 221 140 L 218 143 L 218 144 L 207 156 L 206 156 L 200 161 L 190 166 L 187 166 L 184 168 L 180 168 L 179 169 L 175 169 L 174 170 L 163 170 L 162 169 L 157 169 L 156 168 L 153 168 L 152 167 L 147 166 L 142 163 L 140 163 L 138 161 L 135 160 L 131 156 L 130 156 L 117 142 L 117 140 L 115 138 L 115 136 L 113 134 L 111 130 L 110 124 L 109 123 L 109 118 L 108 117 L 108 101 L 109 100 L 109 96 L 110 95 L 110 90 L 115 80 L 117 78 L 118 75 L 121 72 L 121 71 L 130 62 L 131 62 L 138 56 L 142 55 L 147 52 L 155 50 L 156 49 L 162 49 Z"
+            fill={orange}
+            fillRule="evenodd"
+            clipRule="evenodd"
+          />
+        </g>
+        <g
+          id="soky-letter-k"
+          className="soky-letter soky-letter-k"
+          data-letter="K"
+        >
+          <path
+            className="soky-letter-bg"
+            d="M 336 26 L 334 27 L 330 27 L 329 28 L 314 28 L 313 29 L 309 29 L 302 33 L 295 29 L 292 29 L 291 28 L 258 28 L 247 33 L 247 42 L 252 57 L 252 60 L 254 64 L 255 75 L 257 79 L 257 84 L 258 85 L 258 94 L 259 95 L 259 123 L 257 129 L 257 139 L 256 140 L 256 144 L 255 145 L 255 149 L 254 150 L 254 154 L 253 155 L 252 162 L 242 188 L 245 194 L 246 205 L 247 206 L 246 209 L 247 216 L 246 217 L 245 238 L 248 239 L 251 242 L 258 245 L 264 245 L 265 246 L 286 246 L 287 245 L 292 245 L 298 243 L 302 240 L 306 233 L 306 230 L 307 229 L 307 217 L 312 213 L 318 218 L 326 236 L 332 242 L 336 244 L 344 245 L 345 246 L 373 246 L 374 247 L 378 240 L 381 231 L 382 223 L 381 222 L 381 216 L 379 211 L 379 207 L 376 198 L 375 189 L 372 180 L 371 170 L 370 168 L 369 169 L 367 168 L 363 164 L 360 158 L 360 156 L 358 154 L 357 150 L 354 146 L 353 142 L 348 133 L 348 130 L 350 128 L 347 122 L 344 119 L 343 115 L 341 113 L 336 103 L 336 98 L 337 97 L 339 83 L 342 76 L 342 73 L 349 52 L 348 43 L 340 33 Z"
+            fill={white}
+            fillRule="evenodd"
+            clipRule="evenodd"
+          />
+          <path
+            className="soky-letter-fg"
+            d="M 262 48 L 262 74 L 261 75 L 262 76 L 262 127 L 261 128 L 262 130 L 262 221 L 261 222 L 261 224 L 264 227 L 286 227 L 288 225 L 288 223 L 289 222 L 288 220 L 288 126 L 291 123 L 294 126 L 295 129 L 298 133 L 299 137 L 301 139 L 301 141 L 306 150 L 306 152 L 309 156 L 309 158 L 314 166 L 314 168 L 318 175 L 318 177 L 320 181 L 322 183 L 322 185 L 324 187 L 324 189 L 333 206 L 333 208 L 335 212 L 338 216 L 338 218 L 340 220 L 341 224 L 345 227 L 369 227 L 371 225 L 371 223 L 367 216 L 367 214 L 364 208 L 362 206 L 360 199 L 358 197 L 354 189 L 354 187 L 352 185 L 351 180 L 348 174 L 346 172 L 339 158 L 339 156 L 336 152 L 336 150 L 328 135 L 328 133 L 326 131 L 324 127 L 323 123 L 321 121 L 321 119 L 312 101 L 313 100 L 313 98 L 316 95 L 317 92 L 324 83 L 325 80 L 328 77 L 334 67 L 341 58 L 342 55 L 345 52 L 346 48 L 344 46 L 323 46 L 322 47 L 321 46 L 319 46 L 318 47 L 316 47 L 310 54 L 309 57 L 299 70 L 298 73 L 291 81 L 288 78 L 288 48 L 285 46 L 274 46 L 273 47 L 272 46 L 265 46 Z"
+            fill={orange}
+            fillRule="evenodd"
+            clipRule="evenodd"
+          />
+        </g>
+        <g
+          id="soky-letter-y"
+          className="soky-letter soky-letter-y"
+          data-letter="Y"
+        >
+          <path
+            className="soky-letter-bg"
+            d="M 346 19 L 337 25 L 341 33 L 348 41 L 349 43 L 349 47 L 350 48 L 349 56 L 347 60 L 347 63 L 339 87 L 337 103 L 350 127 L 353 126 L 357 128 L 363 134 L 370 138 L 374 142 L 374 165 L 371 169 L 372 170 L 373 180 L 376 189 L 377 198 L 380 207 L 380 211 L 382 216 L 382 222 L 383 223 L 382 231 L 379 240 L 375 247 L 385 256 L 388 256 L 393 258 L 422 258 L 423 257 L 429 256 L 435 252 L 438 247 L 439 241 L 440 240 L 440 142 L 444 138 L 447 137 L 455 131 L 461 125 L 468 116 L 476 101 L 479 87 L 480 86 L 480 83 L 481 82 L 481 35 L 480 34 L 479 28 L 472 20 L 466 19 L 465 18 L 432 18 L 431 19 L 427 19 L 421 23 L 417 29 L 417 33 L 416 34 L 416 39 L 415 40 L 416 42 L 416 47 L 415 48 L 415 75 L 410 80 L 407 81 L 401 77 L 399 72 L 399 34 L 398 33 L 398 30 L 395 25 L 389 20 L 383 19 L 382 18 L 350 18 L 349 19 Z"
+            fill={white}
+            fillRule="evenodd"
+            clipRule="evenodd"
+          />
+          <path
+            className="soky-letter-fg"
+            d="M 356 36 L 353 38 L 353 46 L 352 47 L 353 49 L 353 84 L 354 85 L 354 88 L 355 89 L 356 94 L 363 107 L 372 117 L 373 117 L 382 124 L 390 127 L 393 130 L 393 236 L 395 239 L 420 239 L 421 238 L 421 235 L 422 234 L 421 232 L 421 189 L 422 188 L 421 187 L 421 182 L 422 181 L 421 180 L 421 158 L 422 157 L 421 155 L 421 131 L 426 126 L 429 126 L 431 125 L 433 123 L 436 122 L 443 116 L 444 116 L 447 113 L 449 109 L 453 105 L 453 103 L 455 101 L 457 97 L 458 92 L 460 89 L 460 86 L 461 85 L 461 80 L 462 79 L 462 38 L 459 36 L 457 37 L 455 36 L 444 36 L 443 37 L 436 37 L 434 39 L 434 76 L 431 82 L 431 84 L 429 88 L 420 96 L 413 99 L 409 99 L 408 100 L 406 100 L 405 99 L 401 99 L 400 98 L 395 97 L 385 87 L 383 83 L 383 81 L 381 77 L 381 40 L 379 37 L 374 37 L 373 36 L 368 36 L 367 37 L 360 37 L 359 36 Z"
+            fill={orange}
+            fillRule="evenodd"
+            clipRule="evenodd"
+          />
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+export default AnimatedSokyLogo;
