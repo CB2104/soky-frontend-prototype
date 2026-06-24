@@ -5,8 +5,12 @@ import { persist } from "zustand/middleware";
 import type { ProductCardViewModel } from "@/features/products/mappers";
 
 export type CartItem = {
+  descriptionSnapshot?: string;
   imageUrlSnapshot?: string;
   notes?: string;
+  priceLabelSnapshot?: string;
+  unitPriceCurrencySnapshot?: ProductCardViewModel["priceCurrency"];
+  unitPriceCentsSnapshot?: number;
   productId: string;
   quantity: number;
   slug: string;
@@ -27,6 +31,20 @@ type CartState = {
   setQuantity: (productId: string, quantity: number) => void;
 };
 
+const MAX_CART_ITEM_QUANTITY = 99;
+
+function toCents(amount: string) {
+  const [whole = "0", fraction = ""] = amount.trim().split(".");
+  const cents =
+    Number(whole) * 100 + Number(fraction.padEnd(2, "0").slice(0, 2));
+
+  return Number.isSafeInteger(cents) ? cents : null;
+}
+
+function clampQuantity(quantity: number) {
+  return Math.min(MAX_CART_ITEM_QUANTITY, Math.max(1, quantity));
+}
+
 export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
@@ -34,14 +52,25 @@ export const useCartStore = create<CartState>()(
       items: [],
       addItem: (product) =>
         set((state) => {
-          const current = state.items.find((item) => item.productId === product.id);
+          const unitPriceCents = toCents(product.priceAmount);
+
+          if (unitPriceCents === null) {
+            return state;
+          }
+
+          const current = state.items.find(
+            (item) => item.productId === product.id,
+          );
 
           if (current) {
             return {
               isOpen: true,
               items: state.items.map((item) =>
                 item.productId === product.id
-                  ? { ...item, quantity: item.quantity + 1 }
+                  ? {
+                      ...item,
+                      quantity: clampQuantity(item.quantity + 1),
+                    }
                   : item,
               ),
             };
@@ -57,6 +86,10 @@ export const useCartStore = create<CartState>()(
                 titleSnapshot: product.title,
                 imageUrlSnapshot: product.imageUrl,
                 quantity: 1,
+                priceLabelSnapshot: product.priceLabel,
+                descriptionSnapshot: product.description,
+                unitPriceCentsSnapshot: unitPriceCents,
+                unitPriceCurrencySnapshot: product.priceCurrency,
               },
             ],
           };
@@ -68,7 +101,10 @@ export const useCartStore = create<CartState>()(
           items: state.items
             .map((item) =>
               item.productId === productId
-                ? { ...item, quantity: Math.max(0, item.quantity - 1) }
+                ? {
+                    ...item,
+                    quantity: Math.max(0, item.quantity - 1),
+                  }
                 : item,
             )
             .filter((item) => item.quantity > 0),
@@ -76,7 +112,9 @@ export const useCartStore = create<CartState>()(
       increment: (productId) =>
         set((state) => ({
           items: state.items.map((item) =>
-            item.productId === productId ? { ...item, quantity: item.quantity + 1 } : item,
+            item.productId === productId
+              ? { ...item, quantity: clampQuantity(item.quantity + 1) }
+              : item,
           ),
         })),
       openCart: () => set({ isOpen: true }),
@@ -95,7 +133,7 @@ export const useCartStore = create<CartState>()(
           items: state.items
             .map((item) =>
               item.productId === productId
-                ? { ...item, quantity: Math.max(0, Math.trunc(quantity)) }
+                ? { ...item, quantity: clampQuantity(Math.trunc(quantity)) }
                 : item,
             )
             .filter((item) => item.quantity > 0),

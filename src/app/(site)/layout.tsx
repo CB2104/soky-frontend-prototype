@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
-import { CartDrawer } from "@/features/cart/components/cart-drawer";
 import { getPublicSettings } from "@/features/settings/api";
 import { SiteFooter } from "@/components/layout/site-footer";
 import Navbar from "@/components/layout/Navbar";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import CartDrawer from "@/features/cart/components/CartDrawer";
 
 export const dynamic = "force-dynamic";
 

@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { ErrorState, EmptyState } from "@/components/ui/states";
-import { ProductCard } from "@/features/products/components/product-card";
+import { ErrorState } from "@/components/ui/states";
 import { getCategories } from "@/features/categories/api";
 import { getCurrentExchangeRate } from "@/features/exchange-rates/api";
 import { getProducts } from "@/features/products/api";

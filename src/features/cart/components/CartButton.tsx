@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { PillActionButton } from "@/components/ui/PillActionButtom";
 import CartSVG from "@/components/brand/CartSVG";
 import { selectCartCount, useCartStore } from "@/features/cart/store";
 import { trackEvent } from "@/features/analytics/client";
+import { useCartHydration } from "../useCartHydration";
 
 type CartButtonProps = {
   className?: string;
@@ -12,17 +12,12 @@ type CartButtonProps = {
 };
 
 export function CartButton({ className, variant = "full" }: CartButtonProps) {
-  const [hasMounted, setHasMounted] = useState(false);
   const items = useCartStore((state) => state.items);
   const isOpen = useCartStore((state) => state.isOpen);
   const openCart = useCartStore((state) => state.openCart);
-  const count = hasMounted ? selectCartCount(items) : 0;
 
-  useEffect(() => {
-    const timeoutId = window.setTimeout(() => setHasMounted(true), 0);
-
-    return () => window.clearTimeout(timeoutId);
-  }, []);
+const hasHydrated = useCartHydration()
+  const count = hasHydrated ? selectCartCount(items) : 0;
 
   return (
     <PillActionButton

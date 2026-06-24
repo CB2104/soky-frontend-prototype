@@ -1,4 +1,4 @@
-import type { ProductDto } from "@/contracts/api";
+import type { ProductDto, PriceCurrency } from "@/contracts/api";
 import { formatPriceLabel } from "@/lib/money";
 
 export type ProductCardViewModel = {
@@ -9,6 +9,8 @@ export type ProductCardViewModel = {
   imageUrl: string;
   isAvailable: boolean;
   priceLabel: string;
+  priceAmount: string;
+  priceCurrency: PriceCurrency;
   slug: string;
   tags: string[];
   title: string;
@@ -23,6 +25,8 @@ export function mapProductToCard(product: ProductDto): ProductCardViewModel {
     imageUrl: product.imageUrl,
     imageAlt: product.imageAlt,
     priceLabel: formatPriceLabel(product.priceAmount, product.priceCurrency),
+    priceAmount: product.priceAmount,
+    priceCurrency: product.priceCurrency,
     isAvailable: product.status === "ACTIVE" && product.isAvailable,
     badge: product.featured ? "Promo" : product.tags[0],
     tags: product.tags,

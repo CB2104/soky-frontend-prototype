@@ -95,7 +95,7 @@ export const mockProducts: ProductDto[] = [
     status: "ACTIVE",
     isAvailable: true,
     sortOrder: 1,
-    priceCurrency: "USD",
+    priceCurrency: "EUR",
     priceAmount: "38.00",
     imageUrl: "https://picsum.photos/seed/soky-box-kiyomi-sushi/1000/760",
     imageAlt: "Box Kiyomi de 72 piezas de sushi con toppings sobre bandeja negra.",

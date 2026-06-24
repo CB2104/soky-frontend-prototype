@@ -1,4 +1,3 @@
-
 export function CartSVG() {
   return (
     <svg
