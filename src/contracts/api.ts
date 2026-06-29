@@ -10,7 +10,77 @@ export type OrderIntentStatus =
   | "EXPIRED";
 export type ExchangeRateMode = "OFFICIAL" | "PARALLEL" | "MANUAL";
 export type ExchangeRateSource = "DOLAR_API" | "MANUAL";
-export type SliderCtaType = "NONE" | "PRODUCT" | "CATEGORY" | "CUSTOM_URL";
+export type SliderIntent =
+  | "welcome"
+  | "promotion"
+  | "conversion"
+  | "announcement";
+
+export type SliderLayoutHint =
+  | "split"
+  | "poster"
+  | "image-led";
+
+export type SliderPlacement =
+  | "home_hero"
+  | "promo_section"
+  | "menu_banner";
+
+export type SliderStatus =
+  | "DRAFT"
+  | "ACTIVE"
+  | "INACTIVE"
+  | "ARCHIVED";
+
+export type SliderCtaType =
+  | "NONE"
+  | "MENU"
+  | "LOCATION"
+  | "CART"
+  | "WHATSAPP"
+  | "PRODUCT"
+  | "CATEGORY"
+  | "CUSTOM_PATH";
+
+export type SliderCtaDto = {
+  label: string;
+  type: SliderCtaType;
+  target?: string;
+};
+
+export type PublicSliderItemDto = {
+  id: string;
+  title: string;
+  description?: string;
+  eyebrow?: string;
+  badgeLabel?: string;
+  highlightText?: string;
+
+  desktopImageUrl: string;
+  mobileImageUrl?: string;
+  imageAlt: string;
+
+  primaryCta?: SliderCtaDto;
+  secondaryCta?: SliderCtaDto;
+
+  intent: SliderIntent;
+  layoutHint: SliderLayoutHint;
+};
+
+export type AdminSliderItemDto = PublicSliderItemDto & {
+  placement: SliderPlacement;
+  status: SliderStatus;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+  archivedAt?: string;
+};
+
+export type LegacySliderCtaType =
+  | "NONE"
+  | "PRODUCT"
+  | "CATEGORY"
+  | "CUSTOM_URL";
 export type CategoryGroup = "FOOD" | "DRINK" | "COMBO" | "DESSERT" | "OTHER";
 export type UserRole = "ADMIN";
 
@@ -103,20 +173,24 @@ export type ProductDto = {
   updatedAt?: string;
 };
 
-export type SliderItemDto = {
+/** @deprecated Use PublicSliderItemDto/AdminSliderItemDto after slider mapper migration. */
+export type LegacySliderItemDto = {
   id: string;
   title: string;
   description?: string;
   imageUrl: string;
   imageAlt: string;
   ctaLabel?: string;
-  ctaType: SliderCtaType;
+  ctaType: LegacySliderCtaType;
   ctaTarget?: string;
   isActive: boolean;
   sortOrder: number;
   createdAt?: string;
   updatedAt?: string;
 };
+
+/** @deprecated Temporary compatibility alias for current mock/home/admin usage. */
+export type SliderItemDto = LegacySliderItemDto;
 
 export type PublicSettingsDto = {
   businessName: string;
@@ -241,7 +315,11 @@ export type AnalyticsEventType =
   | "checkout_started"
   | "whatsapp_clicked"
   | "slider_view"
-  | "slider_click";
+  | "slider_click"
+  | "contact_speed_dial_open"
+  | "contact_whatsapp_click"
+  | "contact_instagram_click"
+  | "contact_tiktok_click";
 
 export type AnalyticsEntityType =
   | "product"
@@ -298,17 +376,10 @@ export type AdminCategoryCreateDto = {
 
 export type AdminCategoryUpdateDto = Partial<AdminCategoryCreateDto>;
 
-export type AdminSliderCreateDto = {
-  title: string;
-  description?: string;
-  imageUrl: string;
-  imageAlt: string;
-  ctaLabel?: string;
-  ctaType: SliderCtaType;
-  ctaTarget?: string;
-  isActive: boolean;
-  sortOrder: number;
-};
+export type AdminSliderCreateDto = Omit<
+  LegacySliderItemDto,
+  "id" | "createdAt" | "updatedAt"
+>;
 
 export type AdminSliderUpdateDto = Partial<AdminSliderCreateDto>;
 

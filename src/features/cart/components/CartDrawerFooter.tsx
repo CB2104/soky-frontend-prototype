@@ -1,8 +1,8 @@
-import WhatsAppSVG from "@/components/brand/WhatsAppSVG";
 import { formatMoney } from "@/lib/money";
 import Link from "next/link";
 import { getEstimatedCartTotals } from "../cartTotals";
 import type { CartItem } from "../store";
+import { WhatsAppSVG } from "@/components/brand/IconsSVG";
 
 type CartDrawerFooterProps = {
   items: CartItem[];

@@ -1,5 +1,4 @@
-import MinusSVG from "@/components/brand/MinusSVG";
-import PlusSVG from "@/components/brand/PlusSVG";
+import { MinusSVG, PlusSVG } from "@/components/brand/IconsSVG";
 import { motion } from "motion/react";
 type CartQuantityStepperProps = {
   label: string;

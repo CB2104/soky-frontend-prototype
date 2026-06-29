@@ -39,9 +39,14 @@ const NavTabs = ({ items }: NavTabsProps) => {
       }}
       className="relative flex w-fit rounded-full border border-white/20 bg-soky-white p-1"
     >
-      <Pill position={activePosition} className="z-10 bg-soky-orange-deep" />
-      <Pill position={hoverPosition} className="z-0 bg-soky-blue-bright" />
-
+      <Pill
+        position={activePosition}
+        className="z-10 bg-soky-orange-deep bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat"
+      />
+      <Pill
+        position={hoverPosition}
+        className="z-0 overflow-hidden rounded-full bg-soky-blue-bright bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat"
+      />
       {items.map((item) => {
         const isActive = isItemActive(item.href);
         const isHovered = hoveredHref === item.href;

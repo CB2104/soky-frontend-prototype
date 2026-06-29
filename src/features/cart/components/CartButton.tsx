@@ -1,10 +1,11 @@
 "use client";
 
 import { PillActionButton } from "@/components/ui/PillActionButtom";
-import CartSVG from "@/components/brand/CartSVG";
 import { selectCartCount, useCartStore } from "@/features/cart/store";
 import { trackEvent } from "@/features/analytics/client";
 import { useCartHydration } from "../useCartHydration";
+import { CartSVG } from "@/components/brand/IconsSVG";
+import { useUiOverlayStore } from "@/features/ui/store";
 
 type CartButtonProps = {
   className?: string;
@@ -16,7 +17,11 @@ export function CartButton({ className, variant = "full" }: CartButtonProps) {
   const isOpen = useCartStore((state) => state.isOpen);
   const openCart = useCartStore((state) => state.openCart);
 
-const hasHydrated = useCartHydration()
+  const closeAllUiOverlays = useUiOverlayStore(
+    (state) => state.closeAllUiOverlays,
+  );
+  const hasHydrated = useCartHydration();
+
   const count = hasHydrated ? selectCartCount(items) : 0;
 
   return (
@@ -27,6 +32,7 @@ const hasHydrated = useCartHydration()
       isActive={isOpen}
       variant={variant}
       onClick={() => {
+        closeAllUiOverlays();
         openCart();
         trackEvent({ eventType: "cart_open", entityType: "cart" });
       }}

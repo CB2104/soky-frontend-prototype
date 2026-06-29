@@ -88,7 +88,7 @@ export function PillActionButton({
           aria-hidden="true"
           variants={orangePillVariants}
           transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-0 z-0 rounded-full bg-soky-orange-deep"
+          className="absolute inset-0 z-0 rounded-full bg-soky-orange-deep bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat"
         />
 
         <span

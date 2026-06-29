@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { usePathname } from "next/navigation";
 import type { NavTabItem } from "@/constants";
 import { cn } from "@/lib/cn";
 import AnimatedSokyLogo from "../brand/AnimatedSokyLogo";
-import WhatsAppSVG from "../brand/WhatsAppSVG";
-import CartSVG from "../brand/CartSVG";
+import { CartSVG, CloseIcon, WhatsAppSVG } from "../brand/IconsSVG";
+import { useUiOverlayStore } from "@/features/ui/store";
 
 type MobileNavDrawerProps = {
   items: NavTabItem[];
@@ -115,8 +115,10 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const reduceMotion = useReducedMotion() ?? false;
-  const [isOpen, setIsOpen] = useState(false);
   const contextualSection = getContextualSection(pathname);
+  const isOpen = useUiOverlayStore((state) => state.isMobileNavOpen);
+  const openMobileNav = useUiOverlayStore((state) => state.openMobileNav);
+  const closeMobileNav = useUiOverlayStore((state) => state.closeMobileNav);
 
   const isItemActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -132,7 +134,7 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
-        setIsOpen(false);
+        closeMobileNav();
         return;
       }
 
@@ -191,7 +193,7 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
       window.removeEventListener("keydown", handleKeyDown);
       triggerElement?.focus();
     };
-  }, [isOpen]);
+  }, [closeMobileNav, isOpen]);
 
   return (
     <div className="relative z-60 md:hidden">
@@ -207,7 +209,14 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
           "relative z-60 -ml-2 grid size-11 touch-manipulation place-items-center transition-[color,opacity] active:text-soky-orange",
           isOpen ? "pointer-events-none opacity-0" : "text-soky-white",
         )}
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={() => {
+          if (isOpen) {
+            closeMobileNav();
+            return;
+          }
+
+          openMobileNav();
+        }}
       >
         <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
           <motion.path
@@ -273,7 +282,7 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
               aria-hidden="true"
               tabIndex={-1}
               className="absolute inset-0 bg-soky-navy/55"
-              onClick={() => setIsOpen(false)}
+              onClick={() => closeMobileNav()}
             />
 
             <motion.aside
@@ -300,22 +309,9 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
                   type="button"
                   aria-label="Cerrar navegación"
                   className="grid size-11 shrink-0 place-items-center rounded-full border border-soky-border bg-soky-paper text-soky-blue transition-colors hover:border-soky-orange hover:bg-soky-orange hover:text-soky-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-orange focus-visible:ring-offset-2"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => closeMobileNav()}
                 >
-                  <svg
-                    aria-hidden="true"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M6 6L18 18M18 6L6 18"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeWidth="2.5"
-                    />
-                  </svg>
+                  <CloseIcon />
                 </button>
                 <h2 id={drawerTitleId} className="sr-only">
                   Navegación de SOKY
@@ -340,19 +336,21 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
                         key={item.href}
                         variants={reduceMotion ? undefined : linkVariants}
                       >
-                        <Link
-                          href={item.href}
-                          aria-current={isActive ? "page" : undefined}
-                          className={cn(
-                            "block rounded-full px-5 py-4 text-lg font-black uppercase transition-colors",
-                            isActive
-                              ? "bg-soky-orange-deep text-soky-white"
-                              : "text-soky-ink active:bg-soky-blue-bright active:text-soky-white",
-                          )}
-                          onClick={() => setIsOpen(false)}
-                        >
-                          {item.title}
-                        </Link>
+                        <div className="group inline-flex w-full touch-manipulation rounded-full bg-soky-orange p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2">
+                          <Link
+                            href={item.href}
+                            aria-current={isActive ? "page" : undefined}
+                            className={cn(
+                              "flex min-h-12 w-full items-center rounded-full px-5 py-3 text-lg font-black uppercase transition-colors",
+                              isActive
+                                ? "bg-soky-orange-deep text-soky-white"
+                                : "bg-soky-white text-soky-ink hover:bg-soky-blue hover:text-soky-white active:bg-soky-blue-bright active:text-soky-white",
+                            )}
+                            onClick={() => closeMobileNav()}
+                          >
+                            {item.title}
+                          </Link>
+                        </div>
                       </motion.div>
                     );
                   })}
@@ -378,7 +376,7 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
                         <Link
                           href={item.href}
                           key={item.href}
-                          onClick={() => setIsOpen(false)}
+                          onClick={() => closeMobileNav()}
                           className="flex min-h-11 items-center rounded-xl px-4 py-2 font-extrabold transition-colors hover:bg-soky-blue hover:text-soky-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-orange focus-visible:ring-offset-2"
                         >
                           {item.title}
@@ -410,7 +408,7 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
                         target="_blank"
                         rel="noreferrer"
                         className="group inline-flex w-full touch-manipulation rounded-full bg-soky-orange p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2"
-                        onClick={() => setIsOpen(false)}
+                        onClick={() => closeMobileNav()}
                       >
                         <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-blue bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-navy group-active:scale-[0.98] group-active:bg-soky-navy">
                           <span
@@ -426,10 +424,12 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
                       <Link
                         href="/cart"
                         className="group inline-flex w-full touch-manipulation rounded-full bg-soky-orange p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2"
-                        onClick={() => setIsOpen(false)}
+                        onClick={() => closeMobileNav()}
                       >
-                        <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-blue bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat
-                         px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-navy group-active:scale-[0.98] group-active:bg-soky-navy">
+                        <span
+                          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-blue bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat
+                         px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-navy group-active:scale-[0.98] group-active:bg-soky-navy"
+                        >
                           <span
                             aria-hidden="true"
                             className="grid size-5 shrink-0 place-items-center [&_svg]:size-5"

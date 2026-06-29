@@ -4,8 +4,7 @@ import type { CartItem } from "../store";
 import { CartQuantityStepper } from "./CartQuantityStepper";
 import { motion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { TrashSVG } from "@/components/brand/TrashSVG";
-import { OpenTrashSVG } from "@/components/brand/OpenTrashSVG";
+import { OpenTrashSVG, TrashSVG } from "@/components/brand/IconsSVG";
 
 type CartItemAccent = "blue" | "orange";
 

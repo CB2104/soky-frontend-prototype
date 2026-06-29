@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import type { AnalyticsEventRequestDto, AnalyticsEventResponseDto } from "@/contracts/api";
+import type {
+  AnalyticsEventRequestDto,
+  AnalyticsEventResponseDto,
+} from "@/contracts/api";
 import { applyScenarioDelay, errorResponse, getScenario } from "@/mock/helpers";
 
 const acceptedEvents = new Set([
@@ -15,6 +18,10 @@ const acceptedEvents = new Set([
   "whatsapp_clicked",
   "slider_view",
   "slider_click",
+  "contact_speed_dial_open",
+  "contact_whatsapp_click",
+  "contact_instagram_click",
+  "contact_tiktok_click",
 ]);
 
 export async function POST(request: Request) {
@@ -26,10 +33,16 @@ export async function POST(request: Request) {
     return NextResponse.json(response);
   }
 
-  const body = (await request.json().catch(() => null)) as AnalyticsEventRequestDto | null;
+  const body = (await request
+    .json()
+    .catch(() => null)) as AnalyticsEventRequestDto | null;
 
   if (!body?.sessionId || !acceptedEvents.has(body.eventType)) {
-    return errorResponse("VALIDATION_ERROR", "Evento de analytics inválido.", 422);
+    return errorResponse(
+      "VALIDATION_ERROR",
+      "Evento de analytics inválido.",
+      422,
+    );
   }
 
   const response: AnalyticsEventResponseDto = { accepted: true };
