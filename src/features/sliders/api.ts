@@ -1,4 +1,8 @@
-import type { PublicSliderItemDto, SliderCtaDto, SliderItemDto } from "@/contracts/api";
+import type {
+  PublicSliderItemDto,
+  SliderCtaDto,
+  SliderItemDto,
+} from "@/contracts/api";
 import { apiClient } from "@/lib/api/client";
 
 function getSafeInternalPath(target?: string) {
@@ -60,8 +64,12 @@ export function mapPublicSliderToLegacySlider(
   };
 }
 
+export async function getActivePublicSliders() {
+  return apiClient.get<PublicSliderItemDto[]>("/sliders/active");
+}
+
 export async function getActiveSliders() {
-  const sliders = await apiClient.get<PublicSliderItemDto[]>("/sliders/active");
+  const sliders = await getActivePublicSliders();
 
   return sliders.map(mapPublicSliderToLegacySlider);
 }

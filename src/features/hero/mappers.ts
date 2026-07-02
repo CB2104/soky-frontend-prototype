@@ -1,10 +1,19 @@
 import type {
+  SliderBackgroundDto,
+  SliderBackgroundImageDto,
+  SliderBackgroundLayerDto,
   PublicSliderItemDto,
   SliderCtaDto,
+  SliderImageFit,
+  SliderImagePosition,
   SliderIntent,
   SliderLayoutHint,
+  SliderMediaMode,
 } from "@/contracts/api";
 import type {
+  HeroBackground,
+  HeroBackgroundImage,
+  HeroBackgroundLayer,
   HeroBadgeTone,
   HeroCtaViewModel,
   HeroPattern,
@@ -13,6 +22,7 @@ import type {
 } from "./types";
 
 const HERO_IMAGE_SIZES = "(min-width: 1024px) 58vw, 100vw";
+const HERO_CUTOUT_IMAGE_SIZES = "(min-width: 1024px) 48vw, 92vw";
 
 function toNullableText(value?: string) {
   return value ?? null;
@@ -64,7 +74,9 @@ function getCtaHref(cta: SliderCtaDto) {
   }
 
   if (cta.type === "CATEGORY") {
-    return cta.target ? `/menu?category=${encodeURIComponent(cta.target)}` : null;
+    return cta.target
+      ? `/menu?category=${encodeURIComponent(cta.target)}`
+      : null;
   }
 
   return getSafeInternalPath(cta.target);
@@ -90,19 +102,97 @@ function mapCta(cta?: SliderCtaDto): HeroCtaViewModel | null {
   };
 }
 
+function getMediaFit(
+  mediaMode: SliderMediaMode,
+  mediaFit: SliderImageFit | undefined,
+): SliderImageFit {
+  if (mediaFit) {
+    return mediaFit;
+  }
+
+  return mediaMode === "cutout-product" ? "contain" : "cover";
+}
+
+function getMediaPosition(
+  mediaPosition: SliderImagePosition | undefined,
+): SliderImagePosition {
+  return mediaPosition ?? "center";
+}
+
+function getFrameEnabled(
+  mediaMode: SliderMediaMode,
+  frameEnabled: boolean | undefined,
+) {
+  return frameEnabled ?? mediaMode !== "cutout-product";
+}
+
+function getImageSizes(mediaMode: SliderMediaMode) {
+  return mediaMode === "cutout-product"
+    ? HERO_CUTOUT_IMAGE_SIZES
+    : HERO_IMAGE_SIZES;
+}
+
+function mapBackgroundImage(
+  image: SliderBackgroundImageDto | undefined,
+): HeroBackgroundImage | null {
+  if (!image) {
+    return null;
+  }
+
+  return {
+    desktopSrc: image.desktopUrl,
+    mobileSrc: image.mobileUrl ?? image.desktopUrl,
+    decorative: true,
+    fit: image.fit ?? "cover",
+    position: image.position ?? "center",
+  };
+}
+
+function mapBackgroundLayer(
+  layer: SliderBackgroundLayerDto,
+): HeroBackgroundLayer {
+  return {
+    colorToken: layer.colorToken ?? null,
+    image: mapBackgroundImage(layer.image),
+    opacity: layer.opacity ?? null,
+  };
+}
+
+function mapBackground(background?: SliderBackgroundDto): HeroBackground {
+  if (!background || background.mode === "none") {
+    return { mode: "none" };
+  }
+
+  if (background.mode === "single") {
+    return {
+      mode: "single",
+      layer: mapBackgroundLayer(background.layer),
+    };
+  }
+
+  return {
+    mode: "two-layer",
+    base: mapBackgroundLayer(background.base),
+    accent: {
+      ...mapBackgroundLayer(background.accent),
+      bleed: background.accent.bleed ?? "none",
+    },
+  };
+}
+
 function getPresentationVariant(
   intent: SliderIntent,
   layoutHint: SliderLayoutHint,
 ): HeroPresentationVariant {
-  if (intent === "promotion" && layoutHint === "poster") {
+  if (intent === "welcome" && layoutHint === "split") {
+    return "welcome-split";
+  }
+
+  if (intent === "promotion") {
     return "promo-poster";
   }
 
-  if (intent === "promotion" && layoutHint === "split") {
-    return "product-split";
-  }
-
-  return "image-panel";
+  return "conversion-cta";
 }
 
 function getPresentationPattern(intent: SliderIntent): HeroPattern {
@@ -144,6 +234,8 @@ export function mapPublicSliderToHeroSlide(
   dto: PublicSliderItemDto,
   index: number,
 ): HeroSlideViewModel {
+  const mediaMode = dto.mediaMode ?? "framed-photo";
+
   return {
     id: dto.id,
     title: dto.title,
@@ -153,12 +245,17 @@ export function mapPublicSliderToHeroSlide(
     highlightText: toNullableText(dto.highlightText),
     intent: dto.intent,
     layoutHint: dto.layoutHint,
+    background: mapBackground(dto.background),
     image: {
       desktopSrc: dto.desktopImageUrl,
       mobileSrc: dto.mobileImageUrl ?? dto.desktopImageUrl,
       alt: dto.imageAlt,
+      mode: mediaMode,
+      fit: getMediaFit(mediaMode, dto.mediaFit),
+      position: getMediaPosition(dto.mediaPosition),
+      frameEnabled: getFrameEnabled(mediaMode, dto.frameEnabled),
       priority: index === 0,
-      sizes: HERO_IMAGE_SIZES,
+      sizes: getImageSizes(mediaMode),
     },
     primaryCta: mapCta(dto.primaryCta),
     secondaryCta: mapCta(dto.secondaryCta),

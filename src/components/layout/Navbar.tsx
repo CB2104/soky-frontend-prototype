@@ -11,7 +11,7 @@ type NavbarProps = {
 
 const Navbar = ({ whatsappUrl }: NavbarProps) => {
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-soky-blue text-soky-white shadow-lg shadow-soky-navy/20">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-soky-blue text-soky-white shadow-lg shadow-soky-navy/20">
       <div className="soky-container flex min-h-20 items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <MobileNavDrawer items={navLinks} whatsappUrl={whatsappUrl} />

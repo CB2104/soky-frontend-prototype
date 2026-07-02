@@ -13,6 +13,59 @@ import type {
 
 const now = new Date("2026-06-14T14:00:00.000Z").toISOString();
 
+const heroProductImageUrl = "/images/soky-hero-party-box.png";
+
+// TODO: Replace the repeated product mock with dedicated SOKY photography per slide.
+const heroBlueOrangeBackground = {
+  mode: "two-layer",
+  base: {
+    colorToken: "brand-primary",
+    image: {
+      desktopUrl: "/images/hero/welcome-blue-desktop.webp",
+      mobileUrl: "/images/hero/welcome-blue-mobile.webp",
+      decorative: true,
+      fit: "cover",
+      position: "center",
+    },
+    opacity: 100,
+  },
+  accent: {
+    colorToken: "accent",
+    image: {
+      desktopUrl: "/images/hero/welcome-orange-accent-desktop-v2.png",
+      mobileUrl: "/images/hero/welcome-orange-accent-mobile-v2.png",
+      decorative: true,
+      fit: "cover",
+      position: "center-right",
+    },
+    opacity: 100,
+    bleed: "contained-end",
+  },
+} satisfies NonNullable<AdminSliderItemDto["background"]>;
+
+const heroSimpleBlueBackground = {
+  mode: "single",
+  layer: {
+    colorToken: "brand-primary",
+    image: {
+      desktopUrl: "/images/hero/welcome-blue-desktop.webp",
+      mobileUrl: "/images/hero/welcome-blue-mobile.webp",
+      decorative: true,
+      fit: "cover",
+      position: "center",
+    },
+    opacity: 100,
+  },
+} satisfies NonNullable<AdminSliderItemDto["background"]>;
+
+const heroPaperBackground = {
+  mode: "single",
+  layer: {
+    colorToken: "paper",
+    opacity: 100,
+  },
+} satisfies NonNullable<AdminSliderItemDto["background"]>;
+
 export const mockCategories: CategoryDto[] = [
   {
     id: "cat-boxes",
@@ -98,7 +151,8 @@ export const mockProducts: ProductDto[] = [
     priceCurrency: "EUR",
     priceAmount: "38.00",
     imageUrl: "https://picsum.photos/seed/soky-box-kiyomi-sushi/1000/760",
-    imageAlt: "Box Kiyomi de 72 piezas de sushi con toppings sobre bandeja negra.",
+    imageAlt:
+      "Box Kiyomi de 72 piezas de sushi con toppings sobre bandeja negra.",
     featured: true,
     tags: ["72 piezas", "Promo", "Compartir"],
     allergens: ["Pescado", "Sésamo"],
@@ -110,7 +164,8 @@ export const mockProducts: ProductDto[] = [
     title: "Box Kyoto",
     slug: "box-kyoto",
     shortDescription: "36 piezas con entradas.",
-    description: "Box mixto con rolls fríos, tempura, entradas y refresco según disponibilidad.",
+    description:
+      "Box mixto con rolls fríos, tempura, entradas y refresco según disponibilidad.",
     categoryId: "cat-boxes",
     categorySlug: "boxes",
     type: "COMBO",
@@ -132,7 +187,8 @@ export const mockProducts: ProductDto[] = [
     title: "Box Osaka",
     slug: "box-osaka",
     shortDescription: "34 piezas mixtas.",
-    description: "Incluye 10 fríos, 24 tempura y refresco de 1L para compartir.",
+    description:
+      "Incluye 10 fríos, 24 tempura y refresco de 1L para compartir.",
     categoryId: "cat-boxes",
     categorySlug: "boxes",
     type: "COMBO",
@@ -154,7 +210,8 @@ export const mockProducts: ProductDto[] = [
     title: "Box SOKY",
     slug: "box-soky",
     shortDescription: "36 piezas todos tempura.",
-    description: "Rolls tempura crujientes con toppings, salsa y una presentación abundante.",
+    description:
+      "Rolls tempura crujientes con toppings, salsa y una presentación abundante.",
     categoryId: "cat-tempura",
     categorySlug: "tempura",
     type: "PROMO",
@@ -176,7 +233,8 @@ export const mockProducts: ProductDto[] = [
     title: "Box Samurai",
     slug: "box-samurai",
     shortDescription: "30 piezas todos fríos.",
-    description: "Una opción fresca con rolls fríos, ideal para combinar con entradas.",
+    description:
+      "Una opción fresca con rolls fríos, ideal para combinar con entradas.",
     categoryId: "cat-frios",
     categorySlug: "frios",
     type: "PROMO",
@@ -198,7 +256,8 @@ export const mockProducts: ProductDto[] = [
     title: "Camarón crispy",
     slug: "camaron-crispy",
     shortDescription: "Entrada crujiente.",
-    description: "Camarones crispy para acompañar tu box o armar una orden más completa.",
+    description:
+      "Camarones crispy para acompañar tu box o armar una orden más completa.",
     categoryId: "cat-entradas",
     categorySlug: "entradas",
     type: "SIMPLE",
@@ -220,7 +279,8 @@ export const mockProducts: ProductDto[] = [
     title: "Fuji Roll",
     slug: "fuji-roll",
     shortDescription: "Temporalmente no disponible.",
-    description: "Roll especial con salsa Fuji y topping. Vuelve pronto al menú.",
+    description:
+      "Roll especial con salsa Fuji y topping. Vuelve pronto al menú.",
     categoryId: "cat-tempura",
     categorySlug: "tempura",
     type: "SIMPLE",
@@ -246,12 +306,19 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     description: "Combos, entradas y favoritos listos para pedir.",
     eyebrow: "Bienvenido",
     badgeLabel: "Popular",
-    desktopImageUrl: "https://picsum.photos/seed/soky-hero-sushi-box/1400/980",
-    mobileImageUrl: "https://picsum.photos/seed/soky-hero-sushi-box-mobile/900/1100",
-    imageAlt: "Mesa con comida preparada para compartir.",
+    desktopImageUrl: heroProductImageUrl,
+    mobileImageUrl: heroProductImageUrl,
+    imageAlt: "Box SOKY con rolls, toppings y piezas para compartir.",
+    mediaMode: "framed-photo",
+    frameEnabled: true,
+    background: heroBlueOrangeBackground,
     primaryCta: {
       label: "Ver menú",
       type: "MENU",
+    },
+    secondaryCta: {
+      label: "Ubicación",
+      type: "LOCATION",
     },
     intent: "welcome",
     layoutHint: "split",
@@ -263,15 +330,26 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   },
   {
     id: "slider-boxes",
-    title: "Combos familiares",
-    description: "Porciones grandes para almuerzos, cenas y reuniones.",
-    highlightText: "Para grupos",
-    desktopImageUrl: "https://picsum.photos/seed/soky-hero-boxes/1400/980",
-    mobileImageUrl: "https://picsum.photos/seed/soky-hero-boxes-mobile/900/1100",
-    imageAlt: "Promos de comida en bandejas para compartir.",
+    title: "Combos para compartir",
+    description: "Boxes generosos para pedir en grupo sin complicar la elección.",
+    eyebrow: "Promos SOKY",
+    badgeLabel: "Popular",
+    highlightText: "COMBOS",
+    desktopImageUrl: heroProductImageUrl,
+    mobileImageUrl: heroProductImageUrl,
+    imageAlt: "Box SOKY con sushi, toppings y piezas para una mesa compartida.",
+    mediaMode: "framed-photo",
+    mediaPosition: "center-right",
+    frameEnabled: true,
+    background: heroBlueOrangeBackground,
     primaryCta: {
-      label: "Pedir ahora",
-      type: "CART",
+      label: "Ver boxes",
+      type: "CATEGORY",
+      target: "boxes",
+    },
+    secondaryCta: {
+      label: "Pedir por WhatsApp",
+      type: "WHATSAPP",
     },
     intent: "promotion",
     layoutHint: "poster",
@@ -283,16 +361,22 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   },
   {
     id: "slider-weekly-special",
-    title: "Especial de la semana",
-    description: "Una recomendación destacada para probar algo distinto.",
-    badgeLabel: "Nuevo",
-    desktopImageUrl: "https://picsum.photos/seed/food-weekly-special/1400/980",
-    mobileImageUrl: "https://picsum.photos/seed/food-weekly-special-mobile/900/1100",
-    imageAlt: "Plato especial servido con acompañantes.",
+    title: "Favoritos tempura",
+    description: "Rolls crocantes y combinaciones para sumar textura al pedido.",
+    eyebrow: "Crocante",
+    badgeLabel: "Favoritos",
+    highlightText: "TEMPURA",
+    desktopImageUrl: heroProductImageUrl,
+    mobileImageUrl: heroProductImageUrl,
+    imageAlt: "Rolls SOKY servidos en un box con piezas crocantes y toppings.",
+    mediaMode: "promo-image",
+    mediaPosition: "center",
+    frameEnabled: true,
+    background: heroBlueOrangeBackground,
     primaryCta: {
-      label: "Ver categoría",
+      label: "Ver tempura",
       type: "CATEGORY",
-      target: "especiales",
+      target: "tempura",
     },
     intent: "promotion",
     layoutHint: "image-led",
@@ -304,15 +388,20 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   },
   {
     id: "slider-pickup",
-    title: "Retiro fácil",
-    description: "Elige retiro o delivery según disponibilidad del negocio.",
-    eyebrow: "Sin espera",
-    desktopImageUrl: "https://picsum.photos/seed/food-pickup-counter/1400/980",
-    mobileImageUrl: "https://picsum.photos/seed/food-pickup-counter-mobile/900/1100",
-    imageAlt: "Mostrador de retiro con pedido listo.",
+    title: "Pide por WhatsApp",
+    description: "Consulta opciones disponibles y cierra tu pedido por chat.",
+    eyebrow: "Pedido rápido",
+    badgeLabel: "Directo",
+    desktopImageUrl: heroProductImageUrl,
+    mobileImageUrl: heroProductImageUrl,
+    imageAlt: "Box SOKY listo para pedir por WhatsApp.",
+    mediaMode: "local-photo",
+    mediaPosition: "center",
+    frameEnabled: true,
+    background: heroSimpleBlueBackground,
     primaryCta: {
-      label: "Ver ubicación",
-      type: "LOCATION",
+      label: "Escribir por WhatsApp",
+      type: "WHATSAPP",
     },
     intent: "conversion",
     layoutHint: "split",
@@ -324,14 +413,23 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   },
   {
     id: "slider-chat",
-    title: "Te ayudamos a elegir",
-    description: "Resuelve dudas antes de cerrar tu pedido.",
-    desktopImageUrl: "https://picsum.photos/seed/food-order-chat/1400/980",
-    mobileImageUrl: "https://picsum.photos/seed/food-order-chat-mobile/900/1100",
-    imageAlt: "Persona revisando un pedido de comida en el teléfono.",
+    title: "Retiro o delivery",
+    description: "Consulta disponibilidad de retiro o delivery antes de cerrar tu pedido.",
+    eyebrow: "Disponibilidad",
+    desktopImageUrl: heroProductImageUrl,
+    mobileImageUrl: heroProductImageUrl,
+    imageAlt: "Pedido SOKY preparado para retiro o delivery.",
+    mediaMode: "framed-photo",
+    mediaPosition: "center-left",
+    frameEnabled: true,
+    background: heroPaperBackground,
     primaryCta: {
-      label: "Consultar",
+      label: "Consultar disponibilidad",
       type: "WHATSAPP",
+    },
+    secondaryCta: {
+      label: "Ver ubicación",
+      type: "LOCATION",
     },
     intent: "conversion",
     layoutHint: "poster",
@@ -343,16 +441,20 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   },
   {
     id: "slider-hours",
-    title: "Horarios actualizados",
-    description: "Comunica cambios de atención sin tocar el diseño del sitio.",
-    highlightText: "Aviso",
-    desktopImageUrl: "https://picsum.photos/seed/food-opening-hours/1400/980",
-    mobileImageUrl: "https://picsum.photos/seed/food-opening-hours-mobile/900/1100",
-    imageAlt: "Letrero de restaurante abierto.",
+    title: "Promos actualizadas",
+    description: "Revisa el menú antes de pedir para ver las opciones activas.",
+    eyebrow: "Aviso",
+    highlightText: "NUEVO",
+    desktopImageUrl: heroProductImageUrl,
+    mobileImageUrl: heroProductImageUrl,
+    imageAlt: "Box SOKY usado como imagen de apoyo para avisos del menú.",
+    mediaMode: "promo-image",
+    mediaPosition: "center-right",
+    frameEnabled: true,
+    background: heroSimpleBlueBackground,
     primaryCta: {
-      label: "Ver detalles",
-      type: "CUSTOM_PATH",
-      target: "/horarios",
+      label: "Ver menú",
+      type: "MENU",
     },
     intent: "announcement",
     layoutHint: "image-led",
@@ -365,7 +467,8 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   {
     id: "slider-menu-banner",
     title: "Banner de menú",
-    description: "Slide disponible para otro placement sin aparecer en el hero.",
+    description:
+      "Slide disponible para otro placement sin aparecer en el hero.",
     desktopImageUrl: "https://picsum.photos/seed/food-menu-banner/1400/980",
     imageAlt: "Ingredientes frescos preparados para cocinar.",
     primaryCta: {
@@ -383,14 +486,17 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   },
   {
     id: "slider-draft",
-    title: "Slide en borrador",
-    description: "Contenido preparado pero no visible públicamente.",
-    desktopImageUrl: "https://picsum.photos/seed/food-draft-slide/1400/980",
-    imageAlt: "Mesa de trabajo preparando una pieza promocional.",
+    title: "Promo SOKY en borrador",
+    description: "Contenido preparado para reemplazar cuando haya una campaña activa.",
+    desktopImageUrl: heroProductImageUrl,
+    mobileImageUrl: heroProductImageUrl,
+    imageAlt: "Box SOKY usado como imagen temporal para una promo en borrador.",
+    mediaMode: "promo-image",
+    frameEnabled: true,
+    background: heroBlueOrangeBackground,
     primaryCta: {
-      label: "Ver promo",
-      type: "CUSTOM_PATH",
-      target: "/promos",
+      label: "Ver menú",
+      type: "MENU",
     },
     intent: "promotion",
     layoutHint: "split",
@@ -486,12 +592,11 @@ export const adminAnalyticsProducts: AdminAnalyticsProductDto[] = mockProducts
     conversionRate: `${31 - index * 2}%`,
   }));
 
-export const adminAnalyticsSliders: AdminAnalyticsSliderDto[] = mockSliderItems.map(
-  (slider, index) => ({
+export const adminAnalyticsSliders: AdminAnalyticsSliderDto[] =
+  mockSliderItems.map((slider, index) => ({
     sliderId: slider.id,
     title: slider.title,
     views: 130 - index * 18,
     clicks: 38 - index * 5,
     clickRate: `${29 - index * 3}%`,
-  }),
-);
+  }));

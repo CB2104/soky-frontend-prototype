@@ -12,7 +12,10 @@ type SiteFooterProps = {
 export function SiteFooter({ settings }: SiteFooterProps) {
   return (
     <PatternSurface className="bg-soky-navy text-soky-white" pattern="seigaiha">
-      <footer className="soky-container grid gap-8 py-12 md:grid-cols-[1.2fr_1fr_1fr]">
+      <footer
+        className="soky-container grid gap-8 py-12 md:grid-cols-[1.2fr_1fr_1fr]"
+        data-contact-speed-dial-hidden-zone
+      >
         <div className="space-y-4">
           <SokyLogo className="h-12 w-auto" />
           <p className="max-w-sm text-sm leading-6 text-soky-white/78">

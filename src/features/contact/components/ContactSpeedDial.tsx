@@ -15,7 +15,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { Variants } from "motion/react";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 export type ContactSpeedDialProps = {
   whatsappUrl: string;
@@ -32,6 +32,13 @@ type ContactAction = {
   icon: ReactNode;
   eventType: AnalyticsEventType;
 };
+
+type ContactSpeedDialContentProps = ContactSpeedDialProps & {
+  isHiddenByZone: boolean;
+};
+
+const hiddenZoneSelector = "[data-contact-speed-dial-hidden-zone]";
+const hiddenZoneThreshold = 0.01;
 
 const actionsVariants: Variants = {
   closed: {
@@ -70,8 +77,123 @@ const actionVariants: Variants = {
   },
 };
 
+function isElementInViewport(element: Element) {
+  const rect = element.getBoundingClientRect();
+
+  return (
+    rect.bottom > 0 &&
+    rect.right > 0 &&
+    rect.top < window.innerHeight &&
+    rect.left < window.innerWidth
+  );
+}
+
+function useIsContactSpeedDialHiddenByZone(pathname: string) {
+  const [isHiddenByZone, setIsHiddenByZone] = useState(false);
+
+  useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      typeof document === "undefined" ||
+      !("IntersectionObserver" in window)
+    ) {
+      return;
+    }
+
+    let frameId: number | undefined;
+
+    const setHiddenByZoneAfterFrame = (nextIsHiddenByZone: boolean) => {
+      if (frameId !== undefined) {
+        window.cancelAnimationFrame(frameId);
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        setIsHiddenByZone(nextIsHiddenByZone);
+        frameId = undefined;
+      });
+    };
+
+    const cancelScheduledUpdate = () => {
+      if (frameId === undefined) {
+        return;
+      }
+
+      window.cancelAnimationFrame(frameId);
+      frameId = undefined;
+    };
+
+    const hiddenZones = Array.from(
+      document.querySelectorAll<HTMLElement>(hiddenZoneSelector),
+    );
+
+    if (hiddenZones.length === 0) {
+      setHiddenByZoneAfterFrame(false);
+      return cancelScheduledUpdate;
+    }
+
+    const intersectingZones = new Set<Element>(
+      hiddenZones.filter(isElementInViewport),
+    );
+
+    setHiddenByZoneAfterFrame(intersectingZones.size > 0);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (
+            entry.isIntersecting &&
+            entry.intersectionRatio >= hiddenZoneThreshold
+          ) {
+            intersectingZones.add(entry.target);
+          } else {
+            intersectingZones.delete(entry.target);
+          }
+        }
+
+        setIsHiddenByZone(intersectingZones.size > 0);
+      },
+      {
+        rootMargin: "0px",
+        threshold: hiddenZoneThreshold,
+      },
+    );
+
+    for (const hiddenZone of hiddenZones) {
+      observer.observe(hiddenZone);
+    }
+
+    return () => {
+      observer.disconnect();
+      cancelScheduledUpdate();
+    };
+  }, [pathname]);
+
+  return isHiddenByZone;
+}
+
 export function ContactSpeedDial(props: ContactSpeedDialProps) {
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => {
+      setHasMounted(true);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, []);
+
+  if (!hasMounted) {
+    return null;
+  }
+
+  return <ContactSpeedDialMounted {...props} />;
+}
+
+function ContactSpeedDialMounted(props: ContactSpeedDialProps) {
   const pathname = usePathname();
+  const isHiddenByZone = useIsContactSpeedDialHiddenByZone(pathname);
   const isHiddenRoute =
     pathname === "/cart" ||
     pathname.startsWith("/cart/") ||
@@ -95,16 +217,31 @@ export function ContactSpeedDial(props: ContactSpeedDialProps) {
     closeContactSpeedDial();
   }, [closeContactSpeedDial, isCartOpen]);
 
+  useEffect(() => {
+    if (!isHiddenByZone) {
+      return;
+    }
+
+    closeContactSpeedDial();
+  }, [closeContactSpeedDial, isHiddenByZone]);
+
   if (isCartOpen || isHiddenRoute) {
     return null;
   }
-  return <ContactSpeedDialContent {...props} />;
+
+  return (
+    <ContactSpeedDialContent
+      {...props}
+      isHiddenByZone={isHiddenByZone}
+    />
+  );
 }
 function ContactSpeedDialContent({
   whatsappUrl,
   instagramUrl,
   tiktokUrl,
-}: ContactSpeedDialProps) {
+  isHiddenByZone,
+}: ContactSpeedDialContentProps) {
   const containerRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const reduceMotion = useReducedMotion() ?? false;
@@ -127,6 +264,22 @@ function ContactSpeedDialContent({
   const toggleContactSpeedDial = useUiOverlayStore(
     (state) => state.toggleContactSpeedDial,
   );
+
+  useEffect(() => {
+    const trigger = triggerRef.current;
+
+    if (
+      !isHiddenByZone ||
+      !trigger ||
+      typeof document === "undefined" ||
+      document.activeElement !== trigger
+    ) {
+      return;
+    }
+
+    trigger.blur();
+  }, [isHiddenByZone]);
+
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -183,16 +336,32 @@ function ContactSpeedDialContent({
     <aside
       ref={containerRef}
       aria-label="Opciones de contacto"
-      className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-20 flex flex-col-reverse items-end gap-3"
+      aria-hidden={isHiddenByZone ? true : undefined}
+      className={[
+        "fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-20 flex flex-col-reverse items-end gap-3",
+        "transition-[opacity,transform] ease-out",
+        reduceMotion ? "duration-0" : "duration-200",
+        isHiddenByZone
+          ? [
+              "pointer-events-none opacity-0",
+              reduceMotion ? undefined : "translate-y-1 scale-95",
+            ]
+          : "pointer-events-auto opacity-100 translate-y-0 scale-100",
+      ]
+        .flat()
+        .filter(Boolean)
+        .join(" ")}
+      inert={isHiddenByZone ? true : undefined}
     >
       <motion.button
         type="button"
         ref={triggerRef}
-        aria-expanded={isOpen}
+        aria-expanded={isHiddenByZone ? false : isOpen}
         aria-controls={actionsId}
         aria-label={
           isOpen ? "Cerrar opciones de contacto" : "Abrir opciones de contacto"
         }
+        tabIndex={isHiddenByZone ? -1 : undefined}
         whileTap={reduceMotion ? undefined : { scale: 0.96 }}
         transition={{ type: "spring", stiffness: 420, damping: 28 }}
         className={[
@@ -205,6 +374,10 @@ function ContactSpeedDialContent({
           "focus-visible:ring-soky-focus focus-visible:ring-offset-2",
         ].join(" ")}
         onClick={() => {
+          if (isHiddenByZone) {
+            return;
+          }
+
           if (!isOpen) {
             trackEvent({
               eventType: "contact_speed_dial_open",
@@ -260,7 +433,7 @@ function ContactSpeedDialContent({
       </motion.button>
 
       <AnimatePresence>
-        {isOpen ? (
+        {isOpen && !isHiddenByZone ? (
           <motion.div
             key="contact-actions"
             id={actionsId}

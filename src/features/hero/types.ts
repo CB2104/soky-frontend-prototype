@@ -1,13 +1,19 @@
 import type {
+  SliderBackgroundBleed,
+  SliderBackgroundColorToken,
+  SliderBackgroundOpacity,
   SliderCtaType,
+  SliderImageFit,
+  SliderImagePosition,
   SliderIntent,
   SliderLayoutHint,
+  SliderMediaMode,
 } from "@/contracts/api";
 
 export type HeroPresentationVariant =
-  | "product-split"
+  | "welcome-split"
   | "promo-poster"
-  | "image-panel";
+  | "conversion-cta";
 
 export type HeroPattern = "seigaiha" | "asanoha" | "none";
 
@@ -21,6 +27,36 @@ export type HeroCtaViewModel = {
   isExternal: boolean;
 };
 
+export type HeroBackgroundImage = {
+  desktopSrc: string;
+  mobileSrc: string;
+  decorative: true;
+  fit: SliderImageFit;
+  position: SliderImagePosition;
+};
+
+export type HeroBackgroundLayer = {
+  colorToken: SliderBackgroundColorToken | null;
+  image: HeroBackgroundImage | null;
+  opacity: SliderBackgroundOpacity | null;
+};
+
+export type HeroBackground =
+  | {
+      mode: "none";
+    }
+  | {
+      mode: "single";
+      layer: HeroBackgroundLayer;
+    }
+  | {
+      mode: "two-layer";
+      base: HeroBackgroundLayer;
+      accent: HeroBackgroundLayer & {
+        bleed: SliderBackgroundBleed;
+      };
+    };
+
 export type HeroSlideViewModel = {
   id: string;
   title: string;
@@ -31,11 +67,16 @@ export type HeroSlideViewModel = {
 
   intent: SliderIntent;
   layoutHint: SliderLayoutHint;
+  background: HeroBackground;
 
   image: {
     desktopSrc: string;
     mobileSrc: string;
     alt: string;
+    mode: SliderMediaMode;
+    fit: SliderImageFit;
+    position: SliderImagePosition;
+    frameEnabled: boolean;
     priority: boolean;
     sizes: string;
   };

@@ -48,6 +48,64 @@ export type SliderCtaDto = {
   target?: string;
 };
 
+export type SliderImageFit = "cover" | "contain";
+
+export type SliderImagePosition =
+  | "center"
+  | "top"
+  | "bottom"
+  | "left"
+  | "right"
+  | "center-left"
+  | "center-right";
+
+export type SliderBackgroundColorToken =
+  | "brand-primary"
+  | "brand-dark"
+  | "accent"
+  | "paper"
+  | "white";
+
+export type SliderBackgroundOpacity = 100 | 70 | 50 | 35;
+
+export type SliderBackgroundBleed = "none" | "contained-end";
+
+export type SliderBackgroundImageDto = {
+  desktopUrl: string;
+  mobileUrl?: string;
+  decorative?: true;
+  fit?: SliderImageFit;
+  position?: SliderImagePosition;
+};
+
+export type SliderBackgroundLayerDto = {
+  colorToken?: SliderBackgroundColorToken;
+  image?: SliderBackgroundImageDto;
+  opacity?: SliderBackgroundOpacity;
+};
+
+export type SliderBackgroundDto =
+  | {
+      mode: "none";
+    }
+  | {
+      mode: "single";
+      layer: SliderBackgroundLayerDto;
+    }
+  | {
+      mode: "two-layer";
+      base: SliderBackgroundLayerDto;
+      accent: SliderBackgroundLayerDto & {
+        bleed?: SliderBackgroundBleed;
+      };
+    };
+
+export type SliderMediaMode =
+  | "framed-photo"
+  | "cutout-product"
+  | "promo-image"
+  | "local-photo";
+
 export type PublicSliderItemDto = {
   id: string;
   title: string;
@@ -59,6 +117,11 @@ export type PublicSliderItemDto = {
   desktopImageUrl: string;
   mobileImageUrl?: string;
   imageAlt: string;
+  mediaMode?: SliderMediaMode;
+  mediaFit?: SliderImageFit;
+  mediaPosition?: SliderImagePosition;
+  frameEnabled?: boolean;
+  background?: SliderBackgroundDto;
 
   primaryCta?: SliderCtaDto;
   secondaryCta?: SliderCtaDto;

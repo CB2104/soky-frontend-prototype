@@ -1,36 +1,38 @@
-import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { BrushLabel } from "@/components/ui/brush-label";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { PatternSurface } from "@/components/ui/pattern-surface";
 import { Section } from "@/components/ui/section";
-import { StampBadge } from "@/components/ui/stamp-badge";
-import { WaveDivider } from "@/components/ui/wave-divider";
 import { ProductCard } from "@/features/products/components/product-card";
 import { getCategories } from "@/features/categories/api";
 import { getFeaturedProducts } from "@/features/products/api";
 import { mapProductToCard } from "@/features/products/mappers";
-import { getActiveSliders } from "@/features/sliders/api";
 import { getPublicSettings } from "@/features/settings/api";
 import { siteUrl } from "@/lib/env";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { getActivePublicSliders } from "@/features/sliders/api";
+import { mapPublicSlidersToHeroSlides } from "@/features/hero/mappers";
+import { HeroSlider } from "@/features/hero/components/HeroSlider";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [sliders, featuredProducts, categories, settings] = await Promise.all([
-    getActiveSliders(),
-    getFeaturedProducts(3),
-    getCategories(),
-    getPublicSettings(),
-  ]);
-  const hero = sliders[0];
+  const [sliderDtos, featuredProducts, categories, settings] =
+    await Promise.all([
+      getActivePublicSliders(),
+      getFeaturedProducts(3),
+      getCategories(),
+      getPublicSettings(),
+    ]);
+  const heroSlides = mapPublicSlidersToHeroSlides(sliderDtos);
   const products = featuredProducts.map(mapProductToCard);
+
   const whatsappUrl = buildWhatsAppUrl(
     settings.whatsappPhone,
     "Hola SOKY, quiero ver las promos disponibles.",
   );
+
+  const heroFallbackDescription =
+    settings.slogan ?? "Sushi casual, colorido y facil de pedir.";
   const localBusinessJsonLd = {
     "@context": "https://schema.org",
     "@type": "Restaurant",
@@ -50,64 +52,11 @@ export default async function HomePage() {
           __html: JSON.stringify(localBusinessJsonLd),
         }}
       />
-      <section id="promos" className="scroll-mt-24">
-        <PatternSurface
-          className="relative bg-soky-blue text-soky-white"
-          pattern="seigaiha"
-        >
-          <Container
-            size="wide"
-            className="grid min-h-[calc(100dvh-5rem)] items-center gap-8 py-10 md:grid-cols-12 md:py-14"
-          >
-            <div className="md:col-span-5">
-              <BrushLabel className="mb-5" color="orange">
-                Promos para compartir
-              </BrushLabel>
-              <h1 className="soky-heading max-w-xl text-[4rem] text-soky-white md:text-[6.5rem]">
-                {hero?.title ?? "Sushi para compartir"}
-              </h1>
-              <p className="mt-5 max-w-md text-lg leading-8 text-soky-white/82">
-                {hero?.description ?? settings.slogan}
-              </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Button href="/menu" size="lg">
-                  Ver menú
-                </Button>
-                <Button
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  variant="whatsapp"
-                  size="lg"
-                >
-                  Pedir ahora
-                </Button>
-              </div>
-            </div>
-            <div className="relative md:col-span-7">
-              <div className="absolute -left-3 top-4 z-10 md:left-2">
-                <StampBadge>Promo</StampBadge>
-              </div>
-              <div className="relative aspect-4/3 overflow-hidden rounded-3xl border-4 border-soky-white/20 shadow-2xl">
-                <Image
-                  src={
-                    hero?.imageUrl ??
-                    "https://picsum.photos/seed/soky-hero-fallback/1400/980"
-                  }
-                  alt={
-                    hero?.imageAlt ?? "Box de sushi SOKY con rolls y toppings."
-                  }
-                  fill
-                  priority
-                  sizes="(min-width: 1024px) 58vw, 100vw"
-                  className="object-cover"
-                />
-              </div>
-            </div>
-          </Container>
-          <WaveDivider tone="paper" />
-        </PatternSurface>
-      </section>
+      <HeroSlider
+        fallbackDescription={heroFallbackDescription}
+        slides={heroSlides}
+        whatsappUrl={whatsappUrl}
+      />
       <Section id="destacados" className="scroll-mt-24" tone="paper">
         <Container>
           <div className="max-w-2xl">
@@ -120,12 +69,8 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {products.map((product, index) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                priority={index === 0}
-              />
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </Container>

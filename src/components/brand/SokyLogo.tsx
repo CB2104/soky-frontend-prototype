@@ -21,7 +21,19 @@ export function SokyLogo({
       aria-hidden={title ? undefined : true}
       {...props}
     >
-      <g id="soky-letter-s" className="soky-letter soky-letter-s" data-letter="S">
+      <path
+        className="soky-logo-sticker"
+        d="M 75 15 C 94 6 113 13 126 29 C 145 10 179 4 210 15 C 224 20 236 28 245 38 C 258 28 276 25 294 30 C 307 18 334 17 350 33 C 364 17 393 16 411 30 C 425 17 449 15 466 25 C 479 33 485 47 482 65 L 482 87 C 479 111 466 130 442 145 L 442 239 C 442 252 432 258 419 258 L 393 258 C 382 258 373 253 368 244 L 344 244 C 331 244 321 237 316 225 L 308 209 L 308 224 C 308 237 300 245 287 246 L 263 246 C 249 246 240 238 237 226 L 103 226 C 96 239 85 248 70 254 C 58 259 44 261 31 258 C 18 255 10 246 10 234 L 10 212 C 10 200 18 190 31 186 C 41 183 45 176 41 166 C 39 160 34 153 29 146 C 15 130 7 113 6 95 C 4 74 10 55 22 41 C 34 27 52 19 75 15 Z"
+        fill={white}
+        fillRule="evenodd"
+        clipRule="evenodd"
+      />
+
+      <g
+        id="soky-letter-s"
+        className="soky-letter soky-letter-s"
+        data-letter="S"
+      >
         <path
           className="soky-letter-bg"
           d="M 76 23 L 64 23 L 63 24 L 59 24 L 51 27 L 48 27 L 43 30 L 37 32 L 31 36 L 21 45 L 12 58 L 11 62 L 8 67 L 6 77 L 5 78 L 5 86 L 4 87 L 5 104 L 6 105 L 7 113 L 10 119 L 10 122 L 14 129 L 14 131 L 17 137 L 21 141 L 23 145 L 33 158 L 40 172 L 40 182 L 39 185 L 36 188 L 26 192 L 23 192 L 19 194 L 12 202 L 11 209 L 10 210 L 10 239 L 11 240 L 12 247 L 19 255 L 25 257 L 28 257 L 29 258 L 40 257 L 41 256 L 44 256 L 45 255 L 48 255 L 57 252 L 67 247 L 79 238 L 82 234 L 87 232 L 89 227 L 89 223 L 91 219 L 91 215 L 93 210 L 94 202 L 97 196 L 97 194 L 101 188 L 94 172 L 90 159 L 88 157 L 88 154 L 85 150 L 84 145 L 74 124 L 71 115 L 71 112 L 68 106 L 68 103 L 66 98 L 66 90 L 68 87 L 77 79 L 80 74 L 83 59 L 85 55 L 85 52 L 88 46 L 90 40 L 90 37 L 91 36 L 91 33 L 89 32 L 85 27 L 82 26 L 80 24 L 77 24 Z"
@@ -37,7 +49,11 @@ export function SokyLogo({
           clipRule="evenodd"
         />
       </g>
-      <g id="soky-letter-o" className="soky-letter soky-letter-o" data-letter="O">
+      <g
+        id="soky-letter-o"
+        className="soky-letter soky-letter-o"
+        data-letter="O"
+      >
         <path
           className="soky-letter-bg"
           d="M 118 16 L 103 26 L 97 32 L 93 34 L 92 33 L 91 40 L 84 59 L 81 74 L 78 79 L 71 86 L 70 86 L 67 90 L 67 98 L 68 99 L 69 106 L 71 109 L 75 124 L 85 145 L 86 150 L 89 154 L 89 157 L 91 159 L 95 172 L 102 187 L 98 194 L 98 196 L 95 202 L 94 210 L 92 215 L 92 219 L 90 223 L 90 227 L 88 233 L 91 234 L 93 237 L 98 241 L 101 241 L 106 243 L 230 243 L 231 242 L 238 241 L 244 237 L 245 217 L 246 216 L 246 213 L 245 212 L 245 209 L 246 208 L 245 205 L 245 198 L 241 187 L 243 184 L 243 182 L 245 179 L 246 174 L 248 171 L 251 162 L 251 159 L 253 154 L 253 150 L 254 149 L 254 145 L 255 144 L 255 140 L 256 139 L 256 129 L 258 123 L 258 95 L 257 94 L 257 85 L 256 84 L 256 79 L 254 75 L 253 64 L 251 60 L 251 57 L 246 42 L 246 34 L 239 31 L 235 27 L 221 17 L 219 17 L 208 11 L 199 8 L 196 8 L 192 6 L 184 5 L 183 4 L 154 4 L 153 5 L 149 5 L 148 6 L 137 8 L 134 10 L 129 11 L 122 15 Z"
@@ -53,7 +69,11 @@ export function SokyLogo({
           clipRule="evenodd"
         />
       </g>
-      <g id="soky-letter-k" className="soky-letter soky-letter-k" data-letter="K">
+      <g
+        id="soky-letter-k"
+        className="soky-letter soky-letter-k"
+        data-letter="K"
+      >
         <path
           className="soky-letter-bg"
           d="M 336 26 L 334 27 L 330 27 L 329 28 L 314 28 L 313 29 L 309 29 L 302 33 L 295 29 L 292 29 L 291 28 L 258 28 L 247 33 L 247 42 L 252 57 L 252 60 L 254 64 L 255 75 L 257 79 L 257 84 L 258 85 L 258 94 L 259 95 L 259 123 L 257 129 L 257 139 L 256 140 L 256 144 L 255 145 L 255 149 L 254 150 L 254 154 L 253 155 L 252 162 L 242 188 L 245 194 L 246 205 L 247 206 L 246 209 L 247 216 L 246 217 L 245 238 L 248 239 L 251 242 L 258 245 L 264 245 L 265 246 L 286 246 L 287 245 L 292 245 L 298 243 L 302 240 L 306 233 L 306 230 L 307 229 L 307 217 L 312 213 L 318 218 L 326 236 L 332 242 L 336 244 L 344 245 L 345 246 L 373 246 L 374 247 L 378 240 L 381 231 L 382 223 L 381 222 L 381 216 L 379 211 L 379 207 L 376 198 L 375 189 L 372 180 L 371 170 L 370 168 L 369 169 L 367 168 L 363 164 L 360 158 L 360 156 L 358 154 L 357 150 L 354 146 L 353 142 L 348 133 L 348 130 L 350 128 L 347 122 L 344 119 L 343 115 L 341 113 L 336 103 L 336 98 L 337 97 L 339 83 L 342 76 L 342 73 L 349 52 L 348 43 L 340 33 Z"
@@ -69,7 +89,11 @@ export function SokyLogo({
           clipRule="evenodd"
         />
       </g>
-      <g id="soky-letter-y" className="soky-letter soky-letter-y" data-letter="Y">
+      <g
+        id="soky-letter-y"
+        className="soky-letter soky-letter-y"
+        data-letter="Y"
+      >
         <path
           className="soky-letter-bg"
           d="M 346 19 L 337 25 L 341 33 L 348 41 L 349 43 L 349 47 L 350 48 L 349 56 L 347 60 L 347 63 L 339 87 L 337 103 L 350 127 L 353 126 L 357 128 L 363 134 L 370 138 L 374 142 L 374 165 L 371 169 L 372 170 L 373 180 L 376 189 L 377 198 L 380 207 L 380 211 L 382 216 L 382 222 L 383 223 L 382 231 L 379 240 L 375 247 L 385 256 L 388 256 L 393 258 L 422 258 L 423 257 L 429 256 L 435 252 L 438 247 L 439 241 L 440 240 L 440 142 L 444 138 L 447 137 L 455 131 L 461 125 L 468 116 L 476 101 L 479 87 L 480 86 L 480 83 L 481 82 L 481 35 L 480 34 L 479 28 L 472 20 L 466 19 L 465 18 L 432 18 L 431 19 L 427 19 L 421 23 L 417 29 L 417 33 L 416 34 L 416 39 L 415 40 L 416 42 L 416 47 L 415 48 L 415 75 L 410 80 L 407 81 L 401 77 L 399 72 L 399 34 L 398 33 L 398 30 L 395 25 L 389 20 L 383 19 L 382 18 L 350 18 L 349 19 Z"

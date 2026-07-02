@@ -12,12 +12,14 @@ type SokyLogoProps = Omit<SVGProps<SVGSVGElement>, "children"> & {
   title?: string;
   white?: string;
   orange?: string;
+  wrapperClassName?: string;
 };
 
 export function AnimatedSokyLogo({
   title = "SOKY",
   white = "#F7F7F2",
   orange = "#FF5A00",
+  wrapperClassName,
   ...props
 }: SokyLogoProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -65,7 +67,10 @@ export function AnimatedSokyLogo({
   );
 
   return (
-    <div ref={rootRef} className={cn("inline-flex z-10 h-12 w-fit")}>
+    <div
+      ref={rootRef}
+      className={cn("inline-flex z-10 w-fit leading-none", wrapperClassName)}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 486 263"
@@ -74,6 +79,14 @@ export function AnimatedSokyLogo({
         aria-hidden={title ? undefined : true}
         {...props}
       >
+        <path
+          className="soky-logo-sticker"
+          d="M 75 15 C 94 6 113 13 126 29 C 145 10 179 4 210 15 C 224 20 236 28 245 38 C 258 28 276 25 294 30 C 307 18 334 17 350 33 C 364 17 393 16 411 30 C 425 17 449 15 466 25 C 479 33 485 47 482 65 L 482 87 C 479 111 466 130 442 145 L 442 239 C 442 252 432 258 419 258 L 393 258 C 382 258 373 253 368 244 L 344 244 C 331 244 321 237 316 225 L 308 209 L 308 224 C 308 237 300 245 287 246 L 263 246 C 249 246 240 238 237 226 L 103 226 C 96 239 85 248 70 254 C 58 259 44 261 31 258 C 18 255 10 246 10 234 L 10 212 C 10 200 18 190 31 186 C 41 183 45 176 41 166 C 39 160 34 153 29 146 C 15 130 7 113 6 95 C 4 74 10 55 22 41 C 34 27 52 19 75 15 Z"
+          fill={white}
+          fillRule="evenodd"
+          clipRule="evenodd"
+        />
+
         <g
           id="soky-letter-s"
           className="soky-letter soky-letter-s"
@@ -94,6 +107,7 @@ export function AnimatedSokyLogo({
             clipRule="evenodd"
           />
         </g>
+
         <g
           id="soky-letter-o"
           className="soky-letter soky-letter-o"
@@ -114,6 +128,7 @@ export function AnimatedSokyLogo({
             clipRule="evenodd"
           />
         </g>
+
         <g
           id="soky-letter-k"
           className="soky-letter soky-letter-k"
@@ -134,6 +149,7 @@ export function AnimatedSokyLogo({
             clipRule="evenodd"
           />
         </g>
+
         <g
           id="soky-letter-y"
           className="soky-letter soky-letter-y"
