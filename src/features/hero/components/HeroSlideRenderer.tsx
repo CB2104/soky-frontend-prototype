@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import type { HeroSlideViewModel } from "../types";
 import { ConversionCtaHero } from "./ConversionCtaHero";
 import { PromoPosterHero } from "./PromoPosterHero";
@@ -7,7 +6,6 @@ import { WelcomeSplitHero } from "./WelcomeSplitHero";
 type HeroSlideRendererProps = {
   className?: string;
   fallbackDescription: string;
-  mobileControls?: ReactNode;
   showWaveDivider?: boolean;
   slide: HeroSlideViewModel | undefined;
   whatsappUrl: string;
@@ -24,7 +22,6 @@ export function isRenderableHeroSlide(slide: HeroSlideViewModel) {
 export function HeroSlideRenderer({
   className,
   fallbackDescription,
-  mobileControls,
   showWaveDivider = true,
   slide,
   whatsappUrl,
@@ -34,7 +31,6 @@ export function HeroSlideRenderer({
       <WelcomeSplitHero
         className={className}
         fallbackDescription={fallbackDescription}
-        mobileControls={mobileControls}
         showWaveDivider={showWaveDivider}
         slide={undefined}
         whatsappUrl={whatsappUrl}
@@ -48,7 +44,6 @@ export function HeroSlideRenderer({
         <WelcomeSplitHero
           className={className}
           fallbackDescription={fallbackDescription}
-          mobileControls={mobileControls}
           showWaveDivider={showWaveDivider}
           slide={slide}
           whatsappUrl={whatsappUrl}
@@ -59,7 +54,6 @@ export function HeroSlideRenderer({
         <PromoPosterHero
           className={className}
           fallbackDescription={fallbackDescription}
-          mobileControls={mobileControls}
           showWaveDivider={showWaveDivider}
           slide={slide}
           whatsappUrl={whatsappUrl}
@@ -70,7 +64,6 @@ export function HeroSlideRenderer({
         <ConversionCtaHero
           className={className}
           fallbackDescription={fallbackDescription}
-          mobileControls={mobileControls}
           showWaveDivider={showWaveDivider}
           slide={slide}
           whatsappUrl={whatsappUrl}

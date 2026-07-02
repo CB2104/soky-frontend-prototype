@@ -32,8 +32,8 @@ const heroBlueOrangeBackground = {
   accent: {
     colorToken: "accent",
     image: {
-      desktopUrl: "/images/hero/welcome-orange-accent-desktop-v2.png",
-      mobileUrl: "/images/hero/welcome-orange-accent-mobile-v2.png",
+      desktopUrl: "/images/hero/welcome-orange-accent-desktop-v3.webp",
+      mobileUrl: "/images/hero/welcome-orange-accent-mobile-v3.webp",
       decorative: true,
       fit: "cover",
       position: "center-right",
@@ -331,7 +331,8 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   {
     id: "slider-boxes",
     title: "Combos para compartir",
-    description: "Boxes generosos para pedir en grupo sin complicar la elección.",
+    description:
+      "Boxes generosos para pedir en grupo sin complicar la elección.",
     eyebrow: "Promos SOKY",
     badgeLabel: "Popular",
     highlightText: "COMBOS",
@@ -362,7 +363,8 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   {
     id: "slider-weekly-special",
     title: "Favoritos tempura",
-    description: "Rolls crocantes y combinaciones para sumar textura al pedido.",
+    description:
+      "Rolls crocantes y combinaciones para sumar textura al pedido.",
     eyebrow: "Crocante",
     badgeLabel: "Favoritos",
     highlightText: "TEMPURA",
@@ -414,7 +416,8 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   {
     id: "slider-chat",
     title: "Retiro o delivery",
-    description: "Consulta disponibilidad de retiro o delivery antes de cerrar tu pedido.",
+    description:
+      "Consulta disponibilidad de retiro o delivery antes de cerrar tu pedido.",
     eyebrow: "Disponibilidad",
     desktopImageUrl: heroProductImageUrl,
     mobileImageUrl: heroProductImageUrl,
@@ -487,7 +490,8 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   {
     id: "slider-draft",
     title: "Promo SOKY en borrador",
-    description: "Contenido preparado para reemplazar cuando haya una campaña activa.",
+    description:
+      "Contenido preparado para reemplazar cuando haya una campaña activa.",
     desktopImageUrl: heroProductImageUrl,
     mobileImageUrl: heroProductImageUrl,
     imageAlt: "Box SOKY usado como imagen temporal para una promo en borrador.",

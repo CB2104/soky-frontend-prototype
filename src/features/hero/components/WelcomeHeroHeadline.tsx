@@ -36,11 +36,7 @@ export function WelcomeHeroHeadline({
         />
       ) : null}
 
-      <motion.div
-        initial={false}
-        animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-        transition={textTransition}
-      >
+      <div    >
         <h1
           id={headingId}
           className={cn(
@@ -61,7 +57,7 @@ export function WelcomeHeroHeadline({
         <p className="mt-2.5 max-w-[30rem] text-base leading-6 text-soky-white/84 sm:text-[1.05rem] sm:leading-7">
           {description}
         </p>
-      </motion.div>
+      </div>
     </div>
   );
 }

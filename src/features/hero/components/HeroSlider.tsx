@@ -104,18 +104,6 @@ export function HeroSlider({
                 <HeroSlideRenderer
                   className="h-full md:h-auto"
                   fallbackDescription={fallbackDescription}
-                  mobileControls={
-                    slideCount > 1 ? (
-                      <HeroSliderControls
-                        activeIndex={boundedActiveIndex}
-                        count={slideCount}
-                        onNext={goToNext}
-                        onPrevious={goToPrevious}
-                        onSelect={goToSlide}
-                        placement="mobile-inline"
-                      />
-                    ) : null
-                  }
                   showWaveDivider={false}
                   slide={slide}
                   whatsappUrl={whatsappUrl}
@@ -132,7 +120,6 @@ export function HeroSlider({
             onNext={goToNext}
             onPrevious={goToPrevious}
             onSelect={goToSlide}
-            placement="desktop-overlay"
           />
         ) : null}
       </div>

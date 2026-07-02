@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { WaveDivider } from "@/components/ui/wave-divider";
 import { PatternSurface } from "@/components/ui/pattern-surface";
 import { Container } from "@/components/ui/container";
@@ -18,7 +17,6 @@ import {
 type WelcomeSplitHeroProps = {
   className?: string;
   fallbackDescription: string;
-  mobileControls?: ReactNode;
   showWaveDivider?: boolean;
   slide: HeroSlideViewModel | undefined;
   whatsappUrl: string;
@@ -111,7 +109,6 @@ function isExternalCta(cta: HeroCta, fallbackIsExternal: boolean) {
 export function WelcomeSplitHero({
   className,
   fallbackDescription,
-  mobileControls,
   showWaveDivider = true,
   slide,
   whatsappUrl,
@@ -149,7 +146,7 @@ export function WelcomeSplitHero({
 
         <Container
           size="wide"
-          className="relative z-10 grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-2.5 pb-4 pt-4 sm:gap-4 sm:pt-6 md:h-auto md:min-h-[calc(100svh-4.5rem)] md:grid-cols-12 md:grid-rows-[auto_auto] md:content-center md:items-center md:gap-x-5 md:gap-y-5 md:py-10 lg:gap-x-7 lg:py-12"
+          className="relative z-10 grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-2.5 pb-[5.75rem] pt-4 sm:gap-4 sm:pt-6 md:h-auto md:min-h-[calc(100svh-4.5rem)] md:grid-cols-12 md:grid-rows-[auto_auto] md:content-center md:items-center md:gap-x-5 md:gap-y-5 md:py-10 lg:gap-x-7 lg:py-12"
         >
           <div className="contents">
             <div className="relative z-20 order-1 md:col-span-5 md:row-start-1 md:self-end">
@@ -199,7 +196,6 @@ export function WelcomeSplitHero({
               </Button>
               </div>
 
-              {mobileControls}
             </div>
           </div>
 
