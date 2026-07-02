@@ -46,6 +46,7 @@ export function HeroSlider({
     return (
       <HeroSlideRenderer
         fallbackDescription={fallbackDescription}
+        isInitialSlide
         slide={undefined}
         whatsappUrl={whatsappUrl}
       />
@@ -93,6 +94,7 @@ export function HeroSlider({
         >
           {renderableSlides.map((slide, index) => {
             const isActive = index === boundedActiveIndex;
+            const isInitialSlide = index === 0;
 
             return (
               <div
@@ -104,6 +106,7 @@ export function HeroSlider({
                 <HeroSlideRenderer
                   className="h-full md:h-auto"
                   fallbackDescription={fallbackDescription}
+                  isInitialSlide={isInitialSlide}
                   showWaveDivider={false}
                   slide={slide}
                   whatsappUrl={whatsappUrl}

@@ -4,6 +4,7 @@ import type { HeroSlideViewModel } from "../types";
 
 type HeroBackgroundLayersProps = {
   background: HeroSlideViewModel["background"];
+  priority?: boolean;
 };
 
 type HeroBackgroundLayer = Extract<
@@ -56,15 +57,19 @@ function BackgroundImage({
   forceObjectCover = false,
   forceObjectRight = false,
   image,
+  priority = false,
 }: {
   forceObjectCover?: boolean;
   forceObjectRight?: boolean;
   image: HeroBackgroundImage;
+  priority?: boolean;
 }) {
   const imageFit = forceObjectCover ? "cover" : image.fit;
   const imagePositionClassName = forceObjectRight
     ? "object-right"
     : imagePositionClass[image.position];
+  const imageLoading = priority ? "eager" : "lazy";
+  const imageFetchPriority = priority ? "high" : "auto";
 
   const imageClassName = cn(
     "h-full w-full",
@@ -87,6 +92,8 @@ function BackgroundImage({
     width: backgroundImageWidth,
     height: backgroundImageHeight,
     sizes: "100vw",
+    loading: imageLoading,
+    fetchPriority: imageFetchPriority,
     className: imageClassName,
   });
 
@@ -108,12 +115,14 @@ function BackgroundLayer({
   forceObjectCover = false,
   forceObjectRight = false,
   layer,
+  priority = false,
 }: {
   applyColorTokenWithImage?: boolean;
   className?: string;
   forceObjectCover?: boolean;
   forceObjectRight?: boolean;
   layer: HeroBackgroundLayer;
+  priority?: boolean;
 }) {
   if (!layer.colorToken && !layer.image) {
     return null;
@@ -136,6 +145,7 @@ function BackgroundLayer({
           forceObjectCover={forceObjectCover}
           forceObjectRight={forceObjectRight}
           image={layer.image}
+          priority={priority}
         />
       ) : null}
     </div>
@@ -169,6 +179,7 @@ function AccentImageLayer({ image }: { image: HeroBackgroundImage }) {
 
 export function HeroBackgroundLayers({
   background,
+  priority = false,
 }: HeroBackgroundLayersProps) {
   if (background.mode === "none") {
     return null;
@@ -180,6 +191,7 @@ export function HeroBackgroundLayers({
         applyColorTokenWithImage
         className="inset-0 z-0"
         layer={background.layer}
+        priority={priority}
       />
     );
   }
@@ -197,6 +209,7 @@ export function HeroBackgroundLayers({
         className="inset-0 z-0"
         forceObjectCover
         layer={background.base}
+        priority={priority}
       />
       {accentImage ? (
         <AccentImageLayer image={accentImage} />

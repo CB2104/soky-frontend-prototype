@@ -20,6 +20,7 @@ import { HeroBackgroundLayers } from "./HeroBackgroundLayers";
 type PromoPosterHeroProps = {
   className?: string;
   fallbackDescription: string;
+  isInitialSlide?: boolean;
   showWaveDivider?: boolean;
   slide: HeroSlideViewModel;
   whatsappUrl: string;
@@ -210,6 +211,7 @@ function PromoPosterMedia({
 export function PromoPosterHero({
   className,
   fallbackDescription,
+  isInitialSlide = false,
   showWaveDivider = true,
   slide,
   whatsappUrl,
@@ -244,7 +246,7 @@ export function PromoPosterHero({
         intensity="medium"
         pattern={pattern}
       >
-        <HeroBackgroundLayers background={background} />
+        <HeroBackgroundLayers background={background} priority={isInitialSlide} />
         <Container
           size="wide"
           className="relative z-10 grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-2.5 pb-[5.75rem] pt-4 sm:gap-3 sm:pt-6 md:h-auto md:min-h-[calc(100svh-4.5rem)] md:grid-cols-12 md:grid-rows-[auto_auto] md:content-center md:items-center md:gap-x-7 md:py-10 lg:py-12"

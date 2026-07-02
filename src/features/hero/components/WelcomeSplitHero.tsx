@@ -17,6 +17,7 @@ import {
 type WelcomeSplitHeroProps = {
   className?: string;
   fallbackDescription: string;
+  isInitialSlide?: boolean;
   showWaveDivider?: boolean;
   slide: HeroSlideViewModel | undefined;
   whatsappUrl: string;
@@ -109,6 +110,7 @@ function isExternalCta(cta: HeroCta, fallbackIsExternal: boolean) {
 export function WelcomeSplitHero({
   className,
   fallbackDescription,
+  isInitialSlide = false,
   showWaveDivider = true,
   slide,
   whatsappUrl,
@@ -142,7 +144,10 @@ export function WelcomeSplitHero({
         className="relative h-full overflow-hidden bg-soky-blue text-soky-white md:h-auto"
         pattern={heroPattern}
       >
-        <HeroBackgroundLayers background={heroBackground} />
+        <HeroBackgroundLayers
+          background={heroBackground}
+          priority={isInitialSlide}
+        />
 
         <Container
           size="wide"
