@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 import type {
   AdminSliderItemDto,
+  AdminSliderUpdateDto,
   LegacySliderCtaType,
   SliderCtaDto,
+  SliderMediaDto,
+  SliderMediaMode,
 } from "@/contracts/api";
 import { mockSliderItems } from "@/mock/db";
 import { errorResponse } from "@/mock/helpers";
+
+const DEFAULT_MEDIA_MODE: Exclude<SliderMediaMode, "cutout-product"> =
+  "promo-image";
+const DEFAULT_FRAME_ENABLED = true;
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -19,7 +26,7 @@ type LegacySliderUpdateFields = {
   isActive?: boolean;
 };
 
-type AdminSliderUpdateRequest = Partial<AdminSliderItemDto> & LegacySliderUpdateFields;
+type AdminSliderUpdateRequest = AdminSliderUpdateDto & LegacySliderUpdateFields;
 
 function requireAuth(request: Request) {
   return request.headers.get("authorization")?.startsWith("Bearer ");
@@ -98,6 +105,39 @@ function hasActivePlacementLimit(slider: AdminSliderItemDto) {
   return activeCount >= 6;
 }
 
+function getMediaFields(
+  body: AdminSliderUpdateRequest,
+  current: AdminSliderItemDto,
+): SliderMediaDto {
+  const desktopImageUrl =
+    body.desktopImageUrl ?? body.imageUrl ?? current.desktopImageUrl;
+  const mediaMode = body.mediaMode ?? current.mediaMode ?? DEFAULT_MEDIA_MODE;
+  const mediaBase = {
+    desktopImageUrl,
+    mobileImageUrl: body.mobileImageUrl ?? current.mobileImageUrl,
+    imageAlt: body.imageAlt ?? current.imageAlt,
+    mediaFit: body.mediaFit ?? current.mediaFit,
+    mediaPosition: body.mediaPosition ?? current.mediaPosition,
+  };
+
+  if (mediaMode === "cutout-product") {
+    return {
+      ...mediaBase,
+      mediaMode,
+    };
+  }
+
+  const existingFrameEnabled =
+    current.mediaMode === "cutout-product" ? undefined : current.frameEnabled;
+
+  return {
+    ...mediaBase,
+    mediaMode,
+    frameEnabled:
+      body.frameEnabled ?? existingFrameEnabled ?? DEFAULT_FRAME_ENABLED,
+  };
+}
+
 export async function PATCH(request: Request, context: RouteContext) {
   if (!requireAuth(request)) {
     return errorResponse("UNAUTHORIZED", "Sesión requerida.", 401);
@@ -126,9 +166,8 @@ export async function PATCH(request: Request, context: RouteContext) {
     eyebrow: body.eyebrow ?? current.eyebrow,
     badgeLabel: body.badgeLabel ?? current.badgeLabel,
     highlightText: body.highlightText ?? current.highlightText,
-    desktopImageUrl: body.desktopImageUrl ?? body.imageUrl ?? current.desktopImageUrl,
-    mobileImageUrl: body.mobileImageUrl ?? current.mobileImageUrl,
-    imageAlt: body.imageAlt ?? current.imageAlt,
+    ...getMediaFields(body, current),
+    background: body.background ?? current.background,
     primaryCta: getPrimaryCta(body, current),
     secondaryCta: body.secondaryCta ?? current.secondaryCta,
     intent: body.intent ?? current.intent,

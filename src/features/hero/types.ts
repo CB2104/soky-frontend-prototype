@@ -19,6 +19,8 @@ export type HeroPattern = "seigaiha" | "asanoha" | "none";
 
 export type HeroBadgeTone = "promo" | "new" | "cold" | "neutral";
 
+export type HeroMediaMode = SliderMediaMode;
+
 export type HeroCtaViewModel = {
   label: string;
   type: SliderCtaType;
@@ -57,6 +59,26 @@ export type HeroBackground =
       };
     };
 
+type HeroSlideImageBase = {
+  desktopSrc: string;
+  mobileSrc: string;
+  alt: string;
+  fit: SliderImageFit;
+  position: SliderImagePosition;
+  priority: boolean;
+  sizes: string;
+};
+
+export type HeroSlideImage =
+  | (HeroSlideImageBase & {
+      mode: "cutout-product";
+      frameEnabled: false;
+    })
+  | (HeroSlideImageBase & {
+      mode: Exclude<HeroMediaMode, "cutout-product">;
+      frameEnabled: boolean;
+    });
+
 export type HeroSlideViewModel = {
   id: string;
   title: string;
@@ -69,17 +91,7 @@ export type HeroSlideViewModel = {
   layoutHint: SliderLayoutHint;
   background: HeroBackground;
 
-  image: {
-    desktopSrc: string;
-    mobileSrc: string;
-    alt: string;
-    mode: SliderMediaMode;
-    fit: SliderImageFit;
-    position: SliderImagePosition;
-    frameEnabled: boolean;
-    priority: boolean;
-    sizes: string;
-  };
+  image: HeroSlideImage;
 
   primaryCta: HeroCtaViewModel | null;
   secondaryCta: HeroCtaViewModel | null;

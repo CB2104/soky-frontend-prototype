@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "motion/react";
 import type { Transition } from "motion/react";
 import { WaveDivider } from "@/components/ui/wave-divider";
 import type { HeroSlideViewModel } from "../types";
+import { HeroBackgroundLayers } from "./HeroBackgroundLayers";
 import { HeroSlideRenderer, isRenderableHeroSlide } from "./HeroSlideRenderer";
 import { HeroSliderControls } from "./HeroSliderControls";
 
@@ -75,6 +76,11 @@ export function HeroSlider({
     setActiveIndex(getClampedIndex(index, slideCount));
   };
 
+  const trackX = `-${boundedActiveIndex * 100}%`;
+  const activeTrackTransition = shouldReduceMotion
+    ? reducedTrackTransition
+    : trackTransition;
+
   return (
     <section
       aria-label="Promociones principales"
@@ -83,14 +89,37 @@ export function HeroSlider({
       data-contact-speed-dial-hidden-zone
       role="region"
     >
-      <div className="relative h-[calc(100svh-5rem)] w-full min-w-0 max-w-full overflow-hidden md:h-auto md:min-h-[calc(100svh-4.5rem)]">
+      <div
+        className="relative h-[100dvh] min-h-[100svh] w-full min-w-0 max-w-full overflow-hidden md:h-auto md:min-h-[100svh]"
+        data-hero-stage
+      >
         <motion.div
-          animate={{ x: `-${boundedActiveIndex * 100}%` }}
-          className="flex h-full w-full min-w-0 max-w-full will-change-transform md:h-auto"
+          animate={{ x: trackX }}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 flex h-full w-full min-w-0 max-w-full will-change-transform"
+          data-hero-background-track
           initial={false}
-          transition={
-            shouldReduceMotion ? reducedTrackTransition : trackTransition
-          }
+          transition={activeTrackTransition}
+        >
+          {renderableSlides.map((slide, index) => (
+            <div
+              key={`${slide.id}-background`}
+              className="relative h-full w-full min-w-0 max-w-full basis-full shrink-0 grow-0 overflow-hidden"
+            >
+              <HeroBackgroundLayers
+                background={slide.background}
+                priority={index === 0}
+              />
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.div
+          animate={{ x: trackX }}
+          className="relative z-10 flex h-full w-full min-w-0 max-w-full will-change-transform md:h-auto"
+          data-hero-track
+          initial={false}
+          transition={activeTrackTransition}
         >
           {renderableSlides.map((slide, index) => {
             const isActive = index === boundedActiveIndex;
@@ -101,12 +130,14 @@ export function HeroSlider({
                 key={slide.id}
                 aria-hidden={isActive ? undefined : true}
                 className="relative h-full w-full min-w-0 max-w-full flex-none basis-full shrink-0 overflow-hidden md:h-auto"
+                data-hero-slide
                 inert={isActive ? undefined : true}
               >
                 <HeroSlideRenderer
                   className="h-full md:h-auto"
                   fallbackDescription={fallbackDescription}
                   isInitialSlide={isInitialSlide}
+                  renderBackground={false}
                   showWaveDivider={false}
                   slide={slide}
                   whatsappUrl={whatsappUrl}

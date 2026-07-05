@@ -44,7 +44,10 @@ export function HeroSliderControls({
         </button>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+0.75rem)] z-30 flex justify-center px-4 md:bottom-5 lg:bottom-10">
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+0.75rem)] z-30 flex justify-center px-4 md:bottom-5 lg:bottom-10"
+        data-hero-controls
+      >
         <div className="pointer-events-auto inline-flex min-h-10 max-w-[calc(100vw-2rem)] items-center gap-1 md:min-h-9 md:gap-1.5">
           <button
             type="button"

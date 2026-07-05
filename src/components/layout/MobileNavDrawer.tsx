@@ -206,7 +206,7 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
         aria-hidden={isOpen}
         tabIndex={isOpen ? -1 : 0}
         className={cn(
-          "relative z-60 -ml-2 grid size-11 touch-manipulation place-items-center transition-[color,opacity] active:text-soky-orange",
+          "relative z-60 -ml-2 grid size-11 touch-manipulation place-items-center drop-shadow-[0_4px_8px_rgb(7_5_74_/_0.45)] transition-[color,filter,opacity] active:text-soky-orange",
           isOpen ? "pointer-events-none opacity-0" : "text-soky-white",
         )}
         onClick={() => {

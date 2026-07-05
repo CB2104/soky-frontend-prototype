@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 import type {
+  AdminSliderCreateDto,
   AdminSliderItemDto,
   LegacySliderCtaType,
   SliderCtaDto,
+  SliderMediaDto,
+  SliderMediaMode,
 } from "@/contracts/api";
 import { mockSliderItems } from "@/mock/db";
 import { errorResponse, paginate } from "@/mock/helpers";
+
+const DEFAULT_MEDIA_MODE: Exclude<SliderMediaMode, "cutout-product"> =
+  "promo-image";
+const DEFAULT_FRAME_ENABLED = true;
 
 type LegacySliderCreateFields = {
   imageUrl?: string;
@@ -15,7 +22,7 @@ type LegacySliderCreateFields = {
   isActive?: boolean;
 };
 
-type AdminSliderCreateRequest = Partial<AdminSliderItemDto> & LegacySliderCreateFields;
+type AdminSliderCreateRequest = AdminSliderCreateDto & LegacySliderCreateFields;
 
 function requireAuth(request: Request) {
   return request.headers.get("authorization")?.startsWith("Bearer ");
@@ -81,6 +88,34 @@ function hasActivePlacementLimit(slider: AdminSliderItemDto) {
   return activeCount >= 6;
 }
 
+function getMediaFields(
+  body: AdminSliderCreateRequest,
+  desktopImageUrl: string,
+  imageAlt: string,
+): SliderMediaDto {
+  const mediaMode = body.mediaMode ?? DEFAULT_MEDIA_MODE;
+  const mediaBase = {
+    desktopImageUrl,
+    mobileImageUrl: body.mobileImageUrl,
+    imageAlt,
+    mediaFit: body.mediaFit,
+    mediaPosition: body.mediaPosition,
+  };
+
+  if (mediaMode === "cutout-product") {
+    return {
+      ...mediaBase,
+      mediaMode,
+    };
+  }
+
+  return {
+    ...mediaBase,
+    mediaMode,
+    frameEnabled: body.frameEnabled ?? DEFAULT_FRAME_ENABLED,
+  };
+}
+
 export async function GET(request: Request) {
   if (!requireAuth(request)) {
     return errorResponse("UNAUTHORIZED", "Sesión requerida.", 401);
@@ -118,9 +153,8 @@ export async function POST(request: Request) {
     eyebrow: body.eyebrow,
     badgeLabel: body.badgeLabel,
     highlightText: body.highlightText,
-    desktopImageUrl,
-    mobileImageUrl: body.mobileImageUrl,
-    imageAlt: body.imageAlt,
+    ...getMediaFields(body, desktopImageUrl, body.imageAlt),
+    background: body.background,
     primaryCta: getPrimaryCta(body),
     secondaryCta: body.secondaryCta,
     intent: body.intent ?? "promotion",

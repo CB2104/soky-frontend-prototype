@@ -37,7 +37,7 @@ const NavTabs = ({ items }: NavTabsProps) => {
           opacity: 0,
         }));
       }}
-      className="relative flex w-fit rounded-full border border-white/20 bg-soky-white p-1"
+      className="relative flex w-fit rounded-full border border-white/20 bg-soky-white p-1 shadow-lg shadow-soky-navy/20"
     >
       <Pill
         position={activePosition}

@@ -9,6 +9,7 @@ type PatternSurfaceProps = {
   className?: string;
   intensity?: Intensity;
   pattern?: Pattern;
+  showPattern?: boolean;
 };
 
 const patternClass: Record<Pattern, string> = {
@@ -28,17 +29,20 @@ export function PatternSurface({
   className,
   intensity = "subtle",
   pattern = "seigaiha",
+  showPattern = true,
 }: PatternSurfaceProps) {
   return (
     <div className={cn("relative isolate overflow-hidden", className)}>
-      <div
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute inset-0 -z-10",
-          patternClass[pattern],
-          intensityClass[intensity],
-        )}
-      />
+      {showPattern ? (
+        <div
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute inset-0 -z-10",
+            patternClass[pattern],
+            intensityClass[intensity],
+          )}
+        />
+      ) : null}
       {children}
     </div>
   );

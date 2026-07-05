@@ -4,7 +4,7 @@ import { mockSliderItems } from "@/mock/db";
 import { applyScenarioDelay, errorResponse, getScenario } from "@/mock/helpers";
 
 function toPublicSliderItem(slider: AdminSliderItemDto): PublicSliderItemDto {
-  return {
+  const publicSliderBase = {
     id: slider.id,
     title: slider.title,
     description: slider.description,
@@ -14,15 +14,26 @@ function toPublicSliderItem(slider: AdminSliderItemDto): PublicSliderItemDto {
     desktopImageUrl: slider.desktopImageUrl,
     mobileImageUrl: slider.mobileImageUrl,
     imageAlt: slider.imageAlt,
-    mediaMode: slider.mediaMode,
     mediaFit: slider.mediaFit,
     mediaPosition: slider.mediaPosition,
-    frameEnabled: slider.frameEnabled,
     background: slider.background,
     primaryCta: slider.primaryCta,
     secondaryCta: slider.secondaryCta,
     intent: slider.intent,
     layoutHint: slider.layoutHint,
+  };
+
+  if (slider.mediaMode === "cutout-product") {
+    return {
+      ...publicSliderBase,
+      mediaMode: slider.mediaMode,
+    };
+  }
+
+  return {
+    ...publicSliderBase,
+    mediaMode: slider.mediaMode,
+    frameEnabled: slider.frameEnabled,
   };
 }
 

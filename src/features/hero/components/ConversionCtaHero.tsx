@@ -20,6 +20,7 @@ type ConversionCtaHeroProps = {
   className?: string;
   fallbackDescription: string;
   isInitialSlide?: boolean;
+  renderBackground?: boolean;
   showWaveDivider?: boolean;
   slide: HeroSlideViewModel;
   whatsappUrl: string;
@@ -210,6 +211,7 @@ export function ConversionCtaHero({
   className,
   fallbackDescription,
   isInitialSlide = false,
+  renderBackground = true,
   showWaveDivider = true,
   slide,
   whatsappUrl,
@@ -241,16 +243,19 @@ export function ConversionCtaHero({
         className={cn(
           "relative h-full overflow-hidden md:h-auto",
           isLightSurface
-            ? "bg-soky-paper text-soky-ink"
-            : "bg-soky-blue text-soky-white",
+            ? cn("text-soky-ink", renderBackground ? "bg-soky-paper" : "bg-transparent")
+            : cn("text-soky-white", renderBackground ? "bg-soky-blue" : "bg-transparent"),
         )}
         intensity="subtle"
         pattern={pattern}
+        showPattern={renderBackground}
       >
-        <HeroBackgroundLayers background={background} priority={isInitialSlide} />
+        {renderBackground ? (
+          <HeroBackgroundLayers background={background} priority={isInitialSlide} />
+        ) : null}
         <Container
           size="wide"
-          className="relative z-10 grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-2.5 pb-[5.75rem] pt-4 sm:gap-3 sm:pt-6 md:h-auto md:min-h-[calc(100svh-4.5rem)] md:grid-cols-12 md:grid-rows-[auto_auto] md:content-center md:items-center md:gap-x-8 md:py-10 lg:py-12"
+          className="relative z-10 grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-2.5 pb-[5.75rem] pt-[calc(var(--navbar-height)_+_1.5rem)] sm:gap-3 sm:pt-[calc(var(--navbar-height)_+_1.75rem)] md:h-auto md:min-h-[100svh] md:grid-cols-12 md:grid-rows-[auto_auto] md:content-center md:items-center md:gap-x-8 md:pb-10 md:pt-[calc(var(--navbar-height)_+_2.5rem)] lg:pb-12 lg:pt-[calc(var(--navbar-height)_+_3rem)]"
         >
           <div className="relative z-20 order-1 md:order-none md:col-span-6 md:col-start-1 md:row-start-1 md:self-end lg:col-span-5">
             <div className="flex flex-wrap items-center gap-2">

@@ -23,6 +23,7 @@ import type {
 
 const HERO_IMAGE_SIZES = "(min-width: 1024px) 58vw, 100vw";
 const HERO_CUTOUT_IMAGE_SIZES = "(min-width: 1024px) 48vw, 92vw";
+const DEFAULT_MEDIA_MODE: SliderMediaMode = "promo-image";
 
 function toNullableText(value?: string) {
   return value ?? null;
@@ -102,15 +103,16 @@ function mapCta(cta?: SliderCtaDto): HeroCtaViewModel | null {
   };
 }
 
-function getMediaFit(
-  mediaMode: SliderMediaMode,
-  mediaFit: SliderImageFit | undefined,
-): SliderImageFit {
-  if (mediaFit) {
-    return mediaFit;
+function getMediaMode(mediaMode: SliderMediaMode | undefined) {
+  return mediaMode ?? DEFAULT_MEDIA_MODE;
+}
+
+function getMediaFit(mediaMode: SliderMediaMode, mediaFit?: SliderImageFit) {
+  if (mediaMode === "cutout-product") {
+    return "contain";
   }
 
-  return mediaMode === "cutout-product" ? "contain" : "cover";
+  return mediaFit ?? "cover";
 }
 
 function getMediaPosition(
@@ -119,17 +121,44 @@ function getMediaPosition(
   return mediaPosition ?? "center";
 }
 
-function getFrameEnabled(
-  mediaMode: SliderMediaMode,
-  frameEnabled: boolean | undefined,
-) {
-  return frameEnabled ?? mediaMode !== "cutout-product";
+function getFrameEnabled(frameEnabled: boolean | undefined) {
+  return frameEnabled ?? true;
 }
 
 function getImageSizes(mediaMode: SliderMediaMode) {
   return mediaMode === "cutout-product"
     ? HERO_CUTOUT_IMAGE_SIZES
     : HERO_IMAGE_SIZES;
+}
+
+function mapHeroImage(
+  dto: PublicSliderItemDto,
+  index: number,
+): HeroSlideViewModel["image"] {
+  const mediaMode = getMediaMode(dto.mediaMode);
+  const imageBase = {
+    desktopSrc: dto.desktopImageUrl,
+    mobileSrc: dto.mobileImageUrl ?? dto.desktopImageUrl,
+    alt: dto.imageAlt,
+    fit: getMediaFit(mediaMode, dto.mediaFit),
+    position: getMediaPosition(dto.mediaPosition),
+    priority: index === 0,
+    sizes: getImageSizes(mediaMode),
+  };
+
+  if (mediaMode === "cutout-product") {
+    return {
+      ...imageBase,
+      mode: mediaMode,
+      frameEnabled: false,
+    };
+  }
+
+  return {
+    ...imageBase,
+    mode: mediaMode,
+    frameEnabled: getFrameEnabled(dto.frameEnabled),
+  };
 }
 
 function mapBackgroundImage(
@@ -234,8 +263,6 @@ export function mapPublicSliderToHeroSlide(
   dto: PublicSliderItemDto,
   index: number,
 ): HeroSlideViewModel {
-  const mediaMode = dto.mediaMode ?? "framed-photo";
-
   return {
     id: dto.id,
     title: dto.title,
@@ -246,17 +273,7 @@ export function mapPublicSliderToHeroSlide(
     intent: dto.intent,
     layoutHint: dto.layoutHint,
     background: mapBackground(dto.background),
-    image: {
-      desktopSrc: dto.desktopImageUrl,
-      mobileSrc: dto.mobileImageUrl ?? dto.desktopImageUrl,
-      alt: dto.imageAlt,
-      mode: mediaMode,
-      fit: getMediaFit(mediaMode, dto.mediaFit),
-      position: getMediaPosition(dto.mediaPosition),
-      frameEnabled: getFrameEnabled(mediaMode, dto.frameEnabled),
-      priority: index === 0,
-      sizes: getImageSizes(mediaMode),
-    },
+    image: mapHeroImage(dto, index),
     primaryCta: mapCta(dto.primaryCta),
     secondaryCta: mapCta(dto.secondaryCta),
     presentation: {

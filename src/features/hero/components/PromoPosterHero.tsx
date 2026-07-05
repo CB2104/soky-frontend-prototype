@@ -21,6 +21,7 @@ type PromoPosterHeroProps = {
   className?: string;
   fallbackDescription: string;
   isInitialSlide?: boolean;
+  renderBackground?: boolean;
   showWaveDivider?: boolean;
   slide: HeroSlideViewModel;
   whatsappUrl: string;
@@ -129,6 +130,9 @@ function PromoPosterMedia({
     "h-full w-full",
     imageFitClass[resolvedImageFit],
     imagePositionClass[image.position],
+    isCutoutProduct
+      ? "drop-shadow-[0_18px_28px_rgb(7_5_74_/_0.24)] md:drop-shadow-[0_30px_42px_rgb(7_5_74_/_0.28)]"
+      : null,
   );
   const imageLoading = image.priority ? "eager" : "lazy";
   const imageFetchPriority = image.priority ? "high" : "auto";
@@ -159,7 +163,7 @@ function PromoPosterMedia({
       className={cn(
         "relative order-2 z-10 mx-auto w-full md:order-none md:col-span-7 md:col-start-6 md:row-span-2 md:row-start-1 md:mx-0 md:self-center",
         isCutoutProduct
-          ? "min-h-0 self-center md:min-h-[29rem] lg:min-h-[31rem]"
+          ? "min-h-0 self-center py-1 md:min-h-[30rem] lg:min-h-[33rem]"
           : "min-h-0 self-center md:min-h-[27rem] lg:min-h-[30rem]",
       )}
     >
@@ -168,7 +172,7 @@ function PromoPosterMedia({
         className={cn(
           "absolute pointer-events-none rounded-full bg-soky-navy/35",
           isCutoutProduct
-            ? "bottom-3 left-1/2 h-10 w-2/3 -translate-x-1/2 blur-xl md:bottom-6 md:h-14"
+            ? "bottom-1 left-1/2 h-8 w-[58%] -translate-x-1/2 bg-soky-navy/25 blur-xl md:bottom-8 md:h-12 md:w-[62%]"
             : "-bottom-4 left-8 h-20 w-2/3 blur-2xl",
         )}
       />
@@ -177,7 +181,7 @@ function PromoPosterMedia({
           className={cn(
             "absolute z-20",
             isCutoutProduct
-              ? "left-1 top-1 md:left-7 md:top-8"
+              ? "left-3 top-0 md:left-9 md:top-8"
               : "-left-2 top-2 md:left-2 md:top-7",
           )}
         >
@@ -188,11 +192,13 @@ function PromoPosterMedia({
         className={cn(
           "relative z-10 mx-auto w-full",
           isCutoutProduct
-            ? "aspect-[4/3] max-w-[22rem] md:mr-0 md:aspect-[6/5] md:max-w-none md:w-[104%] lg:w-[108%]"
-            : "aspect-[16/10] max-w-[23rem] md:ml-auto md:mr-0 md:aspect-[16/9] md:max-w-none md:w-[102%] lg:w-[106%]",
+            ? "aspect-[5/4] max-w-[22rem] sm:max-w-[23.5rem] md:mr-0 md:aspect-[6/5] md:max-w-none md:w-[112%] lg:w-[118%] xl:w-[122%]"
+            : "aspect-[4/3] max-w-[21rem] sm:aspect-[16/10] sm:max-w-[23rem] md:ml-auto md:mr-0 md:aspect-[16/9] md:max-w-none md:w-[102%] lg:w-[106%]",
           hasFrame
-            ? "overflow-hidden rounded-[1.6rem] border-[5px] border-soky-white/30 bg-soky-navy shadow-[0_24px_64px_rgb(7_5_74_/_0.34)] md:-rotate-2 md:rounded-[2rem]"
-            : "overflow-visible",
+            ? "overflow-hidden rounded-[1.6rem] border-[5px] border-soky-white/35 bg-soky-navy shadow-[0_22px_54px_rgb(7_5_74_/_0.32),inset_0_1px_0_rgb(255_255_255_/_0.2)] ring-1 ring-soky-white/18 md:-rotate-2 md:rounded-[2rem]"
+            : isCutoutProduct
+              ? "overflow-visible"
+              : "overflow-hidden rounded-[1.35rem] md:rounded-[1.65rem]",
         )}
       >
         <picture className="block h-full w-full">
@@ -212,6 +218,7 @@ export function PromoPosterHero({
   className,
   fallbackDescription,
   isInitialSlide = false,
+  renderBackground = true,
   showWaveDivider = true,
   slide,
   whatsappUrl,
@@ -242,14 +249,20 @@ export function PromoPosterHero({
       className={cn("h-full scroll-mt-24 md:h-auto", className)}
     >
       <PatternSurface
-        className="relative h-full overflow-hidden bg-soky-blue text-soky-white md:h-auto"
+        className={cn(
+          "relative h-full overflow-hidden text-soky-white md:h-auto",
+          renderBackground ? "bg-soky-blue" : "bg-transparent",
+        )}
         intensity="medium"
         pattern={pattern}
+        showPattern={renderBackground}
       >
-        <HeroBackgroundLayers background={background} priority={isInitialSlide} />
+        {renderBackground ? (
+          <HeroBackgroundLayers background={background} priority={isInitialSlide} />
+        ) : null}
         <Container
           size="wide"
-          className="relative z-10 grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-2.5 pb-[5.75rem] pt-4 sm:gap-3 sm:pt-6 md:h-auto md:min-h-[calc(100svh-4.5rem)] md:grid-cols-12 md:grid-rows-[auto_auto] md:content-center md:items-center md:gap-x-7 md:py-10 lg:py-12"
+          className="relative z-10 grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-2.5 pb-[5.75rem] pt-[calc(var(--navbar-height)_+_1.5rem)] sm:gap-3 sm:pt-[calc(var(--navbar-height)_+_1.75rem)] md:h-auto md:min-h-[100svh] md:grid-cols-12 md:grid-rows-[auto_auto] md:content-center md:items-center md:gap-x-7 md:pb-10 md:pt-[calc(var(--navbar-height)_+_2.5rem)] lg:pb-12 lg:pt-[calc(var(--navbar-height)_+_3rem)]"
         >
           <div className="relative z-20 order-1 md:order-none md:col-span-5 md:col-start-1 md:row-start-1 md:self-end">
             {slide.eyebrow ? (

@@ -18,6 +18,7 @@ type WelcomeSplitHeroProps = {
   className?: string;
   fallbackDescription: string;
   isInitialSlide?: boolean;
+  renderBackground?: boolean;
   showWaveDivider?: boolean;
   slide: HeroSlideViewModel | undefined;
   whatsappUrl: string;
@@ -81,7 +82,7 @@ const fallbackImage = {
   desktopSrc: fallbackImageSrc,
   mobileSrc: fallbackMobileImageSrc,
   alt: fallbackImageAlt,
-  mode: "framed-photo",
+  mode: "promo-image",
   fit: "cover",
   position: "center",
   frameEnabled: true,
@@ -111,6 +112,7 @@ export function WelcomeSplitHero({
   className,
   fallbackDescription,
   isInitialSlide = false,
+  renderBackground = true,
   showWaveDivider = true,
   slide,
   whatsappUrl,
@@ -141,17 +143,23 @@ export function WelcomeSplitHero({
       className={cn("h-full scroll-mt-24 md:h-auto", className)}
     >
       <PatternSurface
-        className="relative h-full overflow-hidden bg-soky-blue text-soky-white md:h-auto"
+        className={cn(
+          "relative h-full overflow-hidden text-soky-white md:h-auto",
+          renderBackground ? "bg-soky-blue" : "bg-transparent",
+        )}
         pattern={heroPattern}
+        showPattern={renderBackground}
       >
-        <HeroBackgroundLayers
-          background={heroBackground}
-          priority={isInitialSlide}
-        />
+        {renderBackground ? (
+          <HeroBackgroundLayers
+            background={heroBackground}
+            priority={isInitialSlide}
+          />
+        ) : null}
 
         <Container
           size="wide"
-          className="relative z-10 grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-2.5 pb-[5.75rem] pt-4 sm:gap-4 sm:pt-6 md:h-auto md:min-h-[calc(100svh-4.5rem)] md:grid-cols-12 md:grid-rows-[auto_auto] md:content-center md:items-center md:gap-x-5 md:gap-y-5 md:py-10 lg:gap-x-7 lg:py-12"
+          className="relative z-10 grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-2.5 pb-23 pt-[calc(var(--navbar-height)_+_1.5rem)] sm:gap-4 sm:pt-[calc(var(--navbar-height)_+_1.75rem)] md:h-auto md:min-h-[100svh] md:grid-cols-12 md:grid-rows-[auto_auto] md:content-center md:items-center md:gap-x-5 md:gap-y-5 md:pb-10 md:pt-[calc(var(--navbar-height)_+_2.5rem)] lg:gap-x-7 lg:pb-12 lg:pt-[calc(var(--navbar-height)_+_3rem)]"
         >
           <div className="contents">
             <div className="relative z-20 order-1 md:col-span-5 md:row-start-1 md:self-end">

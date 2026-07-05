@@ -68,7 +68,10 @@ export type SliderBackgroundColorToken =
 
 export type SliderBackgroundOpacity = 100 | 70 | 50 | 35;
 
-export type SliderBackgroundBleed = "none" | "contained-end";
+export type SliderBackgroundBleed =
+  | "none"
+  | "contained-start"
+  | "contained-end";
 
 export type SliderBackgroundImageDto = {
   desktopUrl: string;
@@ -101,26 +104,37 @@ export type SliderBackgroundDto =
     };
 
 export type SliderMediaMode =
-  | "framed-photo"
   | "cutout-product"
   | "promo-image"
   | "local-photo";
 
-export type PublicSliderItemDto = {
+export type SliderBaseMediaDto = {
+  desktopImageUrl: string;
+  mobileImageUrl?: string;
+  imageAlt: string;
+  mediaFit?: SliderImageFit;
+  mediaPosition?: SliderImagePosition;
+};
+
+export type SliderCutoutMediaDto = SliderBaseMediaDto & {
+  mediaMode: "cutout-product";
+  frameEnabled?: never;
+};
+
+export type SliderFramedMediaDto = SliderBaseMediaDto & {
+  mediaMode?: "promo-image" | "local-photo";
+  frameEnabled?: boolean;
+};
+
+export type SliderMediaDto = SliderCutoutMediaDto | SliderFramedMediaDto;
+
+type PublicSliderItemBaseDto = {
   id: string;
   title: string;
   description?: string;
   eyebrow?: string;
   badgeLabel?: string;
   highlightText?: string;
-
-  desktopImageUrl: string;
-  mobileImageUrl?: string;
-  imageAlt: string;
-  mediaMode?: SliderMediaMode;
-  mediaFit?: SliderImageFit;
-  mediaPosition?: SliderImagePosition;
-  frameEnabled?: boolean;
   background?: SliderBackgroundDto;
 
   primaryCta?: SliderCtaDto;
@@ -129,6 +143,8 @@ export type PublicSliderItemDto = {
   intent: SliderIntent;
   layoutHint: SliderLayoutHint;
 };
+
+export type PublicSliderItemDto = PublicSliderItemBaseDto & SliderMediaDto;
 
 export type AdminSliderItemDto = PublicSliderItemDto & {
   placement: SliderPlacement;
@@ -439,12 +455,29 @@ export type AdminCategoryCreateDto = {
 
 export type AdminCategoryUpdateDto = Partial<AdminCategoryCreateDto>;
 
-export type AdminSliderCreateDto = Omit<
-  LegacySliderItemDto,
-  "id" | "createdAt" | "updatedAt"
->;
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
+  ? Omit<T, K>
+  : never;
 
-export type AdminSliderUpdateDto = Partial<AdminSliderCreateDto>;
+type DistributivePartial<T> = T extends unknown ? Partial<T> : never;
+
+type AdminSliderImmutableFields = "id" | "createdAt" | "updatedAt";
+type AdminSliderCreateDefaultFields =
+  | "intent"
+  | "layoutHint"
+  | "placement"
+  | "status"
+  | "sortOrder";
+
+export type AdminSliderCreateDto = DistributiveOmit<
+  AdminSliderItemDto,
+  AdminSliderImmutableFields | AdminSliderCreateDefaultFields
+> &
+  Partial<Pick<AdminSliderItemDto, AdminSliderCreateDefaultFields>>;
+
+export type AdminSliderUpdateDto = DistributivePartial<
+  DistributiveOmit<AdminSliderItemDto, AdminSliderImmutableFields>
+>;
 
 export type AdminSettingsUpdateDto = Partial<PublicSettingsDto>;
 

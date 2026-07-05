@@ -7,6 +7,7 @@ type HeroSlideRendererProps = {
   className?: string;
   fallbackDescription: string;
   isInitialSlide?: boolean;
+  renderBackground?: boolean;
   showWaveDivider?: boolean;
   slide: HeroSlideViewModel | undefined;
   whatsappUrl: string;
@@ -24,6 +25,7 @@ export function HeroSlideRenderer({
   className,
   fallbackDescription,
   isInitialSlide = false,
+  renderBackground = true,
   showWaveDivider = true,
   slide,
   whatsappUrl,
@@ -34,6 +36,7 @@ export function HeroSlideRenderer({
         className={className}
         fallbackDescription={fallbackDescription}
         isInitialSlide={isInitialSlide}
+        renderBackground={renderBackground}
         showWaveDivider={showWaveDivider}
         slide={undefined}
         whatsappUrl={whatsappUrl}
@@ -48,6 +51,7 @@ export function HeroSlideRenderer({
           className={className}
           fallbackDescription={fallbackDescription}
           isInitialSlide={isInitialSlide}
+          renderBackground={renderBackground}
           showWaveDivider={showWaveDivider}
           slide={slide}
           whatsappUrl={whatsappUrl}
@@ -59,6 +63,7 @@ export function HeroSlideRenderer({
           className={className}
           fallbackDescription={fallbackDescription}
           isInitialSlide={isInitialSlide}
+          renderBackground={renderBackground}
           showWaveDivider={showWaveDivider}
           slide={slide}
           whatsappUrl={whatsappUrl}
@@ -70,6 +75,7 @@ export function HeroSlideRenderer({
           className={className}
           fallbackDescription={fallbackDescription}
           isInitialSlide={isInitialSlide}
+          renderBackground={renderBackground}
           showWaveDivider={showWaveDivider}
           slide={slide}
           whatsappUrl={whatsappUrl}

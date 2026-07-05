@@ -69,7 +69,10 @@ export function AnimatedSokyLogo({
   return (
     <div
       ref={rootRef}
-      className={cn("inline-flex z-10 w-fit leading-none", wrapperClassName)}
+      className={cn(
+        "inline-flex z-10 w-fit leading-none drop-shadow-[0_8px_14px_rgb(7_5_74_/_0.28)]",
+        wrapperClassName,
+      )}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

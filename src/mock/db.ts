@@ -8,6 +8,7 @@ import type {
   OrderIntentConfirmViewDto,
   ProductDto,
   PublicSettingsDto,
+  SliderBackgroundColorToken,
   UserDto,
 } from "@/contracts/api";
 
@@ -15,56 +16,159 @@ const now = new Date("2026-06-14T14:00:00.000Z").toISOString();
 
 const heroProductImageUrl = "/images/soky-hero-party-box.png";
 
-// TODO: Replace the repeated product mock with dedicated SOKY photography per slide.
-const heroBlueOrangeBackground = {
-  mode: "two-layer",
-  base: {
-    colorToken: "brand-primary",
-    image: {
-      desktopUrl: "/images/hero/welcome-blue-desktop.webp",
-      mobileUrl: "/images/hero/welcome-blue-mobile.webp",
-      decorative: true,
-      fit: "cover",
-      position: "center",
-    },
-    opacity: 100,
-  },
-  accent: {
-    colorToken: "accent",
-    image: {
-      desktopUrl: "/images/hero/welcome-orange-accent-desktop-v3.webp",
-      mobileUrl: "/images/hero/welcome-orange-accent-mobile-v3.webp",
-      decorative: true,
-      fit: "cover",
-      position: "center-right",
-    },
-    opacity: 100,
-    bleed: "contained-end",
-  },
-} satisfies NonNullable<AdminSliderItemDto["background"]>;
+type HeroBackgroundAsset = {
+  desktopUrl: string;
+  mobileUrl?: string;
+};
 
-const heroSimpleBlueBackground = {
-  mode: "single",
-  layer: {
-    colorToken: "brand-primary",
-    image: {
-      desktopUrl: "/images/hero/welcome-blue-desktop.webp",
-      mobileUrl: "/images/hero/welcome-blue-mobile.webp",
-      decorative: true,
-      fit: "cover",
-      position: "center",
-    },
-    opacity: 100,
-  },
-} satisfies NonNullable<AdminSliderItemDto["background"]>;
+type HeroAccentSide = "left" | "right";
 
-const heroPaperBackground = {
-  mode: "single",
-  layer: {
-    colorToken: "paper",
-    opacity: 100,
+type BlueOrangeBackgroundOptions = {
+  accent?: HeroBackgroundAsset;
+  accentSide: HeroAccentSide;
+  base: HeroBackgroundAsset;
+};
+
+const heroBlueBackgroundAssets = {
+  v1: {
+    desktopUrl: "/images/hero/hero-base-blue-desktopS3.webp",
+    mobileUrl: "/images/hero/hero-base-blue-mobile-s2.webp",
   },
-} satisfies NonNullable<AdminSliderItemDto["background"]>;
+  v2: {
+    desktopUrl: "/images/hero/hero-base-blue-desktopS1.webp",
+    mobileUrl: "/images/hero/hero-base-blue-mobile-s1.webp",
+  },
+  v3: {
+    desktopUrl: "/images/hero/welcome-blue-desktop.webp",
+    mobileUrl: "/images/hero/welcome-blue-mobile.webp",
+  },
+  v4: {
+    desktopUrl: "/images/hero/2doHero-base-blue-desktop-s1.webp",
+    mobileUrl: "/images/hero/2doHero-base-blue-mobile-s1.webp",
+  },
+} as const satisfies Record<string, HeroBackgroundAsset>;
+
+const heroPaperBackgroundAssets = {
+  v1: {
+    desktopUrl: "/images/hero/hero-base-paper-desktop.webp",
+    mobileUrl: "/images/hero/hero-base-paper-mobile.webp",
+  },
+  v2: {
+    desktopUrl: "/images/hero/hero-base-paper-desktop-v2.webp",
+    mobileUrl: "/images/hero/hero-base-paper-mobile-v2.webp",
+  },
+} as const satisfies Record<string, HeroBackgroundAsset>;
+
+const heroOrangeAccentAssets = {
+  left: {
+    desktopUrl: "/images/hero/hero-accent-orange-desktop-left.webp",
+    mobileUrl: "/images/hero/welcome-orange-accent-mobile-original-left.webp",
+  },
+  right: {
+    desktopUrl: "/images/hero/hero-accent-orange-desktop-right.webp",
+    mobileUrl: "/images/hero/welcome-orange-accent-mobile-original-right.webp",
+  },
+} as const satisfies Record<string, HeroBackgroundAsset>;
+
+const heroBlackBackgroundAssets = {
+  s1: {
+    desktopUrl: "/images/hero/hero-base-black-desktop-s1.webp",
+    mobileUrl: "/images/hero/hero-base-black-mobile-s1.webp",
+  },
+} as const satisfies Record<string, HeroBackgroundAsset>;
+
+function createBlueOrangeBackground({
+  accentSide,
+  accent = heroOrangeAccentAssets[accentSide],
+  base,
+}: BlueOrangeBackgroundOptions): NonNullable<AdminSliderItemDto["background"]> {
+  return {
+    mode: "two-layer",
+    base: {
+      colorToken: "brand-primary",
+      image: {
+        desktopUrl: base.desktopUrl,
+        ...(base.mobileUrl ? { mobileUrl: base.mobileUrl } : {}),
+        decorative: true,
+        fit: "cover",
+        position: "center",
+      },
+      opacity: 100,
+    },
+    accent: {
+      colorToken: "accent",
+      image: {
+        desktopUrl: accent.desktopUrl,
+        ...(accent.mobileUrl ? { mobileUrl: accent.mobileUrl } : {}),
+        decorative: true,
+        fit: "cover",
+        position: "center",
+      },
+      opacity: 100,
+      bleed: "none",
+    },
+  };
+}
+
+const heroBlueOrangeBackgrounds = {
+  slide1: createBlueOrangeBackground({
+    base: heroBlueBackgroundAssets.v1,
+    accentSide: "right",
+  }),
+  slide2: createBlueOrangeBackground({
+    base: heroBlueBackgroundAssets.v2,
+    accentSide: "left",
+  }),
+  slide3: createBlueOrangeBackground({
+    base: heroBlueBackgroundAssets.v3,
+    accentSide: "left",
+  }),
+  slide4: createBlueOrangeBackground({
+    base: heroBlueBackgroundAssets.v4,
+    accentSide: "right",
+  }),
+} as const;
+
+function createSingleImageBackground({
+  asset,
+  colorToken,
+}: {
+  asset: HeroBackgroundAsset;
+  colorToken: SliderBackgroundColorToken;
+}): NonNullable<AdminSliderItemDto["background"]> {
+  return {
+    mode: "single",
+    layer: {
+      colorToken,
+      image: {
+        desktopUrl: asset.desktopUrl,
+        ...(asset.mobileUrl ? { mobileUrl: asset.mobileUrl } : {}),
+        decorative: true,
+        fit: "cover",
+        position: "center",
+      },
+      opacity: 100,
+    },
+  };
+}
+
+function createPaperBackground(
+  asset: HeroBackgroundAsset,
+): NonNullable<AdminSliderItemDto["background"]> {
+  return createSingleImageBackground({ asset, colorToken: "paper" });
+}
+
+const heroPaperBackgrounds = {
+  v1: createPaperBackground(heroPaperBackgroundAssets.v1),
+  v2: createPaperBackground(heroPaperBackgroundAssets.v2),
+};
+
+const heroBlackBackgrounds = {
+  s1: createSingleImageBackground({
+    asset: heroBlackBackgroundAssets.s1,
+    colorToken: "brand-dark",
+  }),
+};
 
 export const mockCategories: CategoryDto[] = [
   {
@@ -309,9 +413,9 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     desktopImageUrl: heroProductImageUrl,
     mobileImageUrl: heroProductImageUrl,
     imageAlt: "Box SOKY con rolls, toppings y piezas para compartir.",
-    mediaMode: "framed-photo",
+    mediaMode: "promo-image",
     frameEnabled: true,
-    background: heroBlueOrangeBackground,
+    background: heroBlueOrangeBackgrounds.slide1,
     primaryCta: {
       label: "Ver menú",
       type: "MENU",
@@ -339,10 +443,10 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     desktopImageUrl: heroProductImageUrl,
     mobileImageUrl: heroProductImageUrl,
     imageAlt: "Box SOKY con sushi, toppings y piezas para una mesa compartida.",
-    mediaMode: "framed-photo",
+    mediaMode: "promo-image",
     mediaPosition: "center-right",
     frameEnabled: true,
-    background: heroBlueOrangeBackground,
+    background: heroBlueOrangeBackgrounds.slide2,
     primaryCta: {
       label: "Ver boxes",
       type: "CATEGORY",
@@ -374,7 +478,7 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     mediaMode: "promo-image",
     mediaPosition: "center",
     frameEnabled: true,
-    background: heroBlueOrangeBackground,
+    background: heroBlueOrangeBackgrounds.slide3,
     primaryCta: {
       label: "Ver tempura",
       type: "CATEGORY",
@@ -398,9 +502,9 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     mobileImageUrl: heroProductImageUrl,
     imageAlt: "Box SOKY listo para pedir por WhatsApp.",
     mediaMode: "local-photo",
-    mediaPosition: "center",
     frameEnabled: true,
-    background: heroSimpleBlueBackground,
+    mediaPosition: "center",
+    background: heroBlueOrangeBackgrounds.slide4,
     primaryCta: {
       label: "Escribir por WhatsApp",
       type: "WHATSAPP",
@@ -422,10 +526,10 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     desktopImageUrl: heroProductImageUrl,
     mobileImageUrl: heroProductImageUrl,
     imageAlt: "Pedido SOKY preparado para retiro o delivery.",
-    mediaMode: "framed-photo",
+    mediaMode: "local-photo",
     mediaPosition: "center-left",
     frameEnabled: true,
-    background: heroPaperBackground,
+    background: heroPaperBackgrounds.v2,
     primaryCta: {
       label: "Consultar disponibilidad",
       type: "WHATSAPP",
@@ -454,7 +558,7 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     mediaMode: "promo-image",
     mediaPosition: "center-right",
     frameEnabled: true,
-    background: heroSimpleBlueBackground,
+    background: heroBlackBackgrounds.s1,
     primaryCta: {
       label: "Ver menú",
       type: "MENU",
@@ -497,7 +601,7 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     imageAlt: "Box SOKY usado como imagen temporal para una promo en borrador.",
     mediaMode: "promo-image",
     frameEnabled: true,
-    background: heroBlueOrangeBackground,
+    background: heroBlueOrangeBackgrounds.slide1,
     primaryCta: {
       label: "Ver menú",
       type: "MENU",
