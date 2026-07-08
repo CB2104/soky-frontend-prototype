@@ -26,7 +26,8 @@
   --color-soky-soy: #2a1710;
   --color-japan-wave: #7fa9c9;
   --color-japan-seal: #a63a2f;
-  --font-sans: var(--font-nunito-sans), "Nunito Sans", "Segoe UI", Arial, sans-serif;
+  --font-sans:
+    var(--font-nunito-sans), "Nunito Sans", "Segoe UI", Arial, sans-serif;
   --font-display: var(--font-anton), Impact, "Arial Narrow", sans-serif;
   --font-hand: "Segoe Print", "Comic Sans MS", cursive;
   --shadow-soky-card: 0 18px 45px rgb(7 5 74 / 0.16);
@@ -136,3 +137,4 @@ img {
     transition-duration: 0.01ms !important;
   }
 }
+

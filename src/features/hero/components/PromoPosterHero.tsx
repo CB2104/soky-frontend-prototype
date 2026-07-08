@@ -127,7 +127,7 @@ function PromoPosterMedia({
   const resolvedImageFit = isCutoutProduct ? "contain" : image.fit;
 
   const imageClassName = cn(
-    "h-full w-full",
+    "block h-full w-full",
     imageFitClass[resolvedImageFit],
     imagePositionClass[image.position],
     isCutoutProduct
@@ -156,6 +156,7 @@ function PromoPosterMedia({
     fetchPriority: imageFetchPriority,
     preload: image.priority,
     className: imageClassName,
+    style: { height: "100%", width: "100%" },
   });
 
   return (
@@ -163,7 +164,7 @@ function PromoPosterMedia({
       className={cn(
         "relative order-2 z-10 mx-auto w-full md:order-none md:col-span-7 md:col-start-6 md:row-span-2 md:row-start-1 md:mx-0 md:self-center",
         isCutoutProduct
-          ? "min-h-0 self-center py-1 md:min-h-[30rem] lg:min-h-[33rem]"
+          ? "min-h-0 self-center py-1 md:min-h-0"
           : "min-h-0 self-center md:min-h-[27rem] lg:min-h-[30rem]",
       )}
     >
@@ -192,7 +193,7 @@ function PromoPosterMedia({
         className={cn(
           "relative z-10 mx-auto w-full",
           isCutoutProduct
-            ? "aspect-[5/4] max-w-[22rem] sm:max-w-[23.5rem] md:mr-0 md:aspect-[6/5] md:max-w-none md:w-[112%] lg:w-[118%] xl:w-[122%]"
+            ? "h-[15rem] max-h-[28svh] max-w-[18rem] sm:h-[16rem] sm:max-h-[30svh] sm:max-w-[19rem] md:mr-0 md:h-[34rem] md:max-h-[64vh] md:max-w-[36rem] lg:h-[37rem] lg:max-h-[68vh] lg:max-w-[39rem] xl:max-w-[41rem]"
             : "aspect-[4/3] max-w-[21rem] sm:aspect-[16/10] sm:max-w-[23rem] md:ml-auto md:mr-0 md:aspect-[16/9] md:max-w-none md:w-[102%] lg:w-[106%]",
           hasFrame
             ? "overflow-hidden rounded-[1.6rem] border-[5px] border-soky-white/35 bg-soky-navy shadow-[0_22px_54px_rgb(7_5_74_/_0.32),inset_0_1px_0_rgb(255_255_255_/_0.2)] ring-1 ring-soky-white/18 md:-rotate-2 md:rounded-[2rem]"

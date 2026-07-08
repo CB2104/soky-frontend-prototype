@@ -39,7 +39,7 @@ export function HeroMedia({ badgeLabel, image, stampTone }: HeroMediaProps) {
   const resolvedImageFit = isCutoutProduct ? "contain" : image.fit;
 
   const imageClassName = cn(
-    "h-full w-full",
+    "block h-full w-full",
     imageFitClass[resolvedImageFit],
     imagePositionClass[image.position],
   );
@@ -65,14 +65,15 @@ export function HeroMedia({ badgeLabel, image, stampTone }: HeroMediaProps) {
     fetchPriority: imageFetchPriority,
     preload: image.priority,
     className: imageClassName,
+    style: { height: "100%", width: "100%" },
   });
 
   return (
     <div
       className={cn(
-        "relative order-2 z-10 md:col-span-7 md:col-start-6 md:row-span-2 md:row-start-1 md:self-center",
+        "relative order-2 z-10 self-center md:col-span-7 md:col-start-6 md:row-span-2 md:row-start-1 md:self-center",
         isCutoutProduct
-          ? "min-h-[15.5rem] md:min-h-[29rem] md:-ml-6 lg:min-h-[31rem] lg:-ml-10"
+          ? "min-h-0 md:min-h-0"
           : "min-h-[14.5rem] md:min-h-[28rem] md:-ml-4 lg:min-h-[30rem] lg:-ml-8",
       )}
     >
@@ -107,7 +108,7 @@ export function HeroMedia({ badgeLabel, image, stampTone }: HeroMediaProps) {
         className={cn(
           "relative z-10 mx-auto w-full",
           isCutoutProduct
-            ? "aspect-[4/3] max-w-[22rem] md:mr-0 md:aspect-[6/5] md:max-w-none md:w-[108%] lg:w-[112%]"
+            ? "h-[18rem] max-h-[34svh] max-w-[20rem] md:mr-0 md:h-[38rem] md:max-h-[70vh] md:max-w-[39rem] lg:h-[40rem] lg:max-h-[72vh] lg:max-w-[42rem]"
             : "aspect-[16/10] max-w-[23rem] md:ml-auto md:mr-0 md:aspect-[16/9] md:max-w-none md:w-[104%] lg:w-[108%]",
           hasFrame
             ? "overflow-hidden rounded-[1.75rem] border-[5px] border-soky-white/30 bg-soky-navy shadow-[0_24px_64px_rgb(7_5_74_/_0.38)] md:-rotate-2 md:rounded-[2rem]"

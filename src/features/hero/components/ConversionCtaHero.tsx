@@ -141,7 +141,7 @@ function ConversionCtaMedia({
   const resolvedImageFit = isCutoutProduct ? "contain" : image.fit;
 
   const imageClassName = cn(
-    "h-full w-full",
+    "block h-full w-full",
     imageFitClass[resolvedImageFit],
     imagePositionClass[image.position],
   );
@@ -167,6 +167,7 @@ function ConversionCtaMedia({
     fetchPriority: imageFetchPriority,
     preload: image.priority,
     className: imageClassName,
+    style: { height: "100%", width: "100%" },
   });
 
   return (
@@ -182,8 +183,8 @@ function ConversionCtaMedia({
         className={cn(
           "relative z-10 mx-auto w-full",
           isCutoutProduct
-            ? "aspect-[4/3] max-w-[18rem] md:max-w-[29rem]"
-            : "aspect-[4/3] max-w-[19rem] md:aspect-[16/11] md:max-w-[31rem]",
+            ? "h-[15rem] max-h-[28svh] max-w-[17.5rem] sm:h-[16rem] sm:max-h-[30svh] sm:max-w-[19rem] md:h-[30rem] md:max-h-[60vh] md:max-w-[31rem] lg:h-[33rem] lg:max-h-[64vh] lg:max-w-[34rem]"
+            : "aspect-[4/3] max-w-[21rem] md:aspect-[16/10] md:max-w-[36rem] lg:max-w-[39rem] xl:max-w-[41rem]",
           hasFrame
             ? cn(
                 "overflow-hidden rounded-[1.5rem] border-[4px] shadow-[0_20px_52px_rgb(7_5_74_/_0.26)] md:rounded-[1.8rem]",

@@ -5,9 +5,9 @@ import Navbar from "@/components/layout/Navbar";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import CartDrawer from "@/features/cart/components/CartDrawer";
 import { ContactSpeedDial } from "@/features/contact/components/ContactSpeedDial";
+import TransitionProvider from "../provider/TransitionProvider";
 
 export const dynamic = "force-dynamic";
-
 
 type SiteLayoutProps = {
   children: ReactNode;
@@ -21,12 +21,17 @@ export default async function SiteLayout({ children }: SiteLayoutProps) {
   );
 
   return (
-    <div className="min-h-dvh bg-soky-paper text-soky-ink">
-      <Navbar whatsappUrl={whatsappUrl} />
-      {children}
-      <SiteFooter settings={settings} />
-      <ContactSpeedDial whatsappUrl={whatsappUrl} instagramUrl={settings.instagramUrl}/>
-      <CartDrawer />
-    </div>
+    <TransitionProvider>
+      <div className="min-h-dvh bg-soky-paper text-soky-ink">
+        <Navbar whatsappUrl={whatsappUrl} />
+        {children}
+        <SiteFooter settings={settings} />
+        <ContactSpeedDial
+          whatsappUrl={whatsappUrl}
+          instagramUrl={settings.instagramUrl}
+        />
+        <CartDrawer />
+      </div>
+    </TransitionProvider>
   );
 }

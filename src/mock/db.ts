@@ -15,6 +15,14 @@ import type {
 const now = new Date("2026-06-14T14:00:00.000Z").toISOString();
 
 const heroProductImageUrl = "/images/soky-hero-party-box.png";
+const heroRotatorSushiFrioImageUrl =
+  "/images/hero/hero-rotator-sushi-frio.webp";
+const slidePromoTempuraImageUrl = "/images/hero/slide-promo-tempura.webp";
+const slidePromoSushiFrioImageUrl =
+  "/images/hero/slide-promo-sushi-frio.webp";
+const slidePromoMixtoImageUrl = "/images/hero/slide-promo-mixto.webp";
+const slideServiceDeliveryImageUrl =
+  "/images/hero/slide-service-delivery.webp";
 
 type HeroBackgroundAsset = {
   desktopUrl: string;
@@ -46,6 +54,14 @@ const heroBlueBackgroundAssets = {
     desktopUrl: "/images/hero/2doHero-base-blue-desktop-s1.webp",
     mobileUrl: "/images/hero/2doHero-base-blue-mobile-s1.webp",
   },
+  comboCold: {
+    desktopUrl: "/images/hero/2doHero-base-blue-desktop-s2.webp",
+    mobileUrl: "/images/hero/2doHero-base-blue-mobile-s2.webp",
+  },
+  comboLargeMixed: {
+    desktopUrl: "/images/hero/2doHero-base-blue-desktop-s1.webp",
+    mobileUrl: "/images/hero/2doHero-base-blue-mobile-s2.webp",
+  },
 } as const satisfies Record<string, HeroBackgroundAsset>;
 
 const heroPaperBackgroundAssets = {
@@ -67,6 +83,14 @@ const heroOrangeAccentAssets = {
   right: {
     desktopUrl: "/images/hero/hero-accent-orange-desktop-right.webp",
     mobileUrl: "/images/hero/welcome-orange-accent-mobile-original-right.webp",
+  },
+  comboCold: {
+    desktopUrl: "/images/hero/accent-orange-accent-desktop-v2-s2.webp",
+    mobileUrl: "/images/hero/Mobile-OrangeAccent-s1.webp",
+  },
+  comboLargeMixed: {
+    desktopUrl: "/images/hero/accent-orange-accent-desktop-v2-s1.webp",
+    mobileUrl: "/images/hero/Mobile-OrangeAccent-s2.webp",
   },
 } as const satisfies Record<string, HeroBackgroundAsset>;
 
@@ -120,11 +144,13 @@ const heroBlueOrangeBackgrounds = {
     accentSide: "left",
   }),
   slide3: createBlueOrangeBackground({
-    base: heroBlueBackgroundAssets.v3,
+    base: heroBlueBackgroundAssets.comboCold,
+    accent: heroOrangeAccentAssets.comboCold,
     accentSide: "left",
   }),
   slide4: createBlueOrangeBackground({
-    base: heroBlueBackgroundAssets.v4,
+    base: heroBlueBackgroundAssets.comboLargeMixed,
+    accent: heroOrangeAccentAssets.comboLargeMixed,
     accentSide: "right",
   }),
 } as const;
@@ -410,11 +436,10 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     description: "Combos, entradas y favoritos listos para pedir.",
     eyebrow: "Bienvenido",
     badgeLabel: "Popular",
-    desktopImageUrl: heroProductImageUrl,
-    mobileImageUrl: heroProductImageUrl,
+    desktopImageUrl: heroRotatorSushiFrioImageUrl,
+    mobileImageUrl: heroRotatorSushiFrioImageUrl,
     imageAlt: "Box SOKY con rolls, toppings y piezas para compartir.",
-    mediaMode: "promo-image",
-    frameEnabled: true,
+    mediaMode: "cutout-product",
     background: heroBlueOrangeBackgrounds.slide1,
     primaryCta: {
       label: "Ver menú",
@@ -440,12 +465,11 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     eyebrow: "Promos SOKY",
     badgeLabel: "Popular",
     highlightText: "COMBOS",
-    desktopImageUrl: heroProductImageUrl,
-    mobileImageUrl: heroProductImageUrl,
+    desktopImageUrl: slidePromoTempuraImageUrl,
+    mobileImageUrl: slidePromoTempuraImageUrl,
     imageAlt: "Box SOKY con sushi, toppings y piezas para una mesa compartida.",
-    mediaMode: "promo-image",
+    mediaMode: "cutout-product",
     mediaPosition: "center-right",
-    frameEnabled: true,
     background: heroBlueOrangeBackgrounds.slide2,
     primaryCta: {
       label: "Ver boxes",
@@ -472,12 +496,11 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     eyebrow: "Crocante",
     badgeLabel: "Favoritos",
     highlightText: "TEMPURA",
-    desktopImageUrl: heroProductImageUrl,
-    mobileImageUrl: heroProductImageUrl,
+    desktopImageUrl: slidePromoSushiFrioImageUrl,
+    mobileImageUrl: slidePromoSushiFrioImageUrl,
     imageAlt: "Rolls SOKY servidos en un box con piezas crocantes y toppings.",
-    mediaMode: "promo-image",
+    mediaMode: "cutout-product",
     mediaPosition: "center",
-    frameEnabled: true,
     background: heroBlueOrangeBackgrounds.slide3,
     primaryCta: {
       label: "Ver tempura",
@@ -498,11 +521,10 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     description: "Consulta opciones disponibles y cierra tu pedido por chat.",
     eyebrow: "Pedido rápido",
     badgeLabel: "Directo",
-    desktopImageUrl: heroProductImageUrl,
-    mobileImageUrl: heroProductImageUrl,
+    desktopImageUrl: slidePromoMixtoImageUrl,
+    mobileImageUrl: slidePromoMixtoImageUrl,
     imageAlt: "Box SOKY listo para pedir por WhatsApp.",
-    mediaMode: "local-photo",
-    frameEnabled: true,
+    mediaMode: "cutout-product",
     mediaPosition: "center",
     background: heroBlueOrangeBackgrounds.slide4,
     primaryCta: {
@@ -523,8 +545,8 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     description:
       "Consulta disponibilidad de retiro o delivery antes de cerrar tu pedido.",
     eyebrow: "Disponibilidad",
-    desktopImageUrl: heroProductImageUrl,
-    mobileImageUrl: heroProductImageUrl,
+    desktopImageUrl: slideServiceDeliveryImageUrl,
+    mobileImageUrl: slideServiceDeliveryImageUrl,
     imageAlt: "Pedido SOKY preparado para retiro o delivery.",
     mediaMode: "local-photo",
     mediaPosition: "center-left",
