@@ -53,3 +53,8 @@ next-env.d.ts
 
 # project documentation
 /docs/
+
+# local AI-assistant tooling and generated QA artifacts
+/.agents/
+/.codex*
+/design-qa*
