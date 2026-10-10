@@ -41,11 +41,11 @@ const NavTabs = ({ items }: NavTabsProps) => {
     >
       <Pill
         position={activePosition}
-        className="z-10 bg-soky-orange-deep bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat"
+        className="z-10 bg-soky-orange-deep bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat"
       />
       <Pill
         position={hoverPosition}
-        className="z-0 overflow-hidden rounded-full bg-soky-blue-bright bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat"
+        className="z-0 overflow-hidden rounded-full bg-soky-blue-bright bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat"
       />
       {items.map((item) => {
         const isActive = isItemActive(item.href);

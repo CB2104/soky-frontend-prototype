@@ -8,7 +8,9 @@ import type {
   PaginatedResponse,
   ProductDto,
 } from "@/contracts/api";
-import { mockExchangeRate, mockProducts } from "./db";
+import { isUsableExchangeRate } from "@/features/exchange-rates/rate-validation";
+import { convertMoneyCents, formatMoneyCents, parseMoneyCents } from "@/lib/money";
+import { mockExchangeRate, mockProducts, mockSettings } from "./db";
 
 export type MockScenario =
   | "default"
@@ -91,10 +93,28 @@ export function getScenarioRate(scenario: MockScenario): ExchangeRateDto {
   return mockExchangeRate;
 }
 
+export function getQuoteRateError(
+  request: CartQuoteRequestDto,
+  scenario: MockScenario = "default",
+): string | null {
+  const rate = getScenarioRate(scenario);
+  if (!isUsableExchangeRate(rate, mockSettings.defaultCurrency)) {
+    return "La tasa no está disponible o requiere validación.";
+  }
+  const mismatch = request.items.some((item) => {
+    const product = mockProducts.find((candidate) => candidate.id === item.productId);
+    return product?.status === "ACTIVE" && product.isAvailable
+      && product.priceCurrency !== rate.baseCurrency;
+  });
+  return mismatch ? "La tasa no corresponde a la moneda de los productos." : null;
+}
+
 export function buildCartQuote(
   request: CartQuoteRequestDto,
   scenario: MockScenario = "default",
 ): CartQuoteResponseDto {
+  const rateError = getQuoteRateError(request, scenario);
+  if (rateError) throw new Error(rateError);
   const rate = getScenarioRate(scenario);
   const invalidItems: CartQuoteResponseDto["invalidItems"] = [];
   const validItems: CartQuoteResponseDto["items"] = [];
@@ -107,7 +127,7 @@ export function buildCartQuote(
       continue;
     }
 
-    if (item.quantity < 1 || !Number.isInteger(item.quantity)) {
+    if (item.quantity < 1 || item.quantity > 99 || !Number.isInteger(item.quantity)) {
       invalidItems.push({ productId: item.productId, reason: "INVALID_QUANTITY" });
       continue;
     }
@@ -117,13 +137,18 @@ export function buildCartQuote(
       continue;
     }
 
-    if (!product.isAvailable || scenario === "unavailable-product") {
+    if (!product.isAvailable || scenario === "unavailable-product"
+      || (scenario === "invalid-items" && item === request.items[0])) {
       invalidItems.push({ productId: item.productId, reason: "UNAVAILABLE" });
       continue;
     }
 
-    const lineTotal = Number(product.priceAmount) * item.quantity;
-    const lineTotalVes = lineTotal * Number(rate.rate);
+    const unitCents = parseMoneyCents(product.priceAmount);
+    if (unitCents === null) throw new Error("Precio de catálogo inválido.");
+    const lineTotal = unitCents * item.quantity;
+    if (!Number.isSafeInteger(lineTotal)) throw new Error("Precio de catálogo inválido.");
+    const lineTotalVes = convertMoneyCents(lineTotal, rate.rate);
+    if (lineTotalVes === null) throw new Error("No se pudo convertir el importe.");
 
     validItems.push({
       productId: product.id,
@@ -132,30 +157,26 @@ export function buildCartQuote(
       quantity: item.quantity,
       unitPriceAmount: product.priceAmount,
       unitPriceCurrency: product.priceCurrency,
-      lineTotalAmount: lineTotal.toFixed(2),
+      lineTotalAmount: formatMoneyCents(lineTotal),
       lineTotalCurrency: product.priceCurrency,
-      lineTotalVes: lineTotalVes.toFixed(2),
+      lineTotalVes: formatMoneyCents(lineTotalVes),
     });
-  }
-
-  if (scenario === "invalid-items" && request.items[0]) {
-    invalidItems.push({ productId: request.items[0].productId, reason: "UNAVAILABLE" });
   }
 
   const subtotalUsd = validItems
     .filter((item) => item.lineTotalCurrency === "USD")
-    .reduce((sum, item) => sum + Number(item.lineTotalAmount), 0);
+    .reduce((sum, item) => sum + (parseMoneyCents(item.lineTotalAmount) ?? 0), 0);
   const subtotalEur = validItems
     .filter((item) => item.lineTotalCurrency === "EUR")
-    .reduce((sum, item) => sum + Number(item.lineTotalAmount), 0);
-  const totalVes = validItems.reduce((sum, item) => sum + Number(item.lineTotalVes), 0);
+    .reduce((sum, item) => sum + (parseMoneyCents(item.lineTotalAmount) ?? 0), 0);
+  const totalVes = validItems.reduce((sum, item) => sum + (parseMoneyCents(item.lineTotalVes) ?? 0), 0);
 
   return {
     items: validItems,
     totals: {
-      ...(subtotalUsd > 0 ? { subtotalUsd: subtotalUsd.toFixed(2) } : {}),
-      ...(subtotalEur > 0 ? { subtotalEur: subtotalEur.toFixed(2) } : {}),
-      totalVes: totalVes.toFixed(2),
+      ...(subtotalUsd > 0 ? { subtotalUsd: formatMoneyCents(subtotalUsd) } : {}),
+      ...(subtotalEur > 0 ? { subtotalEur: formatMoneyCents(subtotalEur) } : {}),
+      totalVes: formatMoneyCents(totalVes),
     },
     rateSnapshot: rate,
     warnings: rate.warning ? [rate.warning] : [],

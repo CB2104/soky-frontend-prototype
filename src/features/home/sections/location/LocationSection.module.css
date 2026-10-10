@@ -1,0 +1,726 @@
+.section {
+  --location-navbar-height: var(--navbar-height, 5rem);
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background: var(--color-soky-petroleum);
+  color: var(--color-soky-white);
+  font-family: var(--font-montserrat), sans-serif;
+  display: grid;
+  align-items: center;
+  min-height: calc(100svh - var(--location-navbar-height));
+  padding-block: clamp(1rem, 3svh, 2.5rem);
+  scroll-margin-top: var(--location-navbar-height);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 0.85fr) minmax(0, 1fr);
+  align-items: center;
+  column-gap: clamp(0.75rem, 1.6vw, 1.5rem);
+  row-gap: clamp(0.5rem, 1.6svh, 1.25rem);
+}
+
+.content,
+.visitPanel {
+  /* Share the desktop grid; become two separate reading panels in portrait. */
+  display: contents;
+}
+
+.header {
+  grid-column: 1 / 3;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.mapIntro {
+  display: none;
+}
+
+.hoursContent {
+  min-width: 0;
+}
+
+.eyebrow {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-soky-orange);
+  margin-bottom: clamp(0.5rem, 1.2svh, 0.9rem);
+}
+
+.heading {
+  margin: 0;
+  max-width: 100%;
+  font-family: var(--font-anton), Impact, sans-serif;
+  font-size: clamp(2.75rem, min(6.4vw, 8.5svh), 6.5rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-wrap: pretty;
+}
+
+.heading > span {
+  display: block;
+}
+
+.description {
+  font-size: clamp(0.95rem, min(1.4vw, 2.3svh), 1.25rem);
+  font-weight: 500;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+  max-width: 48ch;
+}
+
+.information {
+  grid-column: 1 / 3;
+  grid-row: 2;
+  padding: clamp(1rem, 2svh, 1.5rem);
+  color: var(--color-soky-petroleum);
+  background: var(--color-soky-white);
+  border-radius: 1.75rem;
+}
+
+.informationGroup {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0.85rem;
+}
+
+.informationGroup + .informationGroup {
+  border-top: 1px solid var(--color-soky-border);
+  padding-top: 0.8rem;
+  margin-top: 0.8rem;
+}
+
+.informationIcon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  color: var(--color-soky-orange-deep);
+  background: var(--color-soky-paper);
+  border-radius: 50%;
+}
+
+.informationIcon svg,
+.clockIcon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.clockIcon {
+  display: block;
+  background: currentColor;
+  mask: url("/icons/tabler/clock.svg") center / contain no-repeat;
+}
+
+.label {
+  font-size: 0.75rem;
+  line-height: 1.3;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.065em;
+  color: var(--color-soky-orange-ink);
+  margin-bottom: 0.45rem;
+}
+
+.address {
+  font-size: clamp(0.95rem, 1.15vw, 1.125rem);
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.hoursRow {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.4fr);
+  gap: 0.75rem;
+  font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+  line-height: 1.35;
+  font-weight: 500;
+  padding-block: 0.25rem;
+}
+
+.hoursRow + .hoursRow {
+  border-top: 1px solid var(--color-soky-border);
+  margin-top: 0.35rem;
+  padding-top: 0.6rem;
+}
+
+.hoursRow dd {
+  border-left: 1px solid var(--color-soky-border);
+  padding-left: 0.75rem;
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.hoursRow small {
+  display: block;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+.primaryAction,
+.secondaryAction {
+  grid-row: 3;
+  min-width: 0;
+  min-height: 3.5rem;
+  padding: 0.6rem 1rem;
+  gap: 0.65rem;
+  border: 2px solid var(--color-soky-white);
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  font-weight: 700;
+  line-height: 1.2;
+  touch-action: manipulation;
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), background-color 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.primaryAction {
+  position: relative;
+  isolation: isolate;
+  grid-column: 1;
+  background: var(--color-soky-orange-ink);
+  color: var(--color-soky-white);
+}
+
+.primaryAction::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: url("/images/patterns/endless-clouds-light.svg") repeat;
+  background-size: 4rem 2rem;
+  /* SVG ink is 16%; this layer leaves 6% over the accessible orange. */
+  opacity: 0.375;
+  pointer-events: none;
+}
+
+.secondaryAction {
+  grid-column: 2;
+  color: var(--color-soky-orange-ink);
+  background: var(--color-soky-white);
+}
+
+.primaryAction svg,
+.secondaryAction svg {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex-shrink: 0;
+}
+
+.primaryAction svg:first-child {
+  fill: currentColor;
+}
+
+.primaryAction span,
+.secondaryAction span {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.compactActionLabel {
+  display: none;
+}
+
+.primaryAction:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.primaryAction:hover:not(:disabled),
+.secondaryAction:hover {
+  transform: translateY(-2px);
+}
+
+.secondaryAction:hover {
+  background: var(--color-soky-paper);
+}
+
+.primaryAction:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-soky-orange-ink) 92%, var(--color-soky-petroleum));
+}
+
+.primaryAction:active:not(:disabled),
+.secondaryAction:active {
+  scale: 1;
+  transform: translateY(0) scale(0.98);
+}
+
+.social {
+  grid-column: 1 / 3;
+  grid-row: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  font-size: 0.95rem;
+}
+
+.instagram {
+  display: inline-flex;
+  gap: 0.65rem;
+  align-items: center;
+  min-height: 2.75rem;
+  font-weight: 600;
+}
+
+.instagram svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.instagram:hover span {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.pending {
+  grid-column: 1 / 3;
+  grid-row: 5;
+  font-size: 0.82rem;
+  color: var(--color-soky-white);
+}
+
+.mapArea {
+  grid-column: 3;
+  grid-row: 1 / 5;
+  min-width: 0;
+}
+
+.mapSurface {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 2.5rem;
+  background: var(--color-soky-paper);
+  border: 2px solid var(--color-soky-white);
+  height: clamp(16rem, calc(100svh - var(--location-navbar-height) - 8rem), 40rem);
+}
+
+.map {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.mapUnavailable {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  color: var(--color-soky-petroleum);
+  text-align: center;
+}
+
+.mapUnavailable > svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--color-soky-orange-deep);
+}
+
+.section a:focus-visible,
+.section button:focus-visible,
+.map:focus-visible {
+  outline: 3px solid var(--color-soky-focus);
+  outline-offset: 5px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (min-width: 761px) and (max-width: 1100px) and (min-height: 701px) and (orientation: landscape) {
+  .hoursRow {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+
+  .hoursRow dd {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+}
+
+@media (max-width: 1100px) and (orientation: portrait) {
+  .section {
+    display: block;
+    min-height: 0;
+    padding-block: 0;
+  }
+
+  .layout {
+    display: block;
+    max-width: 40rem;
+  }
+
+  .content,
+  .visitPanel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(100svh - var(--location-navbar-height));
+    padding-block: clamp(1.5rem, 4svh, 3rem);
+  }
+
+  .visitPanel {
+    border-top: 1px solid rgb(255 253 247 / 0.25);
+    gap: 1rem;
+  }
+
+  .mapIntro {
+    display: block;
+  }
+
+  .mapIntro h3 {
+    font-family: var(--font-anton), Impact, sans-serif;
+    font-size: clamp(1.75rem, 7.2vw, 2.5rem);
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  .eyebrow {
+    margin-bottom: 1rem;
+  }
+
+  .heading {
+    font-size: clamp(2.25rem, 10.5vw, 4.5rem);
+    max-width: 15ch;
+  }
+
+  .information {
+    margin-top: 1.25rem;
+    border-radius: 1.5rem;
+  }
+
+  .address,
+  .hoursRow {
+    font-size: 1rem;
+  }
+
+  .hoursRow {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+
+  .hoursRow dd {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    min-height: 3.5rem;
+    font-size: clamp(1rem, 4.4vw, 1.125rem);
+  }
+
+  .primaryAction {
+    margin-top: 1rem;
+  }
+
+  .social {
+    justify-content: center;
+  }
+
+  .pending {
+    margin-top: 0.5rem;
+  }
+
+  .mapSurface {
+    height: clamp(18rem, 50svh, 32rem);
+    border-radius: 1.75rem;
+  }
+
+}
+
+@media (min-width: 1101px) and (max-height: 700px), (orientation: landscape) and (min-height: 501px) and (max-height: 700px) {
+  .section {
+    padding-block: 0.875rem;
+  }
+
+  .layout {
+    row-gap: 0.5rem;
+  }
+
+  .heading {
+    font-size: clamp(2rem, min(5vw, 7svh), 3.5rem);
+  }
+
+  .eyebrow {
+    font-size: 0.75rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+    line-height: 1.35;
+    margin-top: 0.4rem;
+  }
+
+  .information {
+    padding: 0.75rem;
+  }
+
+  .informationGroup + .informationGroup {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+  }
+
+  .label {
+    font-size: 0.7rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .address,
+  .hoursRow {
+    font-size: 0.875rem;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    min-height: 3rem;
+    font-size: 1rem;
+  }
+
+  .primaryAction svg,
+  .secondaryAction svg,
+  .primaryAction svg:first-child {
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .section {
+    --location-navbar-height: 3.5rem;
+  }
+}
+
+@media (max-height: 550px) and (orientation: landscape), (max-width: 1100px) and (max-height: 600px) and (orientation: landscape) {
+  .section {
+    padding-block: 0.5rem;
+    padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
+  }
+
+  .layout {
+    column-gap: 0.65rem;
+    row-gap: 0.4rem;
+  }
+
+  .heading {
+    font-size: clamp(1.5rem, 3.7vw, 2.5rem);
+    line-height: 1.05;
+  }
+
+  .heading > span {
+    display: inline;
+  }
+
+  .eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.25rem;
+  }
+
+  .description {
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    margin-top: 0.25rem;
+  }
+
+  .information {
+    padding: 0.5rem 0.75rem;
+    border-radius: 1rem;
+  }
+
+  .informationGroup {
+    grid-template-columns: 1.75rem minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+
+  .informationIcon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .informationIcon svg,
+  .clockIcon {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  .informationGroup + .informationGroup {
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+  }
+
+  .label {
+    font-size: 0.65rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .address,
+  .hoursRow {
+    font-size: 0.8125rem;
+    line-height: 1.3;
+  }
+
+  .hoursRow {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+    gap: 0.4rem;
+    padding-block: 0.15rem;
+  }
+
+  .hoursRow + .hoursRow {
+    margin-top: 0.15rem;
+    padding-top: 0.3rem;
+  }
+
+  .hoursRow dd {
+    padding-left: 0.4rem;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    min-height: 2.75rem;
+    padding: 0.3rem 0.4rem;
+    gap: 0.4rem;
+    border-width: 2px;
+    font-size: 1rem;
+  }
+
+  .primaryAction svg,
+  .secondaryAction svg,
+  .primaryAction svg:first-child {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .social {
+    grid-column: 3;
+    grid-row: 3;
+    justify-content: center;
+    font-size: 0.8125rem;
+  }
+
+  .mapArea {
+    grid-row: 1 / 3;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mapSurface {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+    border-radius: 1.25rem;
+  }
+
+}
+
+@media (max-height: 360px) and (orientation: landscape) {
+  .header {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .header .eyebrow {
+    display: none;
+  }
+
+  .heading {
+    font-size: clamp(1.5rem, 3.4vw, 2rem);
+  }
+
+  .description {
+    margin-top: 0;
+  }
+
+  .informationGroup {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .informationIcon {
+    display: none;
+  }
+
+  .hoursRow {
+    grid-template-columns: max-content minmax(0, 1fr);
+  }
+
+  .hoursRow small {
+    display: inline;
+  }
+
+  .address,
+  .hoursRow {
+    font-size: 0.75rem;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    font-size: 1rem;
+  }
+
+  .primaryAction svg,
+  .secondaryAction svg {
+    display: none;
+  }
+
+  .mapArea {
+    grid-row: 2;
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .actionLabel {
+    display: none;
+  }
+
+  .compactActionLabel {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryAction,
+  .secondaryAction {
+    transition: none;
+  }
+
+  .primaryAction:hover:not(:disabled),
+  .secondaryAction:hover,
+  .primaryAction:active:not(:disabled),
+  .secondaryAction:active {
+    scale: 1;
+    transform: none;
+  }
+}

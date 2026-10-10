@@ -1,0 +1,73 @@
+.overlay {
+  --loading-columns: 16;
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  isolation: isolate;
+  overflow: hidden;
+  touch-action: none;
+}
+.grid { position: absolute; inset: 0; }
+.row {
+  position: absolute;
+  inset-inline: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--loading-columns), minmax(0, 1fr));
+  height: calc(25% + 1px);
+}
+.block {
+  width: calc(100% + 1px);
+  height: 100%;
+  background: var(--color-soky-blue, #1729a6);
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+.row:nth-child(even) .block { transform-origin: right center; }
+.overlay[data-revealing="true"] .block { will-change: transform; }
+.content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 24px;
+  color: var(--color-soky-white, #fffdf7);
+  text-align: center;
+}
+.content p { margin: 0; font: 500 16px/1.5 var(--font-outfit), sans-serif; }
+.logo { width: clamp(112px, 26vw, 200px); max-width: calc(100vw - 48px); }
+.logo svg { display: block; width: 100%; height: auto; }
+.activity { width: 100px; height: 4px; overflow: hidden; border-radius: 8px; background: rgb(255 253 247 / 20%); }
+.activity::after {
+  content: "";
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: var(--color-soky-orange, #fe6402);
+  animation: activity 1.25s ease-in-out infinite alternate;
+}
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.actions button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.actions button:focus-visible { outline: 3px solid var(--color-soky-orange, #fe6402); outline-offset: 4px; }
+@keyframes activity { from { transform: translateX(-30%); } to { transform: translateX(180%); } }
+@media (max-width: 767px) {
+  .overlay { --loading-columns: 8; }
+  .block:nth-child(n + 9) { display: none; }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .content { gap: 8px; padding: 12px; }
+  .logo { width: 140px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .activity::after { animation: none; width: 100%; background: currentColor; }
+}

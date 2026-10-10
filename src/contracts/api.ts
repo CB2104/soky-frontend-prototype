@@ -16,21 +16,11 @@ export type SliderIntent =
   | "conversion"
   | "announcement";
 
-export type SliderLayoutHint =
-  | "split"
-  | "poster"
-  | "image-led";
+export type SliderLayoutHint = "split" | "poster" | "image-led";
 
-export type SliderPlacement =
-  | "home_hero"
-  | "promo_section"
-  | "menu_banner";
+export type SliderPlacement = "home_hero" | "promo_section" | "menu_banner";
 
-export type SliderStatus =
-  | "DRAFT"
-  | "ACTIVE"
-  | "INACTIVE"
-  | "ARCHIVED";
+export type SliderStatus = "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED";
 
 export type SliderCtaType =
   | "NONE"
@@ -59,6 +49,104 @@ export type SliderImagePosition =
   | "center-left"
   | "center-right";
 
+export type HeroVisualProfile =
+  | "desktop"
+  | "desktopWide"
+  | "tabletLandscape"
+  | "tabletPortrait"
+  | "mobile";
+
+export type SliderBackgroundVariant =
+  | "default"
+  | "signature"
+  | "signature-mirrored"
+  | "most-ordered";
+
+export type HeroResponsiveSources = Readonly<{
+  desktop: string;
+  desktopWide: string;
+  tabletLandscape: string;
+  tabletPortrait: string;
+  mobile: string;
+}>;
+
+export type LegacyHeroImageSources = Readonly<{
+  desktopUrl: string;
+  mobileUrl?: string;
+}>;
+
+export type LegacyHeroRotatorImageSources = Readonly<{
+  src: string;
+}>;
+
+export type SliderImageSourcesDto =
+  | HeroResponsiveSources
+  | LegacyHeroImageSources;
+
+export type SliderRotatorImageSourcesDto =
+  | HeroResponsiveSources
+  | LegacyHeroRotatorImageSources;
+
+export type SliderRotatorImageDto = SliderRotatorImageSourcesDto & {
+  alt: string;
+  name?: string;
+  priceLabel?: string;
+};
+
+export type SliderHeadlinePartDto =
+  | {
+      type: "text";
+      text: string;
+    }
+  | {
+      type: "brand-logo";
+      label?: string;
+    };
+
+export type SliderProductLayerPosition =
+  | "center"
+  | "center-left"
+  | "center-right";
+
+export type SliderProductLayerDto = SliderImageSourcesDto & {
+  alt: string;
+  decorative?: boolean;
+  fit?: SliderImageFit;
+  position?: SliderProductLayerPosition;
+};
+
+export type SliderColorLayerDto = {
+  value: string;
+  label?: string;
+};
+
+export type SliderPatternAssetKey = "endless-clouds-light";
+
+export type SliderPatternBlendMode =
+  | "normal"
+  | "overlay"
+  | "soft-light"
+  | "multiply"
+  | "screen";
+
+export type SliderPatternSize = "auto" | "cover" | "contain" | "repeat";
+
+export type SliderPatternPosition =
+  | "center"
+  | "top"
+  | "bottom"
+  | "left"
+  | "right";
+
+export type SliderPatternOverlayDto = {
+  enabled: boolean;
+  assetKey: SliderPatternAssetKey;
+  opacity?: number;
+  blendMode?: SliderPatternBlendMode;
+  size?: SliderPatternSize;
+  position?: SliderPatternPosition;
+};
+
 export type SliderBackgroundColorToken =
   | "brand-primary"
   | "brand-dark"
@@ -73,9 +161,7 @@ export type SliderBackgroundBleed =
   | "contained-start"
   | "contained-end";
 
-export type SliderBackgroundImageDto = {
-  desktopUrl: string;
-  mobileUrl?: string;
+export type SliderBackgroundImageDto = SliderImageSourcesDto & {
   decorative?: true;
   fit?: SliderImageFit;
   position?: SliderImagePosition;
@@ -103,17 +189,16 @@ export type SliderBackgroundDto =
       };
     };
 
-export type SliderMediaMode =
-  | "cutout-product"
-  | "promo-image"
-  | "local-photo";
+export type SliderMediaMode = "cutout-product" | "promo-image" | "local-photo";
 
 export type SliderBaseMediaDto = {
   desktopImageUrl: string;
   mobileImageUrl?: string;
+  imageSources?: HeroResponsiveSources;
   imageAlt: string;
   mediaFit?: SliderImageFit;
   mediaPosition?: SliderImagePosition;
+  rotatorImages?: SliderRotatorImageDto[];
 };
 
 export type SliderCutoutMediaDto = SliderBaseMediaDto & {
@@ -134,8 +219,15 @@ type PublicSliderItemBaseDto = {
   description?: string;
   eyebrow?: string;
   badgeLabel?: string;
+  headlineParts?: SliderHeadlinePartDto[];
   highlightText?: string;
+  productName?: string;
+  promoNote?: string;
   background?: SliderBackgroundDto;
+  productLayer?: SliderProductLayerDto;
+  colorLayer?: SliderColorLayerDto;
+  patternOverlay?: SliderPatternOverlayDto;
+  backgroundVariant?: SliderBackgroundVariant;
 
   primaryCta?: SliderCtaDto;
   secondaryCta?: SliderCtaDto;
@@ -229,6 +321,15 @@ export type CategoryDto = {
   updatedAt?: string;
 };
 
+export type ProductDetailsDto = {
+  pieces?: number;
+  quantity?: number;
+  unit?: string;
+  composition?: { type: string; quantity: number }[];
+  components?: (string | { name: string; quantity: number })[];
+  variants?: string[];
+};
+
 export type ProductDto = {
   id: string;
   title: string;
@@ -248,6 +349,13 @@ export type ProductDto = {
   featured: boolean;
   tags: string[];
   allergens: string[];
+  sourceId?: string;
+  metadata?: string;
+  details?: ProductDetailsDto;
+  labels?: string[];
+  beverageGroup?: string;
+  imageStatus?: "PENDING" | "PROVISIONAL" | "VERIFIED";
+  descriptionSource?: "SOURCE" | "DETAILS" | "PENDING";
   createdAt?: string;
   updatedAt?: string;
 };
@@ -277,6 +385,7 @@ export type PublicSettingsDto = {
   whatsappPhone: string;
   instagramUrl?: string;
   googleMapsUrl?: string;
+  googleMapsEmbedUrl?: string;
   address?: string;
   openingHoursDisplay: string[];
   defaultCurrency: PriceCurrency;

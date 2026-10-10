@@ -1,25 +1,52 @@
 import type {
+  HeroResponsiveSources,
   SliderBackgroundBleed,
   SliderBackgroundColorToken,
   SliderBackgroundOpacity,
+  SliderBackgroundVariant,
   SliderCtaType,
   SliderImageFit,
   SliderImagePosition,
   SliderIntent,
   SliderLayoutHint,
   SliderMediaMode,
+  SliderProductLayerPosition,
 } from "@/contracts/api";
 
 export type HeroPresentationVariant =
   | "welcome-split"
+  | "boxes-showcase"
   | "promo-poster"
-  | "conversion-cta";
+  | "most-ordered-promo"
+  | "conversion-cta"
+  | "announcement-poster";
 
 export type HeroPattern = "seigaiha" | "asanoha" | "none";
 
 export type HeroBadgeTone = "promo" | "new" | "cold" | "neutral";
 
 export type HeroMediaMode = SliderMediaMode;
+
+export type HeroRotatorImage = {
+  src: string;
+  alt: string;
+  name: string | null;
+  priceLabel: string | null;
+};
+
+export type HeroResponsiveRotatorImage = HeroRotatorImage & {
+  sources: HeroResponsiveSources;
+};
+
+export type HeroHeadlinePart =
+  | {
+      type: "text";
+      text: string;
+    }
+  | {
+      type: "brand-logo";
+      label: string | null;
+    };
 
 export type HeroCtaViewModel = {
   label: string;
@@ -30,6 +57,7 @@ export type HeroCtaViewModel = {
 };
 
 export type HeroBackgroundImage = {
+  sources: HeroResponsiveSources;
   desktopSrc: string;
   mobileSrc: string;
   decorative: true;
@@ -59,7 +87,34 @@ export type HeroBackground =
       };
     };
 
+export type HeroProductLayer = {
+  sources: HeroResponsiveSources;
+  desktopSrc: string;
+  mobileSrc: string | null;
+  alt: string;
+  decorative: boolean;
+  fit: SliderImageFit;
+  position: SliderProductLayerPosition;
+};
+
+export type HeroColorLayer = {
+  value: string;
+  label?: string;
+};
+
+export type HeroPatternAssetKey = "endless-clouds-light";
+
+export type HeroPatternOverlay = {
+  enabled: boolean;
+  assetKey: HeroPatternAssetKey;
+  opacity?: number;
+  blendMode?: "normal" | "overlay" | "soft-light" | "multiply" | "screen";
+  size?: "auto" | "cover" | "contain" | "repeat";
+  position?: "center" | "top" | "bottom" | "left" | "right";
+};
+
 type HeroSlideImageBase = {
+  sources: HeroResponsiveSources;
   desktopSrc: string;
   mobileSrc: string;
   alt: string;
@@ -85,13 +140,20 @@ export type HeroSlideViewModel = {
   description: string | null;
   eyebrow: string | null;
   badgeLabel: string | null;
+  productName: string | null;
+  promoNote: string | null;
+  headlineParts?: HeroHeadlinePart[];
   highlightText: string | null;
 
   intent: SliderIntent;
   layoutHint: SliderLayoutHint;
   background: HeroBackground;
+  productLayer: HeroProductLayer | null;
+  colorLayer?: HeroColorLayer;
+  patternOverlay?: HeroPatternOverlay;
 
   image: HeroSlideImage;
+  rotatorImages?: HeroResponsiveRotatorImage[];
 
   primaryCta: HeroCtaViewModel | null;
   secondaryCta: HeroCtaViewModel | null;
@@ -100,5 +162,6 @@ export type HeroSlideViewModel = {
     variant: HeroPresentationVariant;
     pattern: HeroPattern;
     badgeTone: HeroBadgeTone;
+    backgroundVariant: SliderBackgroundVariant;
   };
 };

@@ -1,50 +1,121 @@
-"use client";
-
-import AnimatedSokyLogo from "@/components/brand/AnimatedSokyLogo";
+import SokyLogo from "@/components/brand/SokyLogo";
 import { cn } from "@/lib/cn";
+import type { HeroSlideViewModel } from "../types";
+import styles from "./WelcomeSplitHero.module.css";
 
 type WelcomeHeroHeadlineProps = {
+  as?: "h1" | "h2";
   description: string;
   headingId: string;
-  showLogo?: boolean;
+  headlineParts?: HeroSlideViewModel["headlineParts"];
   title: string;
 };
 
+function HeadlineBrandLogo() {
+  return (
+    <span className={styles.headlineLogo} data-hero-brand-logo>
+      <SokyLogo
+        title=""
+        white="#FFFDF7"
+        orange="#FF6500"
+        aria-hidden="true"
+        focusable="false"
+        className="h-full w-full"
+      />
+    </span>
+  );
+}
+
+function HeadlineWords({ text }: { text: string }) {
+  const words = text.trim().split(/\s+/);
+  return words.map((word, index) => (
+    <span key={`${index}-${word}`} className={styles.titleWord} data-hero-title-word>
+      {word}{index < words.length - 1 ? "\u00a0" : ""}
+    </span>
+  ));
+}
+
+function renderHeadlineParts(
+  parts: NonNullable<HeroSlideViewModel["headlineParts"]>,
+) {
+  const [opening, brand, closing] = parts;
+  if (
+    parts.length === 3 &&
+    opening.type === "text" &&
+    brand.type === "brand-logo" &&
+    closing.type === "text"
+  ) {
+    const closingWords = closing.text.trim().split(/\s+/);
+    if (closingWords.length > 1) {
+      const lastWord = closingWords.pop();
+      return (
+        <>
+          <span className={styles.headlineLine} data-hero-headline-line>
+            <span data-hero-title-text><HeadlineWords text={opening.text} /></span>
+          </span>
+          <span className={cn(styles.headlineLine, styles.brandLine)} data-hero-headline-line>
+            <HeadlineBrandLogo />
+            <span data-hero-title-text><HeadlineWords text={closingWords.join(" ")} /></span>
+            <span className={styles.closingLine} data-hero-headline-line>
+              <span data-hero-title-text><HeadlineWords text={lastWord ?? ""} /></span>
+            </span>
+          </span>
+        </>
+      );
+    }
+  }
+
+  return parts.map((part, index) => (
+    <span key={`${part.type}-${index}`} className="contents">
+      {index > 0 ? " " : null}
+      {part.type === "text" ? (
+        <span data-hero-title-text><HeadlineWords text={part.text} /></span>
+      ) : (
+        <HeadlineBrandLogo />
+      )}
+    </span>
+  ));
+}
+
 export function WelcomeHeroHeadline({
+  as: Heading = "h2",
   description,
   headingId,
-  showLogo = true,
+  headlineParts,
   title,
 }: WelcomeHeroHeadlineProps) {
-  return (
-    <div>
-      {showLogo ? (
-        <AnimatedSokyLogo
-          title="SOKY"
-          wrapperClassName="-ml-1"
-          className="h-auto w-full max-w-60 sm:max-w-[20rem] lg:max-w-md"
-        />
-      ) : null}
+  const hasHeadlineParts = Boolean(headlineParts?.length);
 
+  return (
+    <div className="font-soky-body" data-hero-copy>
       <div>
-        <h1
+        <Heading
           id={headingId}
+          aria-label={hasHeadlineParts ? title : undefined}
           className={cn(
-            "soky-heading max-w-[9.8ch] text-balance text-[clamp(3rem,12.5vw,4.4rem)] leading-[0.88] text-soky-white [text-shadow:0_3px_0_rgb(7_5_74/0.24),0_12px_24px_rgb(7_5_74/0.24)] sm:max-w-[10.4ch] sm:text-[4.65rem] md:max-w-[10.8ch] md:text-[5rem] lg:text-[5.55rem] xl:text-[6rem]",
-            showLogo ? "mt-3" : "mt-0",
+            "font-soky-display font-normal uppercase text-soky-white",
+            styles.heading,
           )}
         >
-          {title}
-        </h1>
+          {hasHeadlineParts && headlineParts ? (
+            <span aria-hidden="true">{renderHeadlineParts(headlineParts)}</span>
+          ) : (
+            <span data-hero-title-text><HeadlineWords text={title} /></span>
+          )}
+        </Heading>
 
         <div
+          data-hero-underline
           aria-hidden="true"
-          className="mt-2.5 flex h-1.5 w-full max-w-40 overflow-hidden rounded-full bg-soky-white/85 shadow-[0_4px_0_rgb(7_5_74/0.14)] sm:max-w-48"
+          className={cn("flex overflow-hidden rounded-full bg-soky-white", styles.underline)}
         >
           <span className="h-full w-1/3 bg-soky-orange" />
         </div>
 
-        <p className="mt-2.5 max-w-120 text-base leading-6 text-soky-white/84 sm:text-[1.05rem] sm:leading-7">
+        <p
+          data-hero-description
+          className={cn("font-soky-body font-medium text-soky-white/95", styles.description)}
+        >
           {description}
         </p>
       </div>

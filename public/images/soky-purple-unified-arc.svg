@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 566 1168" width="566" height="1168" fill="none">
+  <defs>
+    <radialGradient id="soky-arc-purple" cx="330" cy="120" r="330" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5046C3"/>
+      <stop offset="0.65" stop-color="#3C2DC0"/>
+      <stop offset="1" stop-color="#3327BB"/>
+    </radialGradient>
+  </defs>
+  <path d="M380 0
+    C424.7 54.3 458.5 108.7 484.1 163
+    C551 305 584 494 543 663
+    C503 828 374 977.7 220 1072.1
+    Q110 1139.5 0 1167.2
+    L0 946.8
+    C172 894.8 318 746 350 542
+    C374 401 329 279 239.5 163
+    C197.3 108.7 150 54.3 45 0
+    Z" fill="url(#soky-arc-purple)"/>
+</svg>

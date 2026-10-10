@@ -7,7 +7,7 @@ type CartEmptyStateProps = {
 export const CartEmptyState = ({ onClose }: CartEmptyStateProps) => {
   return (
     <div className="relative overflow-hidden rounded-[1.75rem] bg-soky-white p-1 shadow-[0_14px_36px_rgb(7_5_74/0.08)] ring-1 ring-soky-blue/10">
-      <div className="relative overflow-hidden rounded-3xl bg-soky-paper bg-[url('/images/endless-clouds.svg')] bg-size-[56px_28px] bg-repeat text-center">
+      <div className="relative overflow-hidden rounded-3xl bg-soky-paper bg-[url('/images/patterns/endless-clouds.svg')] bg-size-[56px_28px] bg-repeat text-center">
         <div className="relative overflow-hidden rounded-3xl bg-soky-paper/80 px-5 py-7 text-center">
           <span
             aria-hidden="true"
@@ -41,7 +41,7 @@ export const CartEmptyState = ({ onClose }: CartEmptyStateProps) => {
               className="group inline-flex w-full touch-manipulation rounded-full bg-soky-white p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2 shadow-[0_12px_24px_rgb(236_99_35/0.18)]"
               onClick={onClose}
             >
-              <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-orange bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-orange-deep group-active:scale-[0.98] group-active:bg-soky-orange-deep">
+              <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-orange bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-orange-deep group-active:scale-[0.98] group-active:bg-soky-orange-deep">
                 Explorar men&uacute;
               </span>
             </Link>

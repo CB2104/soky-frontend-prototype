@@ -1,0 +1,4 @@
+.header{position:relative;isolation:isolate;overflow:hidden;background:var(--color-soky-navy);color:var(--color-soky-white);padding:20px 22px 18px}
+.header::after{content:"";position:absolute;inset:0 0 auto auto;inline-size:48%;block-size:100%;background:var(--color-soky-white);opacity:.21;pointer-events:none;z-index:-1;mask-image:url('/images/patterns/card-seigaiha.svg'),linear-gradient(225deg,#000 0%,#000 12%,rgb(0 0 0 / .4) 37%,transparent 68%);mask-size:240px 160px,100% 100%;mask-position:right -18px,center;mask-repeat:repeat,no-repeat;mask-composite:intersect}
+.content{position:relative;z-index:1}
+@media(max-width:679px){.header{padding:16px}.header::after{inline-size:44%;block-size:38px;opacity:.15;mask-size:180px 120px,100% 100%;mask-image:url('/images/patterns/card-seigaiha.svg'),linear-gradient(225deg,#000 0%,rgb(0 0 0 / .35) 26%,transparent 72%)}}

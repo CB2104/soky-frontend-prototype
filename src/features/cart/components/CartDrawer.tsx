@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { selectCartCount, useCartStore } from "../store";
+import { lockBodyScroll } from "@/lib/body-scroll-lock";
 import { CartEmptyState } from "./CartEmptyState";
 import { CartItemRow } from "./CartItemRow";
 import {
@@ -46,6 +47,7 @@ export default function CartDrawer() {
   const increment = useCartStore((state) => state.increment);
   const removeItem = useCartStore((state) => state.removeItem);
   const items = useCartStore((state) => state.items);
+  const catalogReady = useCartStore((state) => state.catalogStatus === "ready");
 
   const reduceMotion = useReducedMotion() ?? false;
 
@@ -71,9 +73,7 @@ export default function CartDrawer() {
         ? document.activeElement
         : null;
 
-    const previousOverflow = document.body.style.overflow;
-
-    document.body.style.overflow = "hidden";
+    const releaseScroll = lockBodyScroll();
     closeButtonRef.current?.focus();
 
     function handleKeyDown(event: KeyboardEvent) {
@@ -115,9 +115,9 @@ export default function CartDrawer() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
+      releaseScroll();
       window.removeEventListener("keydown", handleKeyDown);
-      previousFocus?.focus();
+      previousFocus?.focus({ preventScroll: true });
     };
   }, [closeCart, isOpen]);
 
@@ -197,7 +197,7 @@ export default function CartDrawer() {
                   </svg>
                 </button>
               </header>
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-soky-paper bg-[url('/images/endless-clouds.svg')] bg-size-[56px_28px] bg-repeat p-5">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-soky-paper bg-[url('/images/patterns/endless-clouds.svg')] bg-size-[56px_28px] bg-repeat p-5">
                 {!hasHydrated ? (
                   <p role="status" className="text-sm text-soky-muted">
                     Cargando tu pedido
@@ -245,6 +245,7 @@ export default function CartDrawer() {
                               key={item.productId}
                               accent={index % 2 === 0 ? "blue" : "orange"}
                               item={item}
+                              isVerified={catalogReady}
                               onClose={closeCart}
                               onDecrease={() => decrement(item.productId)}
                               onIncrease={() => increment(item.productId)}

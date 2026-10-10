@@ -4,13 +4,14 @@ import type { CartItem } from "../store";
 import { CartQuantityStepper } from "./CartQuantityStepper";
 import { motion } from "motion/react";
 import { cn } from "@/lib/cn";
-import { OpenTrashSVG, TrashSVG } from "@/components/brand/IconsSVG";
+import { CartRemoveButton } from "./CartRemoveButton";
 
 type CartItemAccent = "blue" | "orange";
 
 type CartItemRowProps = {
   accent: CartItemAccent;
   item: CartItem;
+  isVerified: boolean;
   onClose: () => void;
   onDecrease: () => void;
   onIncrease: () => void;
@@ -31,6 +32,7 @@ const accentClasses = {
 export const CartItemRow = ({
   accent,
   item,
+  isVerified,
   onClose,
   onDecrease,
   onIncrease,
@@ -52,7 +54,7 @@ export const CartItemRow = ({
           ease: "easeOut",
         },
       }}
-      className="relative grid h-30 grid-cols-[96px_minmax(0,1fr)] overflow-hidden rounded-2xl border border-soky-blue/10 bg-soky-white shadow-[0_10px_30px_rgb(7_5_74/0.08)]"
+      className="relative grid min-h-30 grid-cols-[96px_minmax(0,1fr)] overflow-hidden rounded-2xl border border-soky-blue/10 bg-soky-white shadow-[0_10px_30px_rgb(7_5_74/0.08)]"
     >
       <span
         aria-hidden="true"
@@ -85,7 +87,9 @@ export const CartItemRow = ({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <Link
-              href={`/menu/${item.slug}`}
+              href={`/menu/${encodeURIComponent(item.slug)}`}
+              scroll={false}
+              data-transition-ignore="true"
               className="group block"
               onClick={onClose}
             >
@@ -100,34 +104,29 @@ export const CartItemRow = ({
               </p>
             ) : null}
 
-            {item.priceLabelSnapshot ? (
-              <p className="mt-1 text-base font-black leading-none text-soky-orange-deep">
-                {item.priceLabelSnapshot}
-              </p>
-            ) : null}
+            <p className="mt-1 text-base font-black leading-none text-soky-orange-deep">
+              {isVerified && !item.catalogIssue && item.priceLabelSnapshot
+                ? item.priceLabelSnapshot
+                : "Por confirmar"}
+            </p>
           </div>
-          <button
-            type="button"
-            className="group relative grid size-11 shrink-0 place-items-center rounded-full text-japan-seal transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-soky-paper active:scale-90"
-            onClick={onRemove}
-            aria-label={`Quitar ${item.titleSnapshot} del carrito`}
-          >
-            <span className="absolute transition-all duration-300  ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:-translate-y-1 group-hover:rotate-[-8deg] group-hover:opacity-0 group-focus-visible:opacity-0">
-              <TrashSVG aria-hidden="true" focusable="false" />
-            </span>
-
-            <span className="absolute translate-y-1 rotate-6 opacity-0 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-y-0 group-hover:rotate-0 group-hover:opacity-100 group-focus-visible:opacity-100">
-              <OpenTrashSVG aria-hidden="true" focusable="false" />
-            </span>
-          </button>
+          <CartRemoveButton label={item.titleSnapshot} onRemove={onRemove} />
         </div>
 
+        {isVerified && item.catalogIssue ? (
+          <p role="status" className="text-xs font-bold text-japan-seal">
+            {item.catalogIssue === "UNAVAILABLE" ? "Agotado" : "Producto por revisar"}
+          </p>
+        ) : null}
+        <div className="mt-auto flex justify-end">
         <CartQuantityStepper
           label={item.titleSnapshot}
           quantity={item.quantity}
+          disabledIncrease={!isVerified || !!item.catalogIssue}
           onDecrease={onDecrease}
           onIncrease={onIncrease}
         />
+        </div>
       </div>
     </motion.li>
   );

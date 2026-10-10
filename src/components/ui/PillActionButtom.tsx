@@ -73,28 +73,47 @@ export function PillActionButton({
       variants={buttonVariants}
       transition={{ type: "spring", stiffness: 420, damping: 24 }}
       className={cn(
-        "group relative inline-flex touch-manipulation rounded-full border border-soky-border bg-soky-white p-1 shadow-lg shadow-soky-navy/20",
+        "group relative inline-flex shrink-0 touch-manipulation rounded-full border border-soky-border bg-soky-white shadow-lg shadow-soky-navy/20",
+        isCompact
+          ? "p-0.5"
+          : [
+              "p-1",
+              "[@media(max-height:500px)_and_(orientation:landscape)]:p-0.5",
+              "[@media(max-height:500px)_and_(orientation:landscape)]:rounded-[1.35rem]",
+            ].join(" "),
         className,
       )}
       {...props}
     >
       <span
         className={cn(
-          "relative isolate inline-flex min-h-12 items-center justify-center overflow-hidden rounded-full",
-          isCompact ? "h-12 w-12" : "gap-2 px-5 pr-6",
+          "relative isolate inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full",
+          isCompact
+            ? "h-11 min-h-11 w-11 min-w-11"
+            : [
+                "h-12 min-h-12",
+                "gap-2 px-5 pr-6",
+
+                "[@media(max-height:500px)_and_(orientation:landscape)]:h-10",
+                "[@media(max-height:500px)_and_(orientation:landscape)]:min-h-10",
+                "[@media(max-height:500px)_and_(orientation:landscape)]:gap-3",
+                "[@media(max-height:500px)_and_(orientation:landscape)]:px-4",
+                "[@media(max-height:500px)_and_(orientation:landscape)]:pr-5",
+                "[@media(max-height:500px)_and_(orientation:landscape)]:rounded-[1.15rem]",
+              ].join(" "),
         )}
       >
         <motion.span
           aria-hidden="true"
           variants={orangePillVariants}
           transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-0 z-0 rounded-full bg-soky-orange-deep bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat"
+          className="absolute inset-0 z-0 rounded-full bg-soky-orange-deep bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat"
         />
 
         <span
           className={cn(
             "relative z-10 grid size-5 shrink-0 -translate-y-px place-items-center transition-colors duration-300 group-active:text-soky-white group-hover:text-soky-white [&_svg]:size-5",
-            isActive ? "text-soky-white" : "text-soky-ink",
+            isActive ? "text-soky-white" : "text-soky-blue",
           )}
           aria-hidden="true"
         >

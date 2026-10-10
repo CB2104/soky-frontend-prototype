@@ -1,19 +1,21 @@
 import type { ReactNode } from "react";
 import { getPublicSettings } from "@/features/settings/api";
-import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteFooter } from "@/components/layout/footer/SiteFooter";
 import Navbar from "@/components/layout/Navbar";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import CartDrawer from "@/features/cart/components/CartDrawer";
+import { CartCatalogSync } from "@/features/cart/components/CartCatalogSync";
 import { ContactSpeedDial } from "@/features/contact/components/ContactSpeedDial";
-import TransitionProvider from "../provider/TransitionProvider";
+import TransitionProvider from "@/providers/TransitionProvider";
 
 export const dynamic = "force-dynamic";
 
 type SiteLayoutProps = {
   children: ReactNode;
+  product: ReactNode;
 };
 
-export default async function SiteLayout({ children }: SiteLayoutProps) {
+export default async function SiteLayout({ children, product }: SiteLayoutProps) {
   const settings = await getPublicSettings();
   const whatsappUrl = buildWhatsAppUrl(
     settings.whatsappPhone,
@@ -25,11 +27,13 @@ export default async function SiteLayout({ children }: SiteLayoutProps) {
       <div className="min-h-dvh bg-soky-paper text-soky-ink">
         <Navbar whatsappUrl={whatsappUrl} />
         {children}
+        {product}
         <SiteFooter settings={settings} />
         <ContactSpeedDial
           whatsappUrl={whatsappUrl}
           instagramUrl={settings.instagramUrl}
         />
+        <CartCatalogSync />
         <CartDrawer />
       </div>
     </TransitionProvider>

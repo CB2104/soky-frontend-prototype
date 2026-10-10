@@ -1,4 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
@@ -12,9 +11,6 @@
 
 # pnpm local cache
 /.pnpm-store/
-
-# downloaded agent skills
-/.agents/
 
 # Windows
 Thumbs.db
@@ -54,7 +50,27 @@ next-env.d.ts
 # project documentation
 /docs/
 
-# local AI-assistant tooling and generated QA artifacts
+# local AI-assistant tooling, generated guidance, and QA artifacts
 /.agents/
 /.codex*
+/AGENT.md
+/AGENTS.md
+/CLAUDE.md
+/.claude/
 /design-qa*
+
+# Documentación y materiales de trabajo locales
+*.md
+/.design/
+/design/
+/qa/
+/screenshots/
+/DESIGN_REVIEW.md
+/brand-strip-audit-*.png
+/public/fonts/Montserrat/README.txt
+
+# Archivos fuente y recursos pendientes de publicar
+/public/fonts/Montserrat/static/
+/public/images/hero/*-master.png
+/public/images/products/*-master.png
+/public/images/recovery/

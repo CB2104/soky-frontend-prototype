@@ -2,9 +2,13 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { ProductDto } from "@/contracts/api";
+import { parseMoneyCents } from "@/lib/money";
+import { getProductSnapshot, reconcileCartItems } from "./reconcile-cart";
 import type { ProductCardViewModel } from "@/features/products/mappers";
 
 export type CartItem = {
+  catalogIssue?: "NOT_FOUND" | "INACTIVE" | "UNAVAILABLE" | "INVALID_PRICE" | "INVALID_QUANTITY";
   descriptionSnapshot?: string;
   imageUrlSnapshot?: string;
   notes?: string;
@@ -17,10 +21,19 @@ export type CartItem = {
   titleSnapshot: string;
 };
 
+export type CatalogStatus = "idle" | "loading" | "ready" | "error";
+
 type CartState = {
+  catalogStatus: CatalogStatus;
+  catalogRevision: number;
+  catalogRefreshKey: number;
+  cartRevision: number;
+  setCatalogStatus: (status: CatalogStatus) => void;
+  reconcileItems: (products: readonly ProductDto[]) => void;
+  retryCatalog: () => void;
   isOpen: boolean;
   items: CartItem[];
-  addItem: (product: ProductCardViewModel) => void;
+  addItem: (product: ProductCardViewModel, options?: { openDrawer?: boolean }) => void;
   clearCart: () => void;
   closeCart: () => void;
   decrement: (productId: string) => void;
@@ -33,16 +46,8 @@ type CartState = {
 
 const MAX_CART_ITEM_QUANTITY = 99;
 
-function toCents(amount: string) {
-  const [whole = "0", fraction = ""] = amount.trim().split(".");
-  const cents =
-    Number(whole) * 100 + Number(fraction.padEnd(2, "0").slice(0, 2));
-
-  return Number.isSafeInteger(cents) ? cents : null;
-}
-
 function clampQuantity(quantity: number) {
-  return Math.min(MAX_CART_ITEM_QUANTITY, Math.max(1, quantity));
+  return Math.min(MAX_CART_ITEM_QUANTITY, Math.max(1, Number.isFinite(quantity) ? Math.trunc(quantity) : 1));
 }
 
 export const useCartStore = create<CartState>()(
@@ -50,11 +55,24 @@ export const useCartStore = create<CartState>()(
     (set) => ({
       isOpen: false,
       items: [],
-      addItem: (product) =>
+      catalogStatus: "idle",
+      catalogRevision: 0,
+      catalogRefreshKey: 0,
+      cartRevision: 0,
+      setCatalogStatus: (catalogStatus) => set((state) => ({
+        catalogStatus,
+        catalogRevision: state.catalogRevision + (catalogStatus === "loading" ? 1 : 0),
+      })),
+      reconcileItems: (products) => set((state) => ({
+        items: reconcileCartItems(state.items, products),
+        catalogStatus: "ready",
+      })),
+      retryCatalog: () => set((state) => ({ catalogRefreshKey: state.catalogRefreshKey + 1 })),
+      addItem: (product, options = {}) =>
         set((state) => {
-          const unitPriceCents = toCents(product.priceAmount);
+          const unitPriceCents = parseMoneyCents(product.priceAmount);
 
-          if (unitPriceCents === null) {
+          if (!product.isAvailable || unitPriceCents === null) {
             return state;
           }
 
@@ -64,11 +82,14 @@ export const useCartStore = create<CartState>()(
 
           if (current) {
             return {
-              isOpen: true,
+              isOpen: options.openDrawer === false ? state.isOpen : true,
+              cartRevision: state.cartRevision + 1,
               items: state.items.map((item) =>
                 item.productId === product.id
                   ? {
                       ...item,
+                      ...getProductSnapshot(product),
+                      catalogIssue: undefined,
                       quantity: clampQuantity(item.quantity + 1),
                     }
                   : item,
@@ -77,28 +98,28 @@ export const useCartStore = create<CartState>()(
           }
 
           return {
-            isOpen: true,
+            isOpen: options.openDrawer === false ? state.isOpen : true,
+            cartRevision: state.cartRevision + 1,
             items: [
               ...state.items,
               {
                 productId: product.id,
-                slug: product.slug,
-                titleSnapshot: product.title,
-                imageUrlSnapshot: product.imageUrl,
+                ...getProductSnapshot(product),
                 quantity: 1,
-                priceLabelSnapshot: product.priceLabel,
-                descriptionSnapshot: product.description,
-                unitPriceCentsSnapshot: unitPriceCents,
-                unitPriceCurrencySnapshot: product.priceCurrency,
               },
             ],
           };
         }),
-      clearCart: () => set({ items: [] }),
+      clearCart: () => set((state) => state.items.length > 0
+        ? { items: [], cartRevision: state.cartRevision + 1 }
+        : state),
       closeCart: () => set({ isOpen: false }),
       decrement: (productId) =>
-        set((state) => ({
-          items: state.items
+        set((state) => {
+          if (!state.items.some((item) => item.productId === productId)) return state;
+          return {
+            cartRevision: state.cartRevision + 1,
+            items: state.items
             .map((item) =>
               item.productId === productId
                 ? {
@@ -108,36 +129,53 @@ export const useCartStore = create<CartState>()(
                 : item,
             )
             .filter((item) => item.quantity > 0),
-        })),
+          };
+        }),
       increment: (productId) =>
-        set((state) => ({
-          items: state.items.map((item) =>
-            item.productId === productId
+        set((state) => {
+          const current = state.items.find((item) => item.productId === productId);
+          if (!current || state.catalogStatus !== "ready" || current.catalogIssue || current.quantity >= MAX_CART_ITEM_QUANTITY) return state;
+          return {
+            cartRevision: state.cartRevision + 1,
+            items: state.items.map((item) => item.productId === productId
               ? { ...item, quantity: clampQuantity(item.quantity + 1) }
-              : item,
-          ),
-        })),
+              : item),
+          };
+        }),
       openCart: () => set({ isOpen: true }),
       removeItem: (productId) =>
-        set((state) => ({
-          items: state.items.filter((item) => item.productId !== productId),
-        })),
+        set((state) => state.items.some((item) => item.productId === productId)
+          ? {
+              items: state.items.filter((item) => item.productId !== productId),
+              cartRevision: state.cartRevision + 1,
+            }
+          : state),
       setNotes: (productId, notes) =>
-        set((state) => ({
-          items: state.items.map((item) =>
-            item.productId === productId ? { ...item, notes } : item,
-          ),
-        })),
+        set((state) => {
+          const current = state.items.find((item) => item.productId === productId);
+          if (!current || current.notes === notes) return state;
+          return {
+            cartRevision: state.cartRevision + 1,
+            items: state.items.map((item) => item.productId === productId ? { ...item, notes } : item),
+          };
+        }),
       setQuantity: (productId, quantity) =>
-        set((state) => ({
-          items: state.items
+        set((state) => {
+          const current = state.items.find((item) => item.productId === productId);
+          if (!current || state.catalogStatus !== "ready" || current.catalogIssue) return state;
+          const nextQuantity = clampQuantity(quantity);
+          if (nextQuantity === current.quantity) return state;
+          return {
+            cartRevision: state.cartRevision + 1,
+            items: state.items
             .map((item) =>
               item.productId === productId
-                ? { ...item, quantity: clampQuantity(Math.trunc(quantity)) }
+                ? { ...item, quantity: nextQuantity }
                 : item,
             )
             .filter((item) => item.quantity > 0),
-        })),
+          };
+        }),
     }),
     {
       name: "soky.cart.v1",

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { HomeLoadingBoundary } from "@/features/home/loading/HomeLoadingBoundary";
 
 const nunitoSans = localFont({
   src: [
@@ -17,9 +18,59 @@ const nunitoSans = localFont({
   display: "swap",
 });
 
+const montserrat = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Montserrat/Montserrat-VariableFont_wght.ttf",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Montserrat/Montserrat-Italic-VariableFont_wght.ttf",
+      style: "italic",
+    },
+  ],
+  variable: "--font-montserrat",
+  display: "swap",
+});
+
+const kalam = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Kalam/Kalam-Light.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Kalam/Kalam-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Kalam/Kalam-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-kalam",
+  display: "swap",
+});
+
 const anton = localFont({
   src: "../../public/fonts/Anton/Anton-Regular.ttf",
   variable: "--font-anton",
+  display: "swap",
+  weight: "400",
+});
+
+const outfit = localFont({
+  src: "../../public/fonts/Outfit/Outfit-VariableFont_wght.ttf",
+  variable: "--font-outfit",
+  display: "swap",
+});
+
+const lilitaOne = localFont({
+  src: "../../public/fonts/Lilita One/LilitaOne-Regular.ttf",
+  variable: "--font-lilita-one",
   display: "swap",
   weight: "400",
 });
@@ -91,11 +142,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" data-scroll-behavior="smooth">
       <body
-        className={`${nunitoSans.variable} ${anton.variable} min-h-dvh bg-background text-foreground antialiased`}
+        className={`${nunitoSans.variable} ${montserrat.variable} ${kalam.variable} ${anton.variable} ${outfit.variable} ${lilitaOne.variable} min-h-dvh bg-background text-foreground antialiased`}
       >
-        {children}
+        <HomeLoadingBoundary>{children}</HomeLoadingBoundary>
       </body>
     </html>
   );

@@ -9,6 +9,7 @@ import type {
 } from "@/contracts/api";
 import { mockSliderItems } from "@/mock/db";
 import { errorResponse, paginate } from "@/mock/helpers";
+import { getCreateModernSliderFields } from "@/mock/slider-modern-fields";
 
 const DEFAULT_MEDIA_MODE: Exclude<SliderMediaMode, "cutout-product"> =
   "promo-image";
@@ -28,7 +29,9 @@ function requireAuth(request: Request) {
   return request.headers.get("authorization")?.startsWith("Bearer ");
 }
 
-function getPrimaryCta(body: AdminSliderCreateRequest): SliderCtaDto | undefined {
+function getPrimaryCta(
+  body: AdminSliderCreateRequest,
+): SliderCtaDto | undefined {
   if (body.primaryCta) {
     return body.primaryCta;
   }
@@ -52,7 +55,9 @@ function getPrimaryCta(body: AdminSliderCreateRequest): SliderCtaDto | undefined
   };
 }
 
-function getStatus(body: AdminSliderCreateRequest): AdminSliderItemDto["status"] {
+function getStatus(
+  body: AdminSliderCreateRequest,
+): AdminSliderItemDto["status"] {
   if (body.status) {
     return body.status;
   }
@@ -97,9 +102,11 @@ function getMediaFields(
   const mediaBase = {
     desktopImageUrl,
     mobileImageUrl: body.mobileImageUrl,
+    imageSources: body.imageSources,
     imageAlt,
     mediaFit: body.mediaFit,
     mediaPosition: body.mediaPosition,
+    rotatorImages: body.rotatorImages,
   };
 
   if (mediaMode === "cutout-product") {
@@ -136,7 +143,9 @@ export async function POST(request: Request) {
     return errorResponse("UNAUTHORIZED", "Sesión requerida.", 401);
   }
 
-  const body = (await request.json().catch(() => null)) as AdminSliderCreateRequest | null;
+  const body = (await request
+    .json()
+    .catch(() => null)) as AdminSliderCreateRequest | null;
   const desktopImageUrl = body?.desktopImageUrl ?? body?.imageUrl;
 
   if (!body?.title || !desktopImageUrl || !body.imageAlt) {
@@ -146,13 +155,17 @@ export async function POST(request: Request) {
   const timestamp = new Date().toISOString();
   const placement = body.placement ?? "home_hero";
   const status = getStatus(body);
+  const modernFields = getCreateModernSliderFields(body);
   const slider: AdminSliderItemDto = {
     id: `slider-${Date.now()}`,
     title: body.title,
     description: body.description,
     eyebrow: body.eyebrow,
     badgeLabel: body.badgeLabel,
+    productName: body.productName,
+    promoNote: body.promoNote,
     highlightText: body.highlightText,
+    ...modernFields,
     ...getMediaFields(body, desktopImageUrl, body.imageAlt),
     background: body.background,
     primaryCta: getPrimaryCta(body),
@@ -165,6 +178,7 @@ export async function POST(request: Request) {
     createdAt: timestamp,
     updatedAt: timestamp,
     archivedAt: status === "ARCHIVED" ? timestamp : body.archivedAt,
+    backgroundVariant: body.backgroundVariant,
   };
 
   if (hasActivePlacementLimit(slider)) {

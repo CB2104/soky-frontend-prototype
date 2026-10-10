@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%" preserveAspectRatio="none" shape-rendering="geometricPrecision">
+  <path fill="#FE6402" d="M 251 10
+    C 329 10 399 38 447 94
+    C 487 141 500 207 486 272
+    C 471 344 430 414 366 457
+    C 307 497 230 501 162 478
+    C 92 455 39 406 18 339
+    C -2 272 9 194 50 132
+    C 95 63 170 17 251 10 Z" />
+</svg>

@@ -1,136 +1,121 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
+import type { ProductDto } from "@/contracts/api";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { ProductCard } from "@/features/products/components/product-card";
-import { getFeaturedProducts, getProductBySlug } from "@/features/products/api";
+import { getCategories } from "@/features/categories/api";
+import { ProductCard } from "@/features/products/components/ProductCard";
+import { ProductDetailContent } from "@/features/products/components/ProductDetailContent";
+import { ProductDetailLoadError } from "@/features/products/components/ProductDetailLoadError";
+import styles from "@/features/products/components/ProductDetailContent.module.css";
+import { getFeaturedProducts } from "@/features/products/api";
 import { mapProductToCard } from "@/features/products/mappers";
-import { formatPriceLabel } from "@/lib/money";
+import { loadProductDetail } from "@/features/products/detail-loader";
+import { getProductDetailMetadata } from "@/features/products/detail-metadata";
+import {
+  mapProductToDetail,
+  serializeProductJsonLd,
+} from "@/features/products/detail-mapper";
 import { siteUrl } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
-type ProductPageProps = {
+type Props = {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ scenario?: string }>;
 };
 
-export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const product = await getProductBySlug(slug).catch(() => null);
-
-  if (!product) {
-    return {
-      title: "Producto no encontrado",
-    };
-  }
-
-  return {
-    title: product.title,
-    description: product.shortDescription ?? product.description,
-    alternates: {
-      canonical: `/menu/${product.slug}`,
-    },
-    openGraph: {
-      title: `${product.title} | SOKY`,
-      description: product.shortDescription ?? product.description,
-      images: [{ url: product.imageUrl }],
-    },
-  };
+export async function generateMetadata({
+  params,
+  searchParams,
+}: Props): Promise<Metadata> {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  return getProductDetailMetadata(slug, query?.scenario);
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
-  const { slug } = await params;
-  const [product, featured] = await Promise.all([
-    getProductBySlug(slug).catch(() => null),
-    getFeaturedProducts(3).catch(() => []),
-  ]);
-
-  if (!product) {
-    notFound();
-  }
-
-  const isAvailable = product.status === "ACTIVE" && product.isAvailable;
-  const related = featured
-    .filter((item) => item.id !== product.id)
+async function RelatedProducts({
+  products,
+  productId,
+}: {
+  products: Promise<ProductDto[]>;
+  productId: string;
+}) {
+  const related = (await products)
+    .filter((item) => item.status === "ACTIVE" && item.id !== productId)
     .slice(0, 2)
     .map(mapProductToCard);
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.title,
-    image: product.imageUrl,
-    description: product.description,
-    offers: {
-      "@type": "Offer",
-      price: product.priceAmount,
-      priceCurrency: product.priceCurrency,
-      availability: isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      url: `${siteUrl}/menu/${product.slug}`,
-    },
-  };
+
+  if (!related.length) return null;
 
   return (
-    <main className="bg-soky-paper text-soky-ink">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <Container className="grid gap-8 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-[1.5rem] bg-soky-blue shadow-soky-card">
-          <Image
-            src={product.imageUrl}
-            alt={product.imageAlt}
-            fill
-            priority
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="object-cover"
+    <section className={styles.related} aria-labelledby="related-products-title">
+      <h2 id="related-products-title" className={styles.relatedTitle}>
+        También puede gustarte
+      </h2>
+      <div className={styles.relatedGrid}>
+        {related.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            imageSizes="(max-width: 639px) and (orientation: portrait) calc(50vw - 1.5rem), 340px"
           />
-        </div>
-        <section className="soky-card p-6">
-          <div className="flex flex-wrap gap-2">
-            {product.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant={tag.toLowerCase().includes("tempura") ? "tempura" : "neutral"}>
-                {tag}
-              </Badge>
-            ))}
-          </div>
-          <h1 className="soky-heading mt-5 text-5xl text-soky-blue md:text-7xl">
-            {product.title}
-          </h1>
-          <p className="mt-5 text-lg leading-8 text-soky-muted">{product.description}</p>
-          <p className="soky-number mt-6 text-5xl text-soky-orange-deep">
-            {formatPriceLabel(product.priceAmount, product.priceCurrency)}
-          </p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            {isAvailable ? (
-              <Button href="/menu">Agregar desde menú</Button>
-            ) : (
-              <Badge variant="promo">No disponible</Badge>
-            )}
-            <Button href="/cart" variant="secondary">
-              Ver carrito
-            </Button>
-          </div>
-          {product.allergens.length > 0 ? (
-            <div className="mt-6 rounded-2xl bg-soky-paper p-4">
-              <h2 className="font-black">Alérgenos</h2>
-              <p className="mt-1 text-sm text-soky-muted">{product.allergens.join(", ")}</p>
-            </div>
-          ) : null}
-        </section>
-      </Container>
-      {related.length > 0 ? (
-        <Container className="pb-12">
-          <h2 className="text-2xl font-black">También puede gustarte</h2>
-          <div className="mt-5 grid gap-5 md:grid-cols-2">
-            {related.map((item) => (
-              <ProductCard key={item.id} product={item} />
-            ))}
-          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default async function ProductPage({ params, searchParams }: Props) {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  const featuredPromise = getFeaturedProducts(3).catch(() => []);
+  const [result, categories] = await Promise.all([
+    loadProductDetail(slug, query?.scenario),
+    getCategories().catch(() => []),
+  ]);
+
+  if (result.status === "not-found") notFound();
+
+  if (result.status === "unavailable") {
+    return (
+      <main className="bg-soky-paper text-soky-ink">
+        <Container className="py-10">
+          <ProductDetailLoadError />
         </Container>
-      ) : null}
+      </main>
+    );
+  }
+
+  const product = mapProductToDetail(result.product, categories);
+
+  return (
+    <main className="relative isolate bg-soky-paper text-soky-ink">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[url('/images/patterns/soky-cloud-wave-pattern.svg')] bg-size-[420px_auto] bg-repeat opacity-[0.035]"
+      />
+      <Container className="py-8 md:py-12">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeProductJsonLd(result.product, siteUrl),
+          }}
+        />
+        <Button
+          href={product.categoryHref}
+          variant="ghost"
+          className="mb-6 -ml-5 text-soky-blue"
+        >
+          ← Volver al menú
+        </Button>
+        <ProductDetailContent product={product} />
+        <Suspense fallback={null}>
+          <RelatedProducts
+            products={featuredPromise}
+            productId={product.card.id}
+          />
+        </Suspense>
+      </Container>
     </main>
   );
 }

@@ -1,0 +1,139 @@
+.background {
+  --location-pattern-size: 7rem;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  background: var(--color-soky-petroleum);
+}
+
+.textureTop,
+.textureBottom {
+  position: absolute;
+  width: clamp(12rem, 24vw, 28rem);
+  height: clamp(8rem, 24svh, 15rem);
+  background: url("/images/patterns/endless-clouds-light.svg") repeat;
+  background-size: var(--location-pattern-size) calc(var(--location-pattern-size) / 2);
+  /* The canonical SVG already contains 16% ink. */
+  opacity: 0.375;
+}
+
+.textureTop {
+  top: 0;
+  left: 0;
+  background-image: url("/images/location/location-waves-down.svg");
+  mask-image: radial-gradient(ellipse at top left, #000 5%, transparent 73%);
+}
+
+.textureBottom {
+  bottom: 0;
+  right: 0;
+  mask-image: radial-gradient(ellipse at bottom right, #000 5%, transparent 73%);
+}
+
+.orangeCorner,
+.orangeWave,
+.whiteWave {
+  position: absolute;
+  display: block;
+  mask-position: center;
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+
+.orangeCorner,
+.orangeWave {
+  background: var(--color-soky-orange);
+}
+
+.orangeCorner {
+  top: 0;
+  right: 0;
+  width: 17.43%;
+  height: 13.89%;
+  mask-image: url("/images/location/location-orange-corner.svg");
+}
+
+.orangeWave {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 14.1%;
+  mask-image: url("/images/location/location-orange-wave.svg");
+}
+
+.whiteWave {
+  bottom: 0;
+  left: 0;
+  width: 57.58%;
+  height: 9.19%;
+  background: var(--color-soky-white);
+  mask-image: url("/images/location/location-white-wave.svg");
+}
+
+.orangeCorner::after,
+.orangeWave::after,
+.whiteWave::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Use the same pattern as a mask so the ink color follows the layer. */
+  background: var(--color-soky-white);
+  mask: url("/images/patterns/endless-clouds-light.svg") repeat;
+  mask-size: var(--location-pattern-size) calc(var(--location-pattern-size) / 2);
+  opacity: 0.5;
+}
+
+.whiteWave::after {
+  background: var(--color-soky-orange-ink);
+  opacity: 0.375;
+}
+
+@media (max-width: 1100px) and (orientation: portrait) {
+  .orangeCorner {
+    width: 44%;
+    height: clamp(4.5rem, 14svh, 8rem);
+  }
+
+  /* One background for both existing panels, not a wave at their boundary. */
+  .orangeWave {
+    height: clamp(1.25rem, 5.4svh, 3rem);
+  }
+
+  .whiteWave {
+    width: 78%;
+    height: clamp(1rem, 4.2svh, 2.5rem);
+  }
+
+  .textureTop,
+  .textureBottom {
+    width: 80%;
+    height: clamp(10rem, 24svh, 15rem);
+    opacity: 0.25;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 800px) {
+  .orangeWave {
+    height: min(14.1%, 7.5svh);
+  }
+
+  .whiteWave {
+    height: min(9.19%, 7svh);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 700px) {
+  .background {
+    --location-pattern-size: clamp(2.625rem, 6.66vw, 7rem);
+  }
+
+  /* Desktop geometry scaled to the section, including its corner textures. */
+  .textureTop,
+  .textureBottom {
+    width: 24%;
+    height: 24%;
+  }
+}

@@ -1,47 +1,39 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { ErrorState } from "@/components/ui/states";
+import { EmptyState, ErrorState } from "@/components/ui/states";
 import { getCategories } from "@/features/categories/api";
 import { getCurrentExchangeRate } from "@/features/exchange-rates/api";
-import { getProducts } from "@/features/products/api";
-import { mapProductToCard } from "@/features/products/mappers";
+import { isUsableExchangeRate } from "@/features/exchange-rates/rate-validation";
+import { MenuCatalog } from "@/features/menu/components/MenuCatalog";
+import { buildMenuSections, getMenuDestination } from "@/features/menu/menu-sections";
+import { getAllProducts } from "@/features/products/api";
 import { getPublicSettings } from "@/features/settings/api";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Menú",
-  description: "Explora boxes, rolls tempura, fríos y entradas de SOKY.",
-  alternates: {
-    canonical: "/menu",
-  },
+  description: "Explora el menú SOKY: boxes, rolls, ensaladas, entradas y más.",
+  alternates: { canonical: "/menu" },
 };
 
-type MenuPageProps = {
-  searchParams?: Promise<{
-    category?: string;
-    scenario?: string;
-  }>;
+type Props = {
+  searchParams?: Promise<{ category?: string; scenario?: string }>;
 };
 
-export default async function MenuPage({ searchParams }: MenuPageProps) {
+export default async function MenuPage({ searchParams }: Props) {
   const params = await searchParams;
-  const categorySlug = params?.category;
-  const scenario = params?.scenario;
-
   const data = await Promise.all([
     getCategories(),
-    getProducts({ categorySlug, limit: 48, scenario }),
-    getCurrentExchangeRate(),
+    getAllProducts({ scenario: params?.scenario }),
+    getCurrentExchangeRate().catch(() => null),
     getPublicSettings(),
-  ])
-    .then(([categories, productsResponse, rate, settings]) => ({
-      categories,
-      products: productsResponse.data.map(mapProductToCard),
-      rate,
-      settings,
-    }))
-    .catch(() => null);
+  ]).then(([categories, products, rate, settings]) => ({
+    sections: buildMenuSections(categories, products),
+    products,
+    rate,
+    settings,
+  })).catch(() => null);
 
   if (!data) {
     return (
@@ -58,99 +50,58 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
     );
   }
 
-  const { categories, products, rate, settings } = data;
-  // try {
-  //   const [categories, productsResponse, rate, settings] = await Promise.all([
-  //     getCategories(),
-  //     getProducts({ categorySlug, limit: 48, scenario }),
-  //     getCurrentExchangeRate(),
-  //     getPublicSettings(),
-  //   ]);
-  //   const products = productsResponse.data.map(mapProductToCard);
+  const initialDestination = getMenuDestination(data.sections, params?.category);
 
-  //   return (
-  //     <main className="bg-soky-paper text-soky-ink">
-  //       <Container className="py-10 md:py-14">
-  //         <div className="max-w-3xl">
-  //           <h1 className="soky-heading text-5xl text-soky-blue md:text-7xl">
-  //             Menú SOKY
-  //           </h1>
-  //           <p className="mt-4 text-lg leading-8 text-soky-muted">
-  //             Elige tu box favorito, agrégalo al carrito y confirma el total
-  //             antes de WhatsApp.
-  //           </p>
-  //         </div>
-  //         <div className="mt-6 flex gap-2 overflow-x-auto pb-2">
-  //           <Button
-  //             href="/menu"
-  //             variant={!categorySlug ? "primary" : "secondary"}
-  //             size="sm"
-  //           >
-  //             Todos
-  //           </Button>
-  //           {categories.map((category) => (
-  //             <Button
-  //               key={category.id}
-  //               href={`/menu?category=${category.slug}`}
-  //               variant={
-  //                 categorySlug === category.slug ? "primary" : "secondary"
-  //               }
-  //               size="sm"
-  //             >
-  //               {category.name}
-  //             </Button>
-  //           ))}
-  //         </div>
-  //         <div className="mt-5 flex flex-wrap items-center gap-3">
-  //           <Badge variant={rate.stale ? "promo" : "success"}>
-  //             Tasa {rate.rate} VES por {rate.baseCurrency}
-  //           </Badge>
-  //           {rate.stale ? (
-  //             <p className="text-sm font-bold text-japan-seal">
-  //               {rate.warning}
-  //             </p>
-  //           ) : null}
-  //           <p className="text-sm text-soky-muted">
-  //             Pedido mínimo referencial:{" "}
-  //             {settings.minimumOrderAmount ?? "Consultar"}{" "}
-  //             {settings.defaultCurrency}
-  //           </p>
-  //         </div>
-  //         {products.length === 0 ? (
-  //           <div className="mt-10">
-  //             <EmptyState
-  //               title="No hay productos en esta categoría"
-  //               description="Prueba otra categoría o vuelve más tarde para ver nuevas promos."
-  //               actionHref="/menu"
-  //               actionLabel="Ver todo"
-  //             />
-  //           </div>
-  //         ) : (
-  //           <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-  //             {products.map((product, index) => (
-  //               <ProductCard
-  //                 key={product.id}
-  //                 product={product}
-  //                 priority={index < 2}
-  //               />
-  //             ))}
-  //           </div>
-  //         )}
-  //       </Container>
-  //     </main>
-  //   );
-  // } catch {
-  //   return (
-  //     <main className="bg-soky-paper text-soky-ink">
-  //       <Container className="py-12">
-  //         <ErrorState
-  //           title="No pudimos cargar el menú"
-  //           description="Revisa la conexión o intenta de nuevo en unos segundos."
-  //           actionHref="/menu"
-  //           actionLabel="Reintentar"
-  //         />
-  //       </Container>
-  //     </main>
-  //   );
-  // }
+  return (
+    <main className="relative isolate bg-soky-paper text-soky-ink">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[url('/images/patterns/soky-cloud-wave-pattern.svg')] bg-size-[420px_auto] bg-repeat opacity-[0.035]"
+      />
+      <Container className="pt-10 md:pt-14">
+        <h1 className="soky-heading text-5xl text-soky-blue md:text-7xl">
+          Menú SOKY
+        </h1>
+        <p className="mt-4 max-w-2xl text-lg leading-8 text-soky-muted">
+          Recorre el menú, encuentra tu favorito y agrégalo a tu pedido.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-3 text-sm text-soky-muted">
+          <p>
+            {isUsableExchangeRate(data.rate, data.settings.defaultCurrency)
+              ? "Tasa: " + data.rate.rate + " VES por " + data.rate.baseCurrency
+              : "Conversión a Bs. por confirmar"}
+          </p>
+          {data.rate?.warning ? <p>{data.rate.warning}</p> : null}
+          <p>
+            Pedido mínimo referencial: {data.settings.minimumOrderAmount ?? "Consultar"}{" "}
+            {data.settings.defaultCurrency}
+          </p>
+        </div>
+        {!initialDestination ? (
+          <div className="py-12">
+            <EmptyState
+              title="Esta categoría no existe"
+              description="Vuelve al menú completo para elegir una sección."
+              actionHref="/menu"
+              actionLabel="Ver menú completo"
+            />
+          </div>
+        ) : data.products.length === 0 ? (
+          <div className="py-12">
+            <EmptyState
+              title="No hay productos por ahora"
+              description="Vuelve más tarde para revisar el menú."
+              actionHref="/menu"
+              actionLabel="Reintentar"
+            />
+          </div>
+        ) : (
+          <MenuCatalog
+            sections={data.sections}
+            initialDestination={initialDestination}
+          />
+        )}
+      </Container>
+    </main>
+  );
 }

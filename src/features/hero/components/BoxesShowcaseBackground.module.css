@@ -1,0 +1,107 @@
+.root {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #149ef2;
+}
+
+.whiteShape,
+.whitePattern {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.whiteShape {
+  background-image: url("/images/hero/wave-white-bottom.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.whitePattern {
+  opacity: 0.55;
+  -webkit-mask-image: url("/images/hero/wave-white-bottom.svg");
+  mask-image: url("/images/hero/wave-white-bottom.svg");
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+.whitePattern::before {
+  position: absolute;
+  inset: 0;
+  background: #145cc8;
+  content: "";
+  -webkit-mask-image: url("/images/patterns/endless-clouds-light.svg");
+  mask-image: url("/images/patterns/endless-clouds-light.svg");
+  -webkit-mask-position: center bottom;
+  mask-position: center bottom;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-size: 112px 56px;
+  mask-size: 112px 56px;
+}
+
+.arc {
+  position: absolute;
+  z-index: 2;
+  top: -12%;
+  right: 0;
+  width: auto;
+  height: 125%;
+  aspect-ratio: 566 / 1168;
+  transform: scaleX(-1);
+  background: #145cc8;
+  -webkit-mask-image: url("/images/soky-purple-unified-arc.svg");
+  mask-image: url("/images/soky-purple-unified-arc.svg");
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+.arcPattern {
+  position: absolute;
+  inset: 0;
+  background-image: url("/images/patterns/endless-clouds-light.svg");
+  background-position: center;
+  background-repeat: repeat;
+  background-size: 112px 56px;
+  opacity: 0.7;
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
+  .whiteShape {
+    background-image: url("/images/hero/wave-white-bottom-mobile.svg");
+  }
+
+  .whitePattern {
+    opacity: 0.5;
+    -webkit-mask-image: url("/images/hero/wave-white-bottom-mobile.svg");
+    mask-image: url("/images/hero/wave-white-bottom-mobile.svg");
+  }
+
+  .whitePattern::before {
+    -webkit-mask-size: 84px 42px;
+    mask-size: 84px 42px;
+  }
+
+  .arc {
+    top: 0%;
+    right: -20%;
+    width: auto;
+    height: 95%;
+  }
+
+  .arcPattern {
+    background-size: 84px 42px;
+  }
+}

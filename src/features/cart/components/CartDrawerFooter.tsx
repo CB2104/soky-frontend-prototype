@@ -1,4 +1,6 @@
 import { formatMoney } from "@/lib/money";
+import { useCurrentExchangeRate } from "@/features/exchange-rates/useCurrentExchangeRate";
+import { useCartStore } from "../store";
 import Link from "next/link";
 import { getEstimatedCartTotals } from "../cartTotals";
 import type { CartItem } from "../store";
@@ -10,7 +12,10 @@ type CartDrawerFooterProps = {
 };
 
 export function CartDrawerFooter({ items, onClose }: CartDrawerFooterProps) {
-  const totals = getEstimatedCartTotals(items);
+  const { rate, status } = useCurrentExchangeRate();
+  const catalogStatus = useCartStore((state) => state.catalogStatus);
+  const retryCatalog = useCartStore((state) => state.retryCatalog);
+  const totals = getEstimatedCartTotals(items, rate, catalogStatus === "ready");
 
   const subtotalLabel =
     [
@@ -35,7 +40,7 @@ export function CartDrawerFooter({ items, onClose }: CartDrawerFooterProps) {
                 Total estimado
               </p>
               <p className="mt-1 text-xs text-soky-muted">
-                Bs. se calcula al finalizar
+                {status === "loading" ? "Consultando tasa…" : "Conversión referencial a Bs."}
               </p>
             </div>
 
@@ -47,20 +52,31 @@ export function CartDrawerFooter({ items, onClose }: CartDrawerFooterProps) {
           </div>
         </div>
 
+        {rate?.warning ? (
+          <p className="mt-3 text-xs leading-5 text-soky-muted">{rate.warning}</p>
+        ) : null}
+        {totals.conversionPending ? (
+          <p role="status" className="mt-3 text-xs leading-5 text-soky-muted">
+            {status === "error" ? "No pudimos consultar la tasa. El importe en Bs. queda por confirmar." : "El importe en Bs. requiere una tasa válida para la moneda de todos los productos."}
+          </p>
+        ) : null}
         {totals.missingSnapshots ? (
           <p className="mt-3 text-xs leading-5 text-soky-muted">
-            Algunos productos antiguos necesitan recalcularse en el checkout.
+            {catalogStatus === "error" ? "No pudimos actualizar tu carrito." : catalogStatus !== "ready" ? "Verificando productos y precios…" : "Revisa los productos que ya no están disponibles."}
           </p>
         ) : null}
       </div>
 
+      {catalogStatus === "error" ? (
+        <button type="button" onClick={retryCatalog} className="mt-3 min-h-11 font-bold text-soky-blue underline">Reintentar actualización</button>
+      ) : null}
       <div className="mt-4 grid gap-3">
         <Link
           href="/cart"
           onClick={onClose}
           className="group inline-flex w-full touch-manipulation rounded-full bg-soky-paper p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2"
         >
-          <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-orange bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-orange-deep group-active:scale-[0.98]">
+          <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-orange bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-orange-deep group-active:scale-[0.98]">
             Continuar pedido
             <WhatsAppSVG width={20} />
           </span>

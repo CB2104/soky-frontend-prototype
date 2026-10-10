@@ -2,10 +2,12 @@ import { getImageProps } from "next/image";
 import {
   ArrowRightIcon,
   MapPinIcon,
+  MenuBlockIcon,
+  SushiSetIcon,
   WhatsAppSVG,
 } from "@/components/brand/IconsSVG";
-import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { Button } from "@/components/ui/button";
 import { PatternSurface } from "@/components/ui/pattern-surface";
 import { StampBadge } from "@/components/ui/stamp-badge";
 import { WaveDivider } from "@/components/ui/wave-divider";
@@ -16,12 +18,14 @@ import type {
   HeroSlideViewModel,
 } from "../types";
 import { HeroBackgroundLayers } from "./HeroBackgroundLayers";
+import styles from "./HeroActions.module.css";
 
 type PromoPosterHeroProps = {
   className?: string;
   fallbackDescription: string;
   isInitialSlide?: boolean;
   renderBackground?: boolean;
+  renderLegacyMedia?: boolean;
   showWaveDivider?: boolean;
   slide: HeroSlideViewModel;
   whatsappUrl: string;
@@ -102,6 +106,14 @@ function getExternalRel(target: string | undefined) {
 }
 
 function PromoCtaIcon({ type }: { type: PromoCtaType }) {
+  if (type === "MENU") {
+    return <MenuBlockIcon className="size-5 shrink-0" />;
+  }
+
+  if (type === "PRODUCT" || type === "CATEGORY") {
+    return <SushiSetIcon className="size-6 shrink-0" />;
+  }
+
   if (type === "LOCATION") {
     return <MapPinIcon className="size-5 shrink-0" />;
   }
@@ -116,10 +128,12 @@ function PromoCtaIcon({ type }: { type: PromoCtaType }) {
 function PromoPosterMedia({
   badgeLabel,
   image,
+  renderImage,
   stampTone,
 }: {
   badgeLabel: string | null;
   image: HeroSlideViewModel["image"];
+  renderImage: boolean;
   stampTone: "promo" | "cold" | "new";
 }) {
   const isCutoutProduct = image.mode === "cutout-product";
@@ -168,15 +182,6 @@ function PromoPosterMedia({
           : "min-h-0 self-center md:min-h-[27rem] lg:min-h-[30rem]",
       )}
     >
-      <div
-        aria-hidden="true"
-        className={cn(
-          "absolute pointer-events-none rounded-full bg-soky-navy/35",
-          isCutoutProduct
-            ? "bottom-1 left-1/2 h-8 w-[58%] -translate-x-1/2 bg-soky-navy/25 blur-xl md:bottom-8 md:h-12 md:w-[62%]"
-            : "-bottom-4 left-8 h-20 w-2/3 blur-2xl",
-        )}
-      />
       {badgeLabel ? (
         <div
           className={cn(
@@ -196,20 +201,22 @@ function PromoPosterMedia({
             ? "h-[15rem] max-h-[28svh] max-w-[18rem] sm:h-[16rem] sm:max-h-[30svh] sm:max-w-[19rem] md:mr-0 md:h-[34rem] md:max-h-[64vh] md:max-w-[36rem] lg:h-[37rem] lg:max-h-[68vh] lg:max-w-[39rem] xl:max-w-[41rem]"
             : "aspect-[4/3] max-w-[21rem] sm:aspect-[16/10] sm:max-w-[23rem] md:ml-auto md:mr-0 md:aspect-[16/9] md:max-w-none md:w-[102%] lg:w-[106%]",
           hasFrame
-            ? "overflow-hidden rounded-[1.6rem] border-[5px] border-soky-white/35 bg-soky-navy shadow-[0_22px_54px_rgb(7_5_74_/_0.32),inset_0_1px_0_rgb(255_255_255_/_0.2)] ring-1 ring-soky-white/18 md:-rotate-2 md:rounded-[2rem]"
+            ? "overflow-hidden rounded-[1.6rem] border-[5px] border-soky-white/35 bg-soky-navy ring-1 ring-soky-white/18 md:-rotate-2 md:rounded-[2rem]"
             : isCutoutProduct
               ? "overflow-visible"
               : "overflow-hidden rounded-[1.35rem] md:rounded-[1.65rem]",
         )}
       >
-        <picture className="block h-full w-full">
-          <source
-            media="(min-width: 768px)"
-            srcSet={desktopImageProps.srcSet}
-            sizes={desktopImageProps.sizes}
-          />
-          <img {...mobileImageProps} alt={image.alt} />
-        </picture>
+        {renderImage ? (
+          <picture className="block h-full w-full">
+            <source
+              media="(min-width: 768px)"
+              srcSet={desktopImageProps.srcSet}
+              sizes={desktopImageProps.sizes}
+            />
+            <img {...mobileImageProps} alt={image.alt} />
+          </picture>
+        ) : null}
       </div>
     </div>
   );
@@ -220,6 +227,7 @@ export function PromoPosterHero({
   fallbackDescription,
   isInitialSlide = false,
   renderBackground = true,
+  renderLegacyMedia = true,
   showWaveDivider = true,
   slide,
   whatsappUrl,
@@ -301,6 +309,7 @@ export function PromoPosterHero({
           <PromoPosterMedia
             badgeLabel={slide.badgeLabel}
             image={slide.image}
+            renderImage={renderLegacyMedia}
             stampTone={stampTone}
           />
 
@@ -309,37 +318,32 @@ export function PromoPosterHero({
               <div className="mt-2 flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:gap-3 md:mt-6">
                 {primaryCta && primaryHref ? (
                   <Button
+                    variant="ghost"
+                    data-hero-cta
                     href={primaryHref}
+                    scroll={primaryHref.startsWith("/menu/") ? false : undefined}
+                    data-transition-ignore={primaryHref.startsWith("/menu/") || primaryHref.startsWith("#") || primaryHref.startsWith("/#") ? true : undefined}
                     target={primaryTarget}
                     rel={getExternalRel(primaryTarget)}
-                    size="lg"
-                    className="group min-h-12 w-full touch-manipulation justify-between gap-3 bg-soky-orange-deep bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-5 text-base font-black uppercase text-soky-white shadow-[0_14px_28px_rgb(7_5_74_/_0.2),0_6px_0_rgb(7_5_74_/_0.16)] ring-1 ring-soky-white/25 hover:-translate-y-0.5 hover:bg-soky-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2 focus-visible:ring-offset-soky-blue sm:w-auto sm:min-w-52 sm:px-6 md:min-h-14"
+                    className={styles.primaryAction}
                   >
-                    <span>{primaryCta.label}</span>
-                    <span
-                      aria-hidden="true"
-                      className="grid size-8 shrink-0 place-items-center rounded-full bg-soky-white/18 transition-transform duration-200 group-hover:translate-x-0.5 group-active:scale-95 [&_svg]:size-5"
-                    >
-                      <PromoCtaIcon type={primaryCta.type} />
-                    </span>
+                    <span aria-hidden="true" className={styles.actionIcon}><PromoCtaIcon type={primaryCta.type} /></span>
+                    <span className={styles.actionLabel}>{primaryCta.label}</span>
                   </Button>
                 ) : null}
                 {secondaryCta && secondaryHref ? (
                   <Button
+                    variant="ghost"
+                    data-hero-cta
                     href={secondaryHref}
+                    scroll={secondaryHref.startsWith("/menu/") ? false : undefined}
+                    data-transition-ignore={secondaryHref.startsWith("/menu/") || secondaryHref.startsWith("#") || secondaryHref.startsWith("/#") ? true : undefined}
                     target={secondaryTarget}
                     rel={getExternalRel(secondaryTarget)}
-                    variant="ghost"
-                    size="lg"
-                    className="group min-h-12 w-full touch-manipulation justify-between gap-3 border-2 border-soky-white/80 bg-soky-white/8 px-5 text-base font-extrabold text-soky-white shadow-[inset_0_0_0_1px_rgb(255_255_255_/_0.12)] hover:border-soky-orange hover:bg-soky-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2 focus-visible:ring-offset-soky-blue sm:w-auto sm:min-w-48 sm:px-6 md:min-h-14"
+                    className={styles.secondaryAction}
                   >
-                    <span>{secondaryCta.label}</span>
-                    <span
-                      aria-hidden="true"
-                      className="grid size-8 shrink-0 place-items-center rounded-full border border-soky-white/45 bg-soky-blue/20 transition-transform duration-200 group-hover:translate-x-0.5 group-active:scale-95 [&_svg]:size-5"
-                    >
-                      <PromoCtaIcon type={secondaryCta.type} />
-                    </span>
+                    <span aria-hidden="true" className={styles.actionIcon}><PromoCtaIcon type={secondaryCta.type} /></span>
+                    <span className={styles.actionLabel}>{secondaryCta.label}</span>
                   </Button>
                 ) : null}
               </div>

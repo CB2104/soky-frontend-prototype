@@ -1,4 +1,35 @@
-import type { SVGProps } from "react";
+import type { CSSProperties, HTMLAttributes, SVGProps } from "react";
+
+type SvgMaskIconProps = Omit<HTMLAttributes<HTMLSpanElement>, "children">;
+
+function SvgMaskIcon({
+  asset,
+  style,
+  ...props
+}: SvgMaskIconProps & { asset: string }) {
+  const maskStyle: CSSProperties = {
+    backgroundColor: "currentColor",
+    maskImage: `url("${asset}")`,
+    maskPosition: "center",
+    maskRepeat: "no-repeat",
+    maskSize: "contain",
+    WebkitMaskImage: `url("${asset}")`,
+    WebkitMaskPosition: "center",
+    WebkitMaskRepeat: "no-repeat",
+    WebkitMaskSize: "contain",
+    ...style,
+  };
+
+  return <span {...props} aria-hidden="true" style={maskStyle} />;
+}
+
+export function MenuBlockIcon(props: SvgMaskIconProps) {
+  return <SvgMaskIcon asset="/images/blockprint-menu.svg" {...props} />;
+}
+
+export function SushiSetIcon(props: SvgMaskIconProps) {
+  return <SvgMaskIcon asset="/images/blockprint-plate-sushi.svg" {...props} />;
+}
 
 export function MinusSVG(props: SVGProps<SVGSVGElement>) {
   return (
@@ -227,6 +258,25 @@ export function ArrowRightIcon(props: SVGProps<SVGSVGElement>) {
     >
       <path d="M5 12h14" />
       <path d="m13 6 6 6-6 6" />
+    </svg>
+  );
+}
+
+export function CrownIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z" />
+      <path d="M5 21h14" />
     </svg>
   );
 }

@@ -1,9 +1,16 @@
+"use client";
+
+import { SplitText } from "gsap/SplitText";
+import gsap from "gsap";
+import { cn } from "@/lib/cn";
+import { useGSAP } from "@gsap/react";
+import { useHomeLoading } from "@/features/home/loading/HomeLoadingBoundary";
+import { useHomeGSAP } from "@/features/home/loading/useHomeGSAP";
 import { WaveDivider } from "@/components/ui/wave-divider";
 import { PatternSurface } from "@/components/ui/pattern-surface";
 import { Container } from "@/components/ui/container";
 import { BrushLabel } from "@/components/ui/brush-label";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/cn";
 import type { HeroSlideViewModel } from "../types";
 import { HeroBackgroundLayers } from "./HeroBackgroundLayers";
 import { HeroMedia } from "./HeroMedia";
@@ -11,14 +18,24 @@ import { WelcomeHeroHeadline } from "./WelcomeHeroHeadline";
 import {
   ArrowRightIcon,
   MapPinIcon,
+  MenuBlockIcon,
+  SushiSetIcon,
   WhatsAppSVG,
 } from "@/components/brand/IconsSVG";
+import { useRef } from "react";
+import { useReducedMotion } from "motion/react";
+import welcomeStyles from "./WelcomeSplitHero.module.css";
+import styles from "./HeroActions.module.css";
+
+gsap.registerPlugin(useGSAP, SplitText);
 
 type WelcomeSplitHeroProps = {
   className?: string;
+  isActive?: boolean;
   fallbackDescription: string;
   isInitialSlide?: boolean;
   renderBackground?: boolean;
+  renderLegacyMedia?: boolean;
   showWaveDivider?: boolean;
   slide: HeroSlideViewModel | undefined;
   whatsappUrl: string;
@@ -47,6 +64,14 @@ function getWelcomeStampTone(
 }
 
 function HeroCtaIcon({ type }: { type: HeroCtaType }) {
+  if (type === "MENU") {
+    return <MenuBlockIcon className="size-5 shrink-0" />;
+  }
+
+  if (type === "PRODUCT" || type === "CATEGORY") {
+    return <SushiSetIcon className="size-6 shrink-0" />;
+  }
+
   if (type === "LOCATION") {
     return <MapPinIcon className="size-5 shrink-0" />;
   }
@@ -79,6 +104,13 @@ const fallbackBackground = {
 } satisfies HeroSlideViewModel["background"];
 
 const fallbackImage = {
+  sources: {
+    desktop: fallbackImageSrc,
+    desktopWide: fallbackImageSrc,
+    tabletLandscape: fallbackImageSrc,
+    tabletPortrait: fallbackMobileImageSrc,
+    mobile: fallbackMobileImageSrc,
+  },
   desktopSrc: fallbackImageSrc,
   mobileSrc: fallbackMobileImageSrc,
   alt: fallbackImageAlt,
@@ -110,9 +142,11 @@ function isExternalCta(cta: HeroCta, fallbackIsExternal: boolean) {
 
 export function WelcomeSplitHero({
   className,
+  isActive = false,
   fallbackDescription,
   isInitialSlide = false,
   renderBackground = true,
+  renderLegacyMedia = true,
   showWaveDivider = true,
   slide,
   whatsappUrl,
@@ -127,24 +161,155 @@ export function WelcomeSplitHero({
   const primaryCtaType = primaryCta?.type ?? "MENU";
   const secondaryCtaType = secondaryCta?.type ?? "LOCATION";
 
-  const heroTitle = slide?.title ?? "Sushi para compartir";
+  const heroTitle = slide?.title ?? "TU ANTOJO SOKY EMPIEZA AQUÍ";
   const heroDescription = slide?.description ?? fallbackDescription;
+  const heroEyebrow = slide?.eyebrow?.trim() || null;
   const heroPattern = getWelcomePattern(slide?.presentation.pattern);
   const stampTone = getWelcomeStampTone(slide?.presentation.badgeTone);
   const heroBackground = slide?.background ?? fallbackBackground;
   const heroImage = slide?.image ?? fallbackImage;
-  const heroBadgeLabel = slide ? slide.badgeLabel : "Popular";
-  const heroHeadingId = "soky-welcome-heading";
+  const heroBadgeLabel = slide?.badgeLabel ?? null;
+  const heroHeadingId = `soky-welcome-heading-${slide?.id ?? "fallback"}`;
+
+  const rootRef = useRef<HTMLElement | null>(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  const { startEntrance } = useHomeLoading();
+
+  useHomeGSAP(
+    () => {
+      const root = rootRef.current;
+
+      if (!root) return;
+
+      const titleElements = Array.from(
+        root.querySelectorAll<HTMLElement>("[data-hero-title-text]"),
+      );
+
+      const description = root.querySelector<HTMLElement>(
+        "[data-hero-description]",
+      );
+
+      const underline = root.querySelector<HTMLElement>(
+        "[data-hero-underline]",
+      );
+
+      const ctas = Array.from(
+        root.querySelectorAll<HTMLElement>("[data-hero-cta]"),
+      );
+
+      if (!description || !underline) return;
+
+      if (shouldReduceMotion) {
+        gsap.set([...titleElements, description, underline, ...ctas], {
+          clearProps: "all",
+        });
+
+        return;
+      }
+
+      const descriptionSplit = new SplitText(description, {
+        type: "words",
+      });
+
+      const titleWords = Array.from(root.querySelectorAll<HTMLElement>(
+        "[data-hero-title-word], [data-hero-brand-logo]",
+      ));
+
+      const timeline = gsap.timeline({
+        paused: true,
+        defaults: {
+          ease: "power3.out",
+        },
+      });
+
+      timeline
+        .fromTo(
+          titleWords.length ? titleWords : titleElements,
+          {
+            autoAlpha: 0,
+            yPercent: 100,
+          },
+          {
+            autoAlpha: 1,
+            yPercent: 0,
+            duration: 0.65,
+            stagger: 0.065,
+          },
+        )
+        .fromTo(
+          underline,
+          {
+            scaleX: 0,
+            transformOrigin: "left center",
+          },
+          {
+            scaleX: 1,
+            duration: 0.35,
+          },
+          "-=0.4",
+        )
+        .fromTo(
+          descriptionSplit.words,
+          {
+            autoAlpha: 0,
+            yPercent: 70,
+          },
+          {
+            autoAlpha: 1,
+            yPercent: 0,
+            duration: 0.45,
+            stagger: 0.025,
+          },
+          "-=0.18",
+        )
+        .fromTo(
+          ctas,
+          {
+            autoAlpha: 0,
+            scale: 0.98,
+            y: 14,
+          },
+          {
+            autoAlpha: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.4,
+            stagger: 0.08,
+            clearProps: "transform",
+          },
+          "-=0.12",
+        );
+
+      let cancelEntrance = () => {};
+      if (isActive) {
+        cancelEntrance = startEntrance(() => { timeline.restart(); });
+      } else {
+        timeline.progress(1).pause();
+      }
+
+      return () => {
+        cancelEntrance();
+        timeline.kill();
+        descriptionSplit.revert();
+      };
+    },
+    {
+      scope: rootRef,
+      dependencies: [isActive, shouldReduceMotion],
+      revertOnUpdate: true,
+    },
+  );
 
   return (
     <section
-      id="promos"
+      ref={rootRef}
       aria-labelledby={heroHeadingId}
-      className={cn("h-full scroll-mt-24 md:h-auto", className)}
+      className={cn("h-full scroll-mt-24", welcomeStyles.root, className)}
     >
       <PatternSurface
         className={cn(
-          "relative h-full overflow-hidden text-soky-white md:h-auto",
+          "relative h-full overflow-hidden text-soky-white",
           renderBackground ? "bg-soky-blue" : "bg-transparent",
         )}
         pattern={heroPattern}
@@ -159,64 +324,68 @@ export function WelcomeSplitHero({
 
         <Container
           size="wide"
-          className="relative z-10 grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] gap-2.5 pb-23 pt-[calc(var(--navbar-height)_+_1.5rem)] sm:gap-4 sm:pt-[calc(var(--navbar-height)_+_1.75rem)] md:h-auto md:min-h-[100svh] md:grid-cols-12 md:grid-rows-[auto_auto] md:content-center md:items-center md:gap-x-5 md:gap-y-5 md:pb-10 md:pt-[calc(var(--navbar-height)_+_2.5rem)] lg:gap-x-7 lg:pb-12 lg:pt-[calc(var(--navbar-height)_+_3rem)]"
+          className="relative z-10 grid h-full min-h-0 grid-rows-[auto_auto_minmax(0,1fr)] gap-2.5 pb-28 pt-[calc(var(--navbar-height)_+_1.5rem)] sm:gap-4 sm:pt-[calc(var(--navbar-height)_+_1.75rem)] md:grid-cols-12 md:grid-rows-[auto_auto] md:content-center md:items-center md:gap-x-5 md:gap-y-5 md:pb-28 md:pt-[calc(var(--navbar-height)_+_2rem)] lg:gap-x-7 lg:pb-28 [@media(max-height:640px)]:gap-y-2 [@media(max-height:640px)]:pb-20 [@media(max-height:640px)]:pt-[calc(var(--navbar-height)_+_0.75rem)] [@media(max-height:560px)]:gap-y-1.5 [@media(max-height:560px)]:pb-20 [@media(max-height:560px)]:pt-[calc(var(--navbar-height)_+_0.25rem)] xl:pb-12 [@media(max-height:500px)_and_(orientation:landscape)]:content-center [@media(max-height:500px)_and_(orientation:landscape)]:gap-x-4 [@media(max-height:500px)_and_(orientation:landscape)]:gap-y-1 [@media(max-height:500px)_and_(orientation:landscape)]:pb-10 [@media(max-height:500px)_and_(orientation:landscape)]:pt-16"
         >
           <div className="contents">
-            <div className="relative z-20 order-1 md:col-span-5 md:row-start-1 md:self-end">
-              <BrushLabel className="mb-2 md:mb-4" color="orange">
-                {slide?.eyebrow ?? "Bienvenido"}
-              </BrushLabel>
+            <div data-welcome-copy className="relative z-20 order-1 md:col-span-5 md:row-start-1 md:self-end [@media(max-height:500px)_and_(orientation:landscape)]:col-span-6 [@media(max-height:500px)_and_(orientation:landscape)]:col-start-1">
+              {heroEyebrow ? (
+              <BrushLabel
+                  className="mb-3 md:mb-4 [@media(max-height:640px)]:mb-2 [@media(max-height:640px)]:px-3 [@media(max-height:640px)]:py-1.5 [@media(max-height:640px)]:text-base [@media(max-height:560px)]:mb-1.5 [@media(max-height:560px)]:py-1 [@media(max-height:500px)_and_(orientation:landscape)]:hidden"
+                  color="orange"
+                >
+                  {heroEyebrow}
+                </BrushLabel>
+              ) : null}
               <WelcomeHeroHeadline
+                as={isInitialSlide ? "h1" : "h2"}
                 description={heroDescription}
                 headingId={heroHeadingId}
-                showLogo={false}
+                headlineParts={slide?.headlineParts}
                 title={heroTitle}
               />
             </div>
 
-            <div className="relative z-20 order-3 flex flex-col gap-3 self-end md:col-span-5 md:row-start-2 md:self-start">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-              <Button
-                href={primaryHref}
-                target={primaryIsExternal ? "_blank" : undefined}
-                rel={primaryIsExternal ? "noopener noreferrer" : undefined}
-                size="lg"
-                className="group min-h-12 w-full touch-manipulation justify-between gap-3 bg-soky-orange-deep bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-4 text-sm font-black uppercase text-soky-white shadow-[0_14px_28px_rgb(7_5_74_/_0.2),0_6px_0_rgb(7_5_74_/_0.16)] ring-1 ring-soky-white/25 hover:-translate-y-0.5 hover:bg-soky-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2 focus-visible:ring-offset-soky-blue sm:w-auto sm:min-w-52 sm:px-6 sm:text-base md:min-h-14"
-              >
-                <span>{primaryCta?.label ?? "Ver menú"}</span>
-                <span
-                  aria-hidden="true"
-                  className="grid size-8 shrink-0 place-items-center rounded-full bg-soky-white/18 transition-transform duration-200 group-hover:translate-x-0.5 group-active:scale-95 [&_svg]:size-5"
+            <div data-welcome-actions className="relative z-20 order-2 mt-1 flex flex-col gap-3 self-start md:col-span-5 md:row-start-2 md:self-start [@media(max-height:500px)_and_(orientation:landscape)]:col-span-6 [@media(max-height:500px)_and_(orientation:landscape)]:col-start-1">
+              <div className="grid grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] items-center gap-2 sm:flex sm:flex-row sm:items-center sm:gap-3 [@media(max-height:500px)_and_(orientation:landscape)]:grid [@media(max-height:500px)_and_(orientation:landscape)]:gap-2 [@media(max-height:500px)_and_(orientation:landscape)]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                <Button
+                  variant="ghost"
+                  data-hero-cta
+                  href={primaryHref}
+                  scroll={primaryHref.startsWith("/menu/") ? false : undefined}
+                  data-transition-ignore={primaryHref.startsWith("/menu/") || primaryHref.startsWith("#") || primaryHref.startsWith("/#") ? true : undefined}
+                  target={primaryIsExternal ? "_blank" : undefined}
+                  rel={primaryIsExternal ? "noopener noreferrer" : undefined}
+                  className={styles.primaryAction}
                 >
-                  <HeroCtaIcon type={primaryCtaType} />
-                </span>
-              </Button>
-              <Button
-                href={secondaryHref}
-                target={secondaryIsExternal ? "_blank" : undefined}
-                rel={secondaryIsExternal ? "noopener noreferrer" : undefined}
-                variant="ghost"
-                size="lg"
-                className="group min-h-12 w-full touch-manipulation justify-between gap-3 border-2 border-soky-white/80 bg-soky-white/8 px-4 text-sm font-extrabold text-soky-white shadow-[inset_0_0_0_1px_rgb(255_255_255_/_0.12)] hover:border-soky-orange hover:bg-soky-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2 focus-visible:ring-offset-soky-blue sm:w-auto sm:min-w-48 sm:px-6 sm:text-base md:min-h-14"
-              >
-                <span>{secondaryCta?.label ?? "Ubicación"}</span>
-                <span
-                  aria-hidden="true"
-                  className="grid size-8 shrink-0 place-items-center rounded-full border border-soky-white/45 bg-soky-blue/20 transition-transform duration-200 group-hover:translate-x-0.5 group-active:scale-95 [&_svg]:size-5"
+                  <span aria-hidden="true" className={styles.actionIcon}><HeroCtaIcon type={primaryCtaType} /></span>
+                  <span className={styles.actionLabel}>{primaryCta?.label ?? "Ver Menú"}</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  data-hero-cta
+                  href={secondaryHref}
+                  scroll={secondaryHref.startsWith("/menu/") ? false : undefined}
+                  data-transition-ignore={secondaryHref.startsWith("/menu/") || secondaryHref.startsWith("#") || secondaryHref.startsWith("/#") ? true : undefined}
+                  target={secondaryIsExternal ? "_blank" : undefined}
+                  rel={secondaryIsExternal ? "noopener noreferrer" : undefined}
+                  className={styles.secondaryAction}
                 >
-                  <HeroCtaIcon type={secondaryCtaType} />
-                </span>
-              </Button>
+                  <span aria-hidden="true" className={styles.actionIcon}><HeroCtaIcon type={secondaryCtaType} /></span>
+                  <span className={styles.actionLabel}>{secondaryCta?.label ?? "Ubicación"}</span>
+                </Button>
               </div>
-
             </div>
           </div>
 
-          <HeroMedia
-            badgeLabel={heroBadgeLabel}
-            image={heroImage}
-            stampTone={stampTone}
-          />
+          <div className="contents">
+            <HeroMedia
+              badgeLabel={heroBadgeLabel}
+              image={heroImage}
+              renderImage={renderLegacyMedia}
+              rotatorImages={slide?.rotatorImages}
+              stampTone={stampTone}
+            />
+          </div>
         </Container>
         {showWaveDivider ? <WaveDivider tone="paper" /> : null}
       </PatternSurface>

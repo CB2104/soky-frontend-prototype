@@ -9,7 +9,7 @@ export async function POST(request: Request) {
 
   mockExchangeRate.fetchedAt = new Date().toISOString();
   mockExchangeRate.stale = false;
-  mockExchangeRate.warning = undefined;
+  mockExchangeRate.warning = "Tasa manual de prueba: no se consultó al proveedor. Fecha de vigencia pendiente.";
 
   return NextResponse.json(mockExchangeRate);
 }

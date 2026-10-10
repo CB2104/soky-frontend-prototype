@@ -1,8 +1,12 @@
 import type { ProductDto, PriceCurrency } from "@/contracts/api";
 import { formatPriceLabel } from "@/lib/money";
 
+export type ProductCardVariant = "default" | "featured" | "promo";
+
 export type ProductCardViewModel = {
+  variant: ProductCardVariant;
   badge?: string;
+  metadata?: string;
   description: string;
   id: string;
   imageAlt: string;
@@ -17,6 +21,24 @@ export type ProductCardViewModel = {
 };
 
 export function mapProductToCard(product: ProductDto): ProductCardViewModel {
+  const variant: ProductCardVariant =
+    product.type === "PROMO"
+      ? "promo"
+      : product.featured
+        ? "featured"
+        : "default";
+
+  const badge =
+    variant === "promo"
+      ? "Promo"
+      : variant === "featured"
+        ? "Favorito"
+        : undefined;
+
+  const metadata = product.metadata ?? product.tags.find((tag) =>
+    /^\d+\s+piezas?$/i.test(tag.trim()),
+  );
+
   return {
     id: product.id,
     slug: product.slug,
@@ -28,7 +50,9 @@ export function mapProductToCard(product: ProductDto): ProductCardViewModel {
     priceAmount: product.priceAmount,
     priceCurrency: product.priceCurrency,
     isAvailable: product.status === "ACTIVE" && product.isAvailable,
-    badge: product.featured ? "Promo" : product.tags[0],
+    variant,
+    badge,
+    metadata,
     tags: product.tags,
   };
 }

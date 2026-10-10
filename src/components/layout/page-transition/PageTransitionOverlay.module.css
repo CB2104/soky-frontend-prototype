@@ -1,0 +1,90 @@
+.overlay {
+  --transition-columns: 16;
+
+  /* Capa de navegación: sobre navbar (50), menú móvil (60) y carrito (70). */
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  isolation: isolate;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.overlay[data-active="true"] {
+  visibility: visible;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+}
+
+.row {
+  position: absolute;
+  inset-inline: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--transition-columns), minmax(0, 1fr));
+  height: calc(25% + 1px);
+}
+
+.block {
+  width: calc(100% + 1px);
+  height: 100%;
+  background: var(--color-soky-blue, #1729a6);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.row:nth-child(even) .block {
+  transform-origin: right center;
+}
+
+.overlay[data-active="true"] .block {
+  will-change: transform;
+}
+
+.logoPosition {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.logo {
+  width: clamp(112px, 26vw, 200px);
+  max-width: calc(100vw - 32px);
+  opacity: 0;
+  transform: translateY(6px) scale(0.96);
+}
+
+.logo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.overlay[data-active="true"] .logo {
+  will-change: transform, opacity;
+}
+
+@media (max-width: 767px) {
+  .overlay {
+    --transition-columns: 8;
+  }
+
+  .block:nth-child(n + 9) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .overlay[data-active="true"] {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}

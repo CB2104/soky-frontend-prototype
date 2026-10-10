@@ -418,7 +418,7 @@ function ContactSpeedDialContent({
             transition={{ duration: reduceMotion ? 0 : 0.12 }}
             className={[
               "grid size-full place-items-center rounded-full",
-              "bg-soky-orange bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat text-soky-white/90",
+              "bg-soky-orange bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat text-soky-white/90",
               "transition-colors duration-200",
               "group-hover:bg-soky-blue group-hover:text-soky-white",
               isOpen && "bg-soky-blue text-soky-white",
@@ -481,7 +481,7 @@ function ContactSpeedDialContent({
                 <span
                   className={[
                     "inline-flex min-h-10 items-center gap-2 rounded-full",
-                    "bg-soky-orange bg-[url('/images/soky-wave-outline-white-soft.svg')] bg-size-[360px_120px] bg-position-[center_58%] bg-no-repeat",
+                    "bg-soky-orange bg-[url('/images/patterns/soky-wave-outline-white-soft.svg')] bg-size-[360px_120px] bg-position-[center_58%] bg-no-repeat",
                     "px-3 pr-4 text-soky-white/90",
                     "transition-colors duration-200",
                     "group-hover:bg-soky-blue group-hover:text-soky-white",

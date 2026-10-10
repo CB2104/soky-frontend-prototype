@@ -2,10 +2,14 @@ import { getImageProps } from "next/image";
 import { StampBadge } from "@/components/ui/stamp-badge";
 import { cn } from "@/lib/cn";
 import type { HeroSlideViewModel } from "../types";
+import { HeroMediaRotator } from "./HeroMediaRotator";
 
 type HeroMediaProps = {
   badgeLabel: string | null;
   image: HeroSlideViewModel["image"];
+  renderImage?: boolean;
+  rotatorImages?: HeroSlideViewModel["rotatorImages"];
+  rotatorViewport?: "all" | "desktop" | "mobile";
   stampTone: "promo" | "cold" | "new";
 };
 
@@ -32,11 +36,20 @@ const imagePositionClass: Record<
   "center-right": "object-right",
 };
 
-export function HeroMedia({ badgeLabel, image, stampTone }: HeroMediaProps) {
+export function HeroMedia({
+  badgeLabel,
+  image,
+  renderImage = true,
+  rotatorImages,
+  rotatorViewport = "all",
+  stampTone,
+}: HeroMediaProps) {
   const isCutoutProduct = image.mode === "cutout-product";
   const hasFrame = image.frameEnabled && !isCutoutProduct;
   const showPromoPlate = !isCutoutProduct && image.frameEnabled;
   const resolvedImageFit = isCutoutProduct ? "contain" : image.fit;
+  const safeRotatorImages = rotatorImages ?? [];
+  const shouldRenderRotator = safeRotatorImages.length >= 2;
 
   const imageClassName = cn(
     "block h-full w-full",
@@ -71,7 +84,7 @@ export function HeroMedia({ badgeLabel, image, stampTone }: HeroMediaProps) {
   return (
     <div
       className={cn(
-        "relative order-2 z-10 self-center md:col-span-7 md:col-start-6 md:row-span-2 md:row-start-1 md:self-center",
+        "relative order-3 z-10 self-end md:col-span-7 md:col-start-6 md:row-span-2 md:row-start-1 md:self-center",
         isCutoutProduct
           ? "min-h-0 md:min-h-0"
           : "min-h-[14.5rem] md:min-h-[28rem] md:-ml-4 lg:min-h-[30rem] lg:-ml-8",
@@ -80,22 +93,14 @@ export function HeroMedia({ badgeLabel, image, stampTone }: HeroMediaProps) {
       {showPromoPlate ? (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -inset-x-2 bottom-4 top-8 -rotate-2 rounded-[2.25rem] bg-soky-orange-deep bg-[url('/images/endless-clouds-light.svg')] bg-size-[auto_64px] bg-repeat md:-right-10 md:left-5 md:bottom-3 md:top-10 md:rounded-[2.5rem]"
+          className="pointer-events-none absolute -inset-x-2 bottom-4 top-8 -rotate-2 rounded-[2.25rem] bg-soky-orange-deep bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[auto_64px] bg-repeat md:-right-10 md:left-5 md:bottom-3 md:top-10 md:rounded-[2.5rem]"
         />
       ) : null}
-      <div
-        aria-hidden="true"
-        className={cn(
-          "absolute pointer-events-none rounded-full bg-soky-navy/35",
-          isCutoutProduct
-            ? "bottom-4 left-1/2 h-10 w-2/3 -translate-x-1/2 blur-xl md:bottom-8 md:h-14"
-            : "-bottom-4 left-8 h-20 w-2/3 blur-2xl",
-        )}
-      />
       {badgeLabel ? (
         <div
           className={cn(
             "absolute z-20",
+            "[@media(max-height:500px)_and_(orientation:landscape)]:hidden",
             isCutoutProduct
               ? "left-2 top-2 md:left-8 md:top-10"
               : "-left-3 top-3 md:left-1 md:top-8",
@@ -108,21 +113,31 @@ export function HeroMedia({ badgeLabel, image, stampTone }: HeroMediaProps) {
         className={cn(
           "relative z-10 mx-auto w-full",
           isCutoutProduct
-            ? "h-[18rem] max-h-[34svh] max-w-[20rem] md:mr-0 md:h-[38rem] md:max-h-[70vh] md:max-w-[39rem] lg:h-[40rem] lg:max-h-[72vh] lg:max-w-[42rem]"
+            ? "h-[15rem] max-h-[27svh] max-w-[20rem] [@media(max-height:500px)]:h-8 [@media(max-height:500px)]:max-h-8 md:mr-0 md:h-[38rem] md:max-h-[70vh] md:max-w-[39rem] lg:h-[40rem] lg:max-h-[72vh] lg:max-w-[42rem]"
             : "aspect-[16/10] max-w-[23rem] md:ml-auto md:mr-0 md:aspect-[16/9] md:max-w-none md:w-[104%] lg:w-[108%]",
           hasFrame
-            ? "overflow-hidden rounded-[1.75rem] border-[5px] border-soky-white/30 bg-soky-navy shadow-[0_24px_64px_rgb(7_5_74_/_0.38)] md:-rotate-2 md:rounded-[2rem]"
+            ? "overflow-hidden rounded-[1.75rem] border-[5px] border-soky-white/30 bg-soky-navy md:-rotate-2 md:rounded-[2rem]"
             : "overflow-visible",
         )}
       >
-        <picture className="block h-full w-full">
-          <source
-            media="(min-width: 768px)"
-            srcSet={desktopImageProps.srcSet}
-            sizes={desktopImageProps.sizes}
+        {!renderImage ? null : shouldRenderRotator ? (
+          <HeroMediaRotator
+            imageClassName={imageClassName}
+            images={safeRotatorImages}
+            priority={image.priority}
+            sizes={image.sizes}
+            viewport={rotatorViewport}
           />
-          <img {...mobileImageProps} alt={image.alt} />
-        </picture>
+        ) : (
+          <picture className="block h-full w-full">
+            <source
+              media="(min-width: 768px)"
+              srcSet={desktopImageProps.srcSet}
+              sizes={desktopImageProps.sizes}
+            />
+            <img {...mobileImageProps} alt={image.alt} />
+          </picture>
+        )}
       </div>
     </div>
   );

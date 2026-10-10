@@ -5,29 +5,95 @@ import type {
   AdminSliderItemDto,
   CategoryDto,
   ExchangeRateDto,
+  HeroResponsiveSources,
+  LegacyHeroImageSources,
   OrderIntentConfirmViewDto,
   ProductDto,
   PublicSettingsDto,
   SliderBackgroundColorToken,
   UserDto,
 } from "@/contracts/api";
+import { preparedMenuCategories, preparedMenuProducts } from "./menu-dto-adapter";
 
 const now = new Date("2026-06-14T14:00:00.000Z").toISOString();
 
 const heroProductImageUrl = "/images/soky-hero-party-box.png";
-const heroRotatorSushiFrioImageUrl =
-  "/images/hero/hero-rotator-sushi-frio.webp";
-const slidePromoTempuraImageUrl = "/images/hero/slide-promo-tempura.webp";
-const slidePromoSushiFrioImageUrl =
-  "/images/hero/slide-promo-sushi-frio.webp";
 const slidePromoMixtoImageUrl = "/images/hero/slide-promo-mixto.webp";
-const slideServiceDeliveryImageUrl =
-  "/images/hero/slide-service-delivery.webp";
+const slideServiceDeliveryImageUrl = "/images/hero/slide-service-delivery.webp";
 
-type HeroBackgroundAsset = {
-  desktopUrl: string;
-  mobileUrl?: string;
-};
+const slide1BaseSources = {
+  desktop: "/images/hero/slide-1-base-desktop.webp",
+  desktopWide: "/images/hero/slide-1-base-desktop-wide.webp",
+  tabletLandscape: "/images/hero/slide-1-base-tablet-landscape.webp",
+  tabletPortrait: "/images/hero/slide-1-base-tablet-portrait.webp",
+  mobile: "/images/hero/slide-1-base-mobile.webp",
+} satisfies HeroResponsiveSources;
+
+const slide1AccentSources = {
+  desktop: "/images/hero/slide-1-accent-desktop.webp",
+  desktopWide: "/images/hero/slide-1-accent-desktop-wide.webp",
+  tabletLandscape: "/images/hero/slide-1-accent-tablet-landscape.webp",
+  tabletPortrait: "/images/hero/slide-1-accent-tablet-portrait.webp",
+  mobile: "/images/hero/slide-1-accent-mobile.webp",
+} satisfies HeroResponsiveSources;
+
+const slide1Product1Sources = sameImageForAllSizes(
+  "/images/hero/slide-1-product-1-universal.webp",
+);
+
+const slide1Product2Sources = sameImageForAllSizes(
+  "/images/hero/slide-1-product-2-universal.webp",
+);
+
+const slide1Product3Sources = sameImageForAllSizes(
+  "/images/hero/slide-1-product-3-universal.webp",
+);
+
+const slide2BaseSources = {
+  desktop: "/images/hero/slide-2-base-desktop.webp",
+  desktopWide: "/images/hero/slide-2-base-desktop-wide.webp",
+  tabletLandscape: "/images/hero/slide-2-base-tablet-landscape.webp",
+  tabletPortrait: "/images/hero/slide-2-base-tablet-portrait.webp",
+  mobile: "/images/hero/slide-2-base-mobile.webp",
+} satisfies HeroResponsiveSources;
+
+const slide2AccentSources = {
+  desktop: "/images/hero/slide-2-accent-desktop.webp",
+  desktopWide: "/images/hero/slide-2-accent-desktop-wide.webp",
+  tabletLandscape: "/images/hero/slide-2-accent-tablet-landscape.webp",
+  tabletPortrait: "/images/hero/slide-2-accent-tablet-portrait.webp",
+  mobile: "/images/hero/slide-2-accent-mobile.webp",
+} satisfies HeroResponsiveSources;
+
+const slide2ProductSources = {
+  desktop: "/images/hero/slide-2-product-desktop.webp",
+  desktopWide: "/images/hero/slide-2-product-desktop-wide.webp",
+  tabletLandscape: "/images/hero/slide-2-product-tablet-landscape.webp",
+  tabletPortrait: "/images/hero/slide-2-product-tablet-portrait.webp",
+  mobile: "/images/hero/slide-2-product-mobile.webp",
+} satisfies HeroResponsiveSources;
+
+function sameImageForAllSizes(src: string): HeroResponsiveSources {
+  return {
+    desktop: src,
+    desktopWide: src,
+    tabletLandscape: src,
+    tabletPortrait: src,
+    mobile: src,
+  };
+}
+
+const boxKiyomiRotatorSources = sameImageForAllSizes(
+  "/images/hero/box-kiyomi-rotator.webp",
+);
+const boxKyotoRotatorSources = sameImageForAllSizes(
+  "/images/hero/box-kyoto-rotator.webp",
+);
+const boxKuramaRotatorSources = sameImageForAllSizes(
+  "/images/hero/box-kurama-rotator.webp",
+);
+
+type HeroBackgroundAsset = HeroResponsiveSources | LegacyHeroImageSources;
 
 type HeroAccentSide = "left" | "right";
 
@@ -35,13 +101,10 @@ type BlueOrangeBackgroundOptions = {
   accent?: HeroBackgroundAsset;
   accentSide: HeroAccentSide;
   base: HeroBackgroundAsset;
+  baseColorToken?: SliderBackgroundColorToken;
 };
 
 const heroBlueBackgroundAssets = {
-  v1: {
-    desktopUrl: "/images/hero/hero-base-blue-desktopS3.webp",
-    mobileUrl: "/images/hero/hero-base-blue-mobile-s2.webp",
-  },
   v2: {
     desktopUrl: "/images/hero/hero-base-blue-desktopS1.webp",
     mobileUrl: "/images/hero/hero-base-blue-mobile-s1.webp",
@@ -64,33 +127,15 @@ const heroBlueBackgroundAssets = {
   },
 } as const satisfies Record<string, HeroBackgroundAsset>;
 
-const heroPaperBackgroundAssets = {
-  v1: {
-    desktopUrl: "/images/hero/hero-base-paper-desktop.webp",
-    mobileUrl: "/images/hero/hero-base-paper-mobile.webp",
-  },
-  v2: {
-    desktopUrl: "/images/hero/hero-base-paper-desktop-v2.webp",
-    mobileUrl: "/images/hero/hero-base-paper-mobile-v2.webp",
-  },
-} as const satisfies Record<string, HeroBackgroundAsset>;
-
 const heroOrangeAccentAssets = {
   left: {
     desktopUrl: "/images/hero/hero-accent-orange-desktop-left.webp",
     mobileUrl: "/images/hero/welcome-orange-accent-mobile-original-left.webp",
   },
-  right: {
-    desktopUrl: "/images/hero/hero-accent-orange-desktop-right.webp",
-    mobileUrl: "/images/hero/welcome-orange-accent-mobile-original-right.webp",
-  },
+  right: slide1AccentSources,
   comboCold: {
     desktopUrl: "/images/hero/accent-orange-accent-desktop-v2-s2.webp",
     mobileUrl: "/images/hero/Mobile-OrangeAccent-s1.webp",
-  },
-  comboLargeMixed: {
-    desktopUrl: "/images/hero/accent-orange-accent-desktop-v2-s1.webp",
-    mobileUrl: "/images/hero/Mobile-OrangeAccent-s2.webp",
   },
 } as const satisfies Record<string, HeroBackgroundAsset>;
 
@@ -105,14 +150,14 @@ function createBlueOrangeBackground({
   accentSide,
   accent = heroOrangeAccentAssets[accentSide],
   base,
+  baseColorToken = "brand-primary",
 }: BlueOrangeBackgroundOptions): NonNullable<AdminSliderItemDto["background"]> {
   return {
     mode: "two-layer",
     base: {
-      colorToken: "brand-primary",
+      colorToken: baseColorToken,
       image: {
-        desktopUrl: base.desktopUrl,
-        ...(base.mobileUrl ? { mobileUrl: base.mobileUrl } : {}),
+        ...base,
         decorative: true,
         fit: "cover",
         position: "center",
@@ -122,8 +167,7 @@ function createBlueOrangeBackground({
     accent: {
       colorToken: "accent",
       image: {
-        desktopUrl: accent.desktopUrl,
-        ...(accent.mobileUrl ? { mobileUrl: accent.mobileUrl } : {}),
+        ...accent,
         decorative: true,
         fit: "cover",
         position: "center",
@@ -136,22 +180,20 @@ function createBlueOrangeBackground({
 
 const heroBlueOrangeBackgrounds = {
   slide1: createBlueOrangeBackground({
-    base: heroBlueBackgroundAssets.v1,
+    base: slide1BaseSources,
+    accent: slide1AccentSources,
+    baseColorToken: "white",
     accentSide: "right",
   }),
   slide2: createBlueOrangeBackground({
-    base: heroBlueBackgroundAssets.v2,
+    base: slide2BaseSources,
+    accent: slide2AccentSources,
     accentSide: "left",
   }),
   slide3: createBlueOrangeBackground({
     base: heroBlueBackgroundAssets.comboCold,
     accent: heroOrangeAccentAssets.comboCold,
     accentSide: "left",
-  }),
-  slide4: createBlueOrangeBackground({
-    base: heroBlueBackgroundAssets.comboLargeMixed,
-    accent: heroOrangeAccentAssets.comboLargeMixed,
-    accentSide: "right",
   }),
 } as const;
 
@@ -167,8 +209,7 @@ function createSingleImageBackground({
     layer: {
       colorToken,
       image: {
-        desktopUrl: asset.desktopUrl,
-        ...(asset.mobileUrl ? { mobileUrl: asset.mobileUrl } : {}),
+        ...asset,
         decorative: true,
         fit: "cover",
         position: "center",
@@ -178,17 +219,6 @@ function createSingleImageBackground({
   };
 }
 
-function createPaperBackground(
-  asset: HeroBackgroundAsset,
-): NonNullable<AdminSliderItemDto["background"]> {
-  return createSingleImageBackground({ asset, colorToken: "paper" });
-}
-
-const heroPaperBackgrounds = {
-  v1: createPaperBackground(heroPaperBackgroundAssets.v1),
-  v2: createPaperBackground(heroPaperBackgroundAssets.v2),
-};
-
 const heroBlackBackgrounds = {
   s1: createSingleImageBackground({
     asset: heroBlackBackgroundAssets.s1,
@@ -196,253 +226,61 @@ const heroBlackBackgrounds = {
   }),
 };
 
-export const mockCategories: CategoryDto[] = [
-  {
-    id: "cat-boxes",
-    key: "boxes",
-    name: "Boxes",
-    slug: "boxes",
-    group: "COMBO",
-    description: "Promos generosas para compartir.",
-    imageUrl: "https://picsum.photos/seed/soky-sushi-box-category/900/700",
-    sortOrder: 1,
-    isActive: true,
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "cat-tempura",
-    key: "tempura",
-    name: "Tempura",
-    slug: "tempura",
-    group: "FOOD",
-    description: "Rolls crocantes con toppings y salsas.",
-    imageUrl: "https://picsum.photos/seed/soky-tempura-category/900/700",
-    sortOrder: 2,
-    isActive: true,
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "cat-frios",
-    key: "frios",
-    name: "Fríos",
-    slug: "frios",
-    group: "FOOD",
-    description: "Rolls fríos y frescos para combinar.",
-    imageUrl: "https://picsum.photos/seed/soky-cold-roll-category/900/700",
-    sortOrder: 3,
-    isActive: true,
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "cat-entradas",
-    key: "entradas",
-    name: "Entradas",
-    slug: "entradas",
-    group: "FOOD",
-    description: "Extras crujientes para acompañar.",
-    imageUrl: "https://picsum.photos/seed/soky-starters-category/900/700",
-    sortOrder: 4,
-    isActive: true,
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "cat-bebidas",
-    key: "bebidas",
-    name: "Bebidas",
-    slug: "bebidas",
-    group: "DRINK",
-    description: "Refrescos y acompañantes.",
-    imageUrl: "https://picsum.photos/seed/soky-drinks-category/900/700",
-    sortOrder: 5,
-    isActive: true,
-    createdAt: now,
-    updatedAt: now,
-  },
-];
+export const mockCategories: CategoryDto[] = preparedMenuCategories.map((category) => ({
+  ...category,
+  createdAt: now,
+  updatedAt: now,
+}));
 
-export const mockProducts: ProductDto[] = [
-  {
-    id: "prod-kiyomi",
-    title: "Box Kiyomi",
-    slug: "box-kiyomi",
-    shortDescription: "72 piezas para compartir.",
-    description:
-      "Una promo grande con rolls tempura, piezas frías, toppings y refresco para una mesa completa.",
-    categoryId: "cat-boxes",
-    categorySlug: "boxes",
-    type: "COMBO",
-    status: "ACTIVE",
-    isAvailable: true,
-    sortOrder: 1,
-    priceCurrency: "EUR",
-    priceAmount: "38.00",
-    imageUrl: "https://picsum.photos/seed/soky-box-kiyomi-sushi/1000/760",
-    imageAlt:
-      "Box Kiyomi de 72 piezas de sushi con toppings sobre bandeja negra.",
-    featured: true,
-    tags: ["72 piezas", "Promo", "Compartir"],
-    allergens: ["Pescado", "Sésamo"],
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "prod-kyoto",
-    title: "Box Kyoto",
-    slug: "box-kyoto",
-    shortDescription: "36 piezas con entradas.",
-    description:
-      "Box mixto con rolls fríos, tempura, entradas y refresco según disponibilidad.",
-    categoryId: "cat-boxes",
-    categorySlug: "boxes",
-    type: "COMBO",
-    status: "ACTIVE",
-    isAvailable: true,
-    sortOrder: 2,
-    priceCurrency: "USD",
-    priceAmount: "24.00",
-    imageUrl: "https://picsum.photos/seed/soky-box-kyoto-rolls/1000/760",
-    imageAlt: "Box Kyoto de 36 piezas con rolls fríos y tempura.",
-    featured: true,
-    tags: ["36 piezas", "Más pedido"],
-    allergens: ["Pescado", "Cangrejo"],
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "prod-osaka",
-    title: "Box Osaka",
-    slug: "box-osaka",
-    shortDescription: "34 piezas mixtas.",
-    description:
-      "Incluye 10 fríos, 24 tempura y refresco de 1L para compartir.",
-    categoryId: "cat-boxes",
-    categorySlug: "boxes",
-    type: "COMBO",
-    status: "ACTIVE",
-    isAvailable: true,
-    sortOrder: 3,
-    priceCurrency: "USD",
-    priceAmount: "22.00",
-    imageUrl: "https://picsum.photos/seed/soky-box-osaka-tempura/1000/760",
-    imageAlt: "Box Osaka mixto de sushi con piezas tempura y frías.",
-    featured: true,
-    tags: ["34 piezas", "Mixto"],
-    allergens: ["Pescado"],
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "prod-soky",
-    title: "Box SOKY",
-    slug: "box-soky",
-    shortDescription: "36 piezas todos tempura.",
-    description:
-      "Rolls tempura crujientes con toppings, salsa y una presentación abundante.",
-    categoryId: "cat-tempura",
-    categorySlug: "tempura",
-    type: "PROMO",
-    status: "ACTIVE",
-    isAvailable: true,
-    sortOrder: 4,
-    priceCurrency: "USD",
-    priceAmount: "20.00",
-    imageUrl: "https://picsum.photos/seed/soky-tempura-rolls/1000/760",
-    imageAlt: "Box SOKY de rolls tempura con salsa y topping.",
-    featured: false,
-    tags: ["36 piezas", "Todos tempura"],
-    allergens: ["Pescado", "Gluten"],
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "prod-samurai",
-    title: "Box Samurai",
-    slug: "box-samurai",
-    shortDescription: "30 piezas todos fríos.",
-    description:
-      "Una opción fresca con rolls fríos, ideal para combinar con entradas.",
-    categoryId: "cat-frios",
-    categorySlug: "frios",
-    type: "PROMO",
-    status: "ACTIVE",
-    isAvailable: true,
-    sortOrder: 5,
-    priceCurrency: "USD",
-    priceAmount: "18.00",
-    imageUrl: "https://picsum.photos/seed/soky-cold-rolls/1000/760",
-    imageAlt: "Box Samurai con rolls fríos de sushi.",
-    featured: false,
-    tags: ["30 piezas", "Fríos"],
-    allergens: ["Pescado"],
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "prod-crispy",
-    title: "Camarón crispy",
-    slug: "camaron-crispy",
-    shortDescription: "Entrada crujiente.",
-    description:
-      "Camarones crispy para acompañar tu box o armar una orden más completa.",
-    categoryId: "cat-entradas",
-    categorySlug: "entradas",
-    type: "SIMPLE",
-    status: "ACTIVE",
-    isAvailable: true,
-    sortOrder: 6,
-    priceCurrency: "USD",
-    priceAmount: "8.00",
-    imageUrl: "https://picsum.photos/seed/soky-crispy-shrimp/1000/760",
-    imageAlt: "Entrada de camarón crispy con salsa.",
-    featured: false,
-    tags: ["Entrada", "Crispy"],
-    allergens: ["Crustáceos", "Gluten"],
-    createdAt: now,
-    updatedAt: now,
-  },
-  {
-    id: "prod-fuji",
-    title: "Fuji Roll",
-    slug: "fuji-roll",
-    shortDescription: "Temporalmente no disponible.",
-    description:
-      "Roll especial con salsa Fuji y topping. Vuelve pronto al menú.",
-    categoryId: "cat-tempura",
-    categorySlug: "tempura",
-    type: "SIMPLE",
-    status: "ACTIVE",
-    isAvailable: false,
-    sortOrder: 7,
-    priceCurrency: "USD",
-    priceAmount: "10.00",
-    imageUrl: "https://picsum.photos/seed/soky-fuji-roll/1000/760",
-    imageAlt: "Fuji Roll con topping y salsa.",
-    featured: false,
-    tags: ["Especial"],
-    allergens: ["Pescado", "Gluten"],
-    createdAt: now,
-    updatedAt: now,
-  },
-];
+export const mockProducts: ProductDto[] = preparedMenuProducts.map((product) => ({
+  ...product,
+  createdAt: now,
+  updatedAt: now,
+}));
 
 export const mockSliderItems: AdminSliderItemDto[] = [
   {
     id: "slider-kiyomi",
-    title: "Comida para compartir",
-    description: "Combos, entradas y favoritos listos para pedir.",
-    eyebrow: "Bienvenido",
-    badgeLabel: "Popular",
-    desktopImageUrl: heroRotatorSushiFrioImageUrl,
-    mobileImageUrl: heroRotatorSushiFrioImageUrl,
+    title: "TU ANTOJO SOKY EMPIEZA AQUÍ",
+    description:
+      "Sushi con el equilibrio perfecto entre sabor, calidad y buena vibra.",
+    headlineParts: [
+      { type: "text", text: "TU ANTOJO" },
+      { type: "brand-logo", label: "SOKY" },
+      { type: "text", text: "EMPIEZA AQUÍ" },
+    ],
+    desktopImageUrl: slide1Product1Sources.desktop,
+    mobileImageUrl: slide1Product1Sources.mobile,
     imageAlt: "Box SOKY con rolls, toppings y piezas para compartir.",
+    productLayer: {
+      ...slide1Product1Sources,
+      alt: "Sushi tempura SOKY servido en bandeja negra.",
+      fit: "cover",
+      position: "center",
+    },
+    colorLayer: {
+      value: "#FFFFFF",
+      label: "Soky White",
+    },
+    rotatorImages: [
+      {
+        ...slide1Product1Sources,
+        alt: "Sushi SOKY tempura con toppings en bandeja negra.",
+      },
+      {
+        ...slide1Product2Sources,
+        alt: "Sushi SOKY tempura con topping de cangrejo y crocante.",
+      },
+      {
+        ...slide1Product3Sources,
+        alt: "Sushi SOKY tempura con salsas y topping crujiente.",
+      },
+    ],
     mediaMode: "cutout-product",
     background: heroBlueOrangeBackgrounds.slide1,
+    backgroundVariant: "signature",
     primaryCta: {
-      label: "Ver menú",
+      label: "VER MENÚ",
       type: "MENU",
     },
     secondaryCta: {
@@ -459,29 +297,58 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   },
   {
     id: "slider-boxes",
-    title: "Combos para compartir",
+    title: "Un box para cada plan",
     description:
-      "Boxes generosos para pedir en grupo sin complicar la elección.",
-    eyebrow: "Promos SOKY",
-    badgeLabel: "Popular",
-    highlightText: "COMBOS",
-    desktopImageUrl: slidePromoTempuraImageUrl,
-    mobileImageUrl: slidePromoTempuraImageUrl,
-    imageAlt: "Box SOKY con sushi, toppings y piezas para una mesa compartida.",
+      "Elige entre Kiyomi, Kyoto o Kurama y comparte sin complicar la elección.",
+    desktopImageUrl: boxKiyomiRotatorSources.desktop,
+    mobileImageUrl: boxKiyomiRotatorSources.mobile,
+    imageSources: boxKiyomiRotatorSources,
+    imageAlt: "Box Kiyomi de SOKY con sushi y toppings para compartir.",
+    rotatorImages: [
+      {
+        ...boxKiyomiRotatorSources,
+        alt: "Box Kiyomi de SOKY con sushi y toppings para compartir.",
+        name: "Box Kiyomi",
+        priceLabel: "24€",
+      },
+      {
+        ...boxKyotoRotatorSources,
+        alt: "Box Kyoto de SOKY con piezas tempura y toppings.",
+        name: "Box Kyoto",
+        priceLabel: "15€",
+      },
+      {
+        ...boxKuramaRotatorSources,
+        alt: "Box Kurama de SOKY con selección de sushi para compartir.",
+        name: "Box Kurama",
+        priceLabel: "22€",
+      },
+    ],
     mediaMode: "cutout-product",
     mediaPosition: "center-right",
-    background: heroBlueOrangeBackgrounds.slide2,
+    background: {
+      mode: "none",
+    },
+    colorLayer: {
+      value: "#149EF2",
+      label: "Azul cielo SOKY",
+    },
+    patternOverlay: {
+      enabled: true,
+      assetKey: "endless-clouds-light",
+      opacity: 0.18,
+      blendMode: "normal",
+      size: "repeat",
+      position: "center",
+    },
+    backgroundVariant: "default",
     primaryCta: {
       label: "Ver boxes",
       type: "CATEGORY",
       target: "boxes",
     },
-    secondaryCta: {
-      label: "Pedir por WhatsApp",
-      type: "WHATSAPP",
-    },
     intent: "promotion",
-    layoutHint: "poster",
+    layoutHint: "split",
     placement: "home_hero",
     status: "ACTIVE",
     sortOrder: 2,
@@ -490,22 +357,50 @@ export const mockSliderItems: AdminSliderItemDto[] = [
   },
   {
     id: "slider-weekly-special",
-    title: "Favoritos tempura",
+    title: "PIEZAS",
     description:
-      "Rolls crocantes y combinaciones para sumar textura al pedido.",
-    eyebrow: "Crocante",
-    badgeLabel: "Favoritos",
-    highlightText: "TEMPURA",
-    desktopImageUrl: slidePromoSushiFrioImageUrl,
-    mobileImageUrl: slidePromoSushiFrioImageUrl,
-    imageAlt: "Rolls SOKY servidos en un box con piezas crocantes y toppings.",
+      "Todo el sabor SOKY, listo para compartir con bebida de 1 L incluida.",
+    eyebrow: "10 FRIOS + 24 TEMPURA",
+    badgeLabel: "EL MÁS PEDIDO",
+    highlightText: "34",
+    productName: "Box Osaka",
+    promoNote: "Incluye toppings",
+    desktopImageUrl: slidePromoMixtoImageUrl,
+    mobileImageUrl: slidePromoMixtoImageUrl,
+    imageAlt: "Box Osaka con selección mixta de sushi frío y tempura.",
+    productLayer: {
+      desktopUrl: "/images/hero/soky-hero-sushi-transparente.webp",
+      mobileUrl: "/images/hero/soky-hero-sushi-transparente.webp",
+      alt: "Box Osaka con 34 piezas de sushi frío y tempura.",
+      fit: "contain",
+      position: "center-left",
+    },
     mediaMode: "cutout-product",
     mediaPosition: "center",
-    background: heroBlueOrangeBackgrounds.slide3,
+    background: {
+      mode: "none",
+    },
+    colorLayer: {
+      value: "#0E66D0",
+      label: "Azul brillante SOKY",
+    },
+    patternOverlay: {
+      enabled: true,
+      assetKey: "endless-clouds-light",
+      opacity: 0.35,
+      blendMode: "normal",
+      size: "repeat",
+      position: "center",
+    },
+    backgroundVariant: "most-ordered",
     primaryCta: {
-      label: "Ver tempura",
-      type: "CATEGORY",
-      target: "tempura",
+      label: "Pedir Box Osaka",
+      type: "PRODUCT",
+      target: "box-osaka",
+    },
+    secondaryCta: {
+      label: "Ver menú",
+      type: "MENU",
     },
     intent: "promotion",
     layoutHint: "image-led",
@@ -526,7 +421,10 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     imageAlt: "Box SOKY listo para pedir por WhatsApp.",
     mediaMode: "cutout-product",
     mediaPosition: "center",
-    background: heroBlueOrangeBackgrounds.slide4,
+    background: createSingleImageBackground({
+      asset: heroBlueBackgroundAssets.comboLargeMixed,
+      colorToken: "brand-primary",
+    }),
     primaryCta: {
       label: "Escribir por WhatsApp",
       type: "WHATSAPP",
@@ -534,37 +432,49 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     intent: "conversion",
     layoutHint: "split",
     placement: "home_hero",
-    status: "ACTIVE",
-    sortOrder: 4,
+    status: "INACTIVE",
+    sortOrder: 5,
     createdAt: now,
     updatedAt: now,
   },
   {
     id: "slider-chat",
-    title: "Retiro o delivery",
-    description:
-      "Consulta disponibilidad de retiro o delivery antes de cerrar tu pedido.",
-    eyebrow: "Disponibilidad",
+    title: "NO TE QUEDES CON LAS GANAS",
+    description: "Pide delivery o ven a vistarnos.",
+    eyebrow: "DELIVERY + PICKUP",
     desktopImageUrl: slideServiceDeliveryImageUrl,
     mobileImageUrl: slideServiceDeliveryImageUrl,
-    imageAlt: "Pedido SOKY preparado para retiro o delivery.",
+    imageAlt: "Sushi SOKY preparado para delivery o pickup.",
     mediaMode: "local-photo",
     mediaPosition: "center-left",
     frameEnabled: true,
-    background: heroPaperBackgrounds.v2,
+    background: { mode: "none" },
+    productLayer: {
+      desktop: "/images/hero/soky-slide4-sushi-cutout.webp",
+      desktopWide: "/images/hero/soky-slide4-sushi-cutout.webp",
+      tabletLandscape: "/images/hero/soky-slide4-sushi-cutout.webp",
+      tabletPortrait: "/images/hero/soky-slide4-sushi-cutout.webp",
+      mobile: "/images/hero/soky-slide4-sushi-cutout.webp",
+      alt: "Sushi SOKY preparado para delivery o pickup.",
+      decorative: false,
+      fit: "contain",
+      position: "center-right",
+    },
     primaryCta: {
-      label: "Consultar disponibilidad",
+      label: "Pedir por WhatsApp",
       type: "WHATSAPP",
+      target: "Hola SOKY, quiero hacer un pedido.",
     },
     secondaryCta: {
       label: "Ver ubicación",
       type: "LOCATION",
+      target: "/#ubicacion",
     },
     intent: "conversion",
     layoutHint: "poster",
     placement: "home_hero",
     status: "ACTIVE",
-    sortOrder: 5,
+    sortOrder: 4,
     createdAt: now,
     updatedAt: now,
   },
@@ -588,7 +498,7 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     intent: "announcement",
     layoutHint: "image-led",
     placement: "home_hero",
-    status: "ACTIVE",
+    status: "INACTIVE",
     sortOrder: 6,
     createdAt: now,
     updatedAt: now,
@@ -631,8 +541,8 @@ export const mockSliderItems: AdminSliderItemDto[] = [
     intent: "promotion",
     layoutHint: "split",
     placement: "home_hero",
-    status: "DRAFT",
-    sortOrder: 7,
+    status: "INACTIVE",
+    sortOrder: 6,
     createdAt: now,
     updatedAt: now,
   },
@@ -641,30 +551,39 @@ export const mockSliderItems: AdminSliderItemDto[] = [
 export const mockSettings: PublicSettingsDto = {
   businessName: "SOKY",
   slogan: "Sushi casual, colorido y fácil de pedir.",
-  whatsappPhone: "+584120000000",
+  whatsappPhone: "+584127785027",
   instagramUrl: "https://www.instagram.com/soky_ve",
-  googleMapsUrl: "https://maps.google.com",
-  address: "Agregar dirección real del local",
-  openingHoursDisplay: ["Lunes a domingo", "12:00 PM - 10:00 PM"],
-  defaultCurrency: "USD",
+  googleMapsUrl: "https://maps.app.goo.gl/ZbBc8t1KkYPPGieRA",
+  googleMapsEmbedUrl:
+    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3926.058560625368!2d-67.9517439!3d10.256860899999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e8043006a1e4489%3A0x5121e84328b258da!2sSoky%20Sushi!5e0!3m2!1ses!2sve!4v1791038800489!5m2!1ses!2sve",
+  address: "Calle Ricaurte, San Diego 2006, Carabobo, Venezuela",
+  openingHoursDisplay: [
+    "Domingo a jueves · 12:00 p. m. – 10:00 p. m.",
+    "Viernes y sábado · 12:00 p. m. – 12:00 a. m. (medianoche)",
+  ],
+  defaultCurrency: "EUR",
   acceptedCurrencies: ["USD", "EUR", "VES"],
   exchangeRateMode: "MANUAL",
   deliveryEnabled: true,
   pickupEnabled: true,
   deliveryNotes: "Delivery sujeto a zona y disponibilidad.",
-  minimumOrderAmount: "8.00",
+  minimumOrderAmount: mockProducts
+    .filter((product) => product.status === "ACTIVE" && product.isAvailable && product.priceCurrency === "EUR")
+    .map((product) => Number(product.priceAmount))
+    .toSorted((a, b) => a - b)[0]?.toFixed(2),
   serviceFeeEnabled: false,
   serviceFeeAmount: "0.00",
 };
 
 export const mockExchangeRate: ExchangeRateDto = {
-  baseCurrency: "USD",
+  baseCurrency: "EUR",
   targetCurrency: "VES",
-  rate: "36.50",
+  rate: "980.61",
   mode: "MANUAL",
   source: "MANUAL",
-  fetchedAt: now,
+  fetchedAt: new Date().toISOString(),
   stale: false,
+  warning: "Tasa manual de prueba: 980,61 VES por EUR. Fecha de vigencia pendiente; no es una consulta al proveedor.",
 };
 
 export const mockUser: UserDto = {

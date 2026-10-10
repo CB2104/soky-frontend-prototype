@@ -1,0 +1,11 @@
+.button{position:relative;display:grid;place-items:center;inline-size:44px;block-size:44px;flex-shrink:0;border:0;border-radius:50%;background:transparent;color:var(--color-japan-seal);cursor:pointer;transition:background-color .18s}
+.button:focus-visible{outline:3px solid var(--color-soky-focus);outline-offset:3px}
+.closed,.open{position:absolute;display:grid;place-items:center;transition:transform .2s ease,opacity .2s ease}
+.closed svg,.open svg{inline-size:18px;block-size:18px}
+.open{opacity:0;transform:translateY(4px) rotate(6deg)}
+@media(min-width:768px) and (hover:hover) and (pointer:fine){
+  .button:is(:hover,:focus-visible){background:var(--color-soky-paper)}
+  .button:is(:hover,:focus-visible) .closed{opacity:0;transform:translateY(-4px) rotate(-8deg)}
+  .button:is(:hover,:focus-visible) .open{opacity:1;transform:translateY(0) rotate(0)}
+}
+@media(prefers-reduced-motion:reduce){.button,.closed,.open{transition:none}.button:is(:hover,:focus-visible) .closed,.button:is(:hover,:focus-visible) .open{transform:none}}

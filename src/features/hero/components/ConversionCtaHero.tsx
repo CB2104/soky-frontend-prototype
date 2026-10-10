@@ -2,10 +2,12 @@ import { getImageProps } from "next/image";
 import {
   ArrowRightIcon,
   MapPinIcon,
+  MenuBlockIcon,
+  SushiSetIcon,
   WhatsAppSVG,
 } from "@/components/brand/IconsSVG";
-import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { Button } from "@/components/ui/button";
 import { PatternSurface } from "@/components/ui/pattern-surface";
 import { WaveDivider } from "@/components/ui/wave-divider";
 import { cn } from "@/lib/cn";
@@ -15,6 +17,7 @@ import type {
   HeroSlideViewModel,
 } from "../types";
 import { HeroBackgroundLayers } from "./HeroBackgroundLayers";
+import styles from "./HeroActions.module.css";
 
 type ConversionCtaHeroProps = {
   className?: string;
@@ -118,6 +121,14 @@ function isExternalCta(cta: HeroCtaViewModel) {
 }
 
 function ConversionCtaIcon({ type }: { type: ConversionCtaType }) {
+  if (type === "MENU") {
+    return <MenuBlockIcon className="size-5 shrink-0" />;
+  }
+
+  if (type === "PRODUCT" || type === "CATEGORY") {
+    return <SushiSetIcon className="size-6 shrink-0" />;
+  }
+
   if (type === "LOCATION") {
     return <MapPinIcon className="size-5 shrink-0" />;
   }
@@ -173,13 +184,6 @@ function ConversionCtaMedia({
   return (
     <div className="relative order-2 z-10 mx-auto min-h-0 w-full self-center md:order-none md:col-span-6 md:col-start-7 md:row-span-2 md:row-start-1 md:mx-0 md:self-center">
       <div
-        aria-hidden="true"
-        className={cn(
-          "absolute bottom-0 left-1/2 h-14 w-3/4 -translate-x-1/2 rounded-full blur-2xl",
-          isLightSurface ? "bg-soky-blue/18" : "bg-soky-navy/35",
-        )}
-      />
-      <div
         className={cn(
           "relative z-10 mx-auto w-full",
           isCutoutProduct
@@ -187,7 +191,7 @@ function ConversionCtaMedia({
             : "aspect-[4/3] max-w-[21rem] md:aspect-[16/10] md:max-w-[36rem] lg:max-w-[39rem] xl:max-w-[41rem]",
           hasFrame
             ? cn(
-                "overflow-hidden rounded-[1.5rem] border-[4px] shadow-[0_20px_52px_rgb(7_5_74_/_0.26)] md:rounded-[1.8rem]",
+                "overflow-hidden rounded-[1.5rem] border-[4px] md:rounded-[1.8rem]",
                 isLightSurface
                   ? "border-soky-white bg-soky-white"
                   : "border-soky-white/28 bg-soky-navy",
@@ -343,53 +347,33 @@ export function ConversionCtaHero({
               <div className="mt-2 flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:gap-3 md:mt-6">
                 {primaryCta && primaryHref ? (
                   <Button
+                    variant="ghost"
+                    data-hero-cta
                     href={primaryHref}
+                    scroll={primaryHref.startsWith("/menu/") ? false : undefined}
+                    data-transition-ignore={primaryHref.startsWith("/menu/") || primaryHref.startsWith("#") || primaryHref.startsWith("/#") ? true : undefined}
                     rel={primaryIsExternal ? "noopener noreferrer" : undefined}
-                    size="lg"
                     target={primaryIsExternal ? "_blank" : undefined}
-                    className={cn(
-                      "group min-h-12 w-full touch-manipulation justify-between gap-3 bg-soky-orange-deep bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-5 text-base font-black uppercase text-soky-white shadow-[0_14px_28px_rgb(7_5_74_/_0.2),0_6px_0_rgb(7_5_74_/_0.16)] ring-1 ring-soky-white/25 hover:-translate-y-0.5 hover:bg-soky-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2 sm:w-auto sm:min-w-52 sm:px-6 md:min-h-14",
-                      isLightSurface
-                        ? "focus-visible:ring-offset-soky-paper"
-                        : "focus-visible:ring-offset-soky-blue",
-                    )}
+                    className={styles.primaryAction}
                   >
-                    <span>{primaryCta.label}</span>
-                    <span
-                      aria-hidden="true"
-                      className="grid size-8 shrink-0 place-items-center rounded-full bg-soky-white/18 transition-transform duration-200 group-hover:translate-x-0.5 group-active:scale-95 [&_svg]:size-5"
-                    >
-                      <ConversionCtaIcon type={primaryCta.type} />
-                    </span>
+                    <span aria-hidden="true" className={styles.actionIcon}><ConversionCtaIcon type={primaryCta.type} /></span>
+                    <span className={styles.actionLabel}>{primaryCta.label}</span>
                   </Button>
                 ) : null}
 
                 {secondaryCta && secondaryHref ? (
                   <Button
-                    href={secondaryHref}
-                    rel={secondaryIsExternal ? "noopener noreferrer" : undefined}
-                    size="lg"
-                    target={secondaryIsExternal ? "_blank" : undefined}
                     variant="ghost"
-                    className={cn(
-                      "group min-h-12 w-full touch-manipulation justify-between gap-3 border-2 px-5 text-base font-extrabold shadow-[inset_0_0_0_1px_rgb(255_255_255_/_0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2 sm:w-auto sm:min-w-48 sm:px-6 md:min-h-14",
-                      isLightSurface
-                        ? "border-soky-blue/45 bg-soky-white/75 text-soky-blue hover:border-soky-orange hover:bg-soky-white focus-visible:ring-offset-soky-paper"
-                        : "border-soky-white/80 bg-soky-white/8 text-soky-white hover:border-soky-orange hover:bg-soky-white/16 focus-visible:ring-offset-soky-blue",
-                    )}
+                    data-hero-cta
+                    href={secondaryHref}
+                    scroll={secondaryHref.startsWith("/menu/") ? false : undefined}
+                    data-transition-ignore={secondaryHref.startsWith("/menu/") || secondaryHref.startsWith("#") || secondaryHref.startsWith("/#") ? true : undefined}
+                    rel={secondaryIsExternal ? "noopener noreferrer" : undefined}
+                    target={secondaryIsExternal ? "_blank" : undefined}
+                    className={styles.secondaryAction}
                   >
-                    <span>{secondaryCta.label}</span>
-                    <span
-                      aria-hidden="true"
-                      className={cn(
-                        "grid size-8 shrink-0 place-items-center rounded-full border transition-transform duration-200 group-hover:translate-x-0.5 group-active:scale-95 [&_svg]:size-5",
-                        isLightSurface
-                          ? "border-soky-blue/25 bg-soky-blue/8"
-                          : "border-soky-white/45 bg-soky-blue/20",
-                      )}
-                    >
-                      <ConversionCtaIcon type={secondaryCta.type} />
-                    </span>
+                    <span aria-hidden="true" className={styles.actionIcon}><ConversionCtaIcon type={secondaryCta.type} /></span>
+                    <span className={styles.actionLabel}>{secondaryCta.label}</span>
                   </Button>
                 ) : null}
               </div>

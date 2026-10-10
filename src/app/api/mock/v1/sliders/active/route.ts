@@ -10,17 +10,26 @@ function toPublicSliderItem(slider: AdminSliderItemDto): PublicSliderItemDto {
     description: slider.description,
     eyebrow: slider.eyebrow,
     badgeLabel: slider.badgeLabel,
+    productName: slider.productName,
+    promoNote: slider.promoNote,
+    headlineParts: slider.headlineParts,
     highlightText: slider.highlightText,
     desktopImageUrl: slider.desktopImageUrl,
     mobileImageUrl: slider.mobileImageUrl,
+    imageSources: slider.imageSources,
     imageAlt: slider.imageAlt,
     mediaFit: slider.mediaFit,
     mediaPosition: slider.mediaPosition,
+    rotatorImages: slider.rotatorImages,
     background: slider.background,
+    productLayer: slider.productLayer,
+    colorLayer: slider.colorLayer,
+    patternOverlay: slider.patternOverlay,
     primaryCta: slider.primaryCta,
     secondaryCta: slider.secondaryCta,
     intent: slider.intent,
     layoutHint: slider.layoutHint,
+    backgroundVariant: slider.backgroundVariant,
   };
 
   if (slider.mediaMode === "cutout-product") {
@@ -42,7 +51,11 @@ export async function GET(request: Request) {
   await applyScenarioDelay(scenario);
 
   if (scenario === "error") {
-    return errorResponse("INTERNAL_ERROR", "No se pudieron cargar los sliders.", 500);
+    return errorResponse(
+      "INTERNAL_ERROR",
+      "No se pudieron cargar los sliders.",
+      500,
+    );
   }
 
   const sliders =

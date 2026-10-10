@@ -88,7 +88,7 @@ NEXT_PUBLIC_REAL_API_BASE_URL=http://localhost:4000/api/v1
 | `/order-intents/confirm/[token]` | Confirmación de una intención de pedido. |
 | `/${NEXT_PUBLIC_ADMIN_PATH}` | Entrada al panel administrativo. |
 
-## Estructura principal
+## Estructura principal actual
 
 ```text
 src/
@@ -99,6 +99,17 @@ src/
 ├── lib/          # Configuración y utilidades compartidas
 └── mock/         # Datos y helpers de la API mock
 ```
+
+La [convención canónica de organización frontend](docs/fullstack/01_FRONTEND_ARCHITECTURE_SPLIT.md)
+define la estructura objetivo y debe consultarse antes de crear componentes o
+funcionalidades. Fue aprobada el 27 de septiembre de 2026; **la migración de
+código sigue pendiente**. Incluye secciones de inicio en `features/home/sections`,
+separación de BrandStrip y Hero y agrupación gradual de carrito, admin, layout y
+providers, sin cambiar rutas públicas.
+
+Consultar [el índice operativo](docs/README.md), [el backlog](docs/fullstack/05_FRONTEND_BACKLOG_CODEX.md),
+el [registro de deuda técnica](docs/TECHNICAL_DEBT.md) y [la guía de agentes](AGENTS.md)
+para continuar el trabajo.
 
 ## Estado
 

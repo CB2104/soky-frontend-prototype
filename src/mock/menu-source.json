@@ -1,0 +1,730 @@
+{
+  "restaurant": {
+    "name": "SOKY",
+    "instagram": "@soky_ve",
+    "currency": "EUR"
+  },
+  "categories": [
+    {
+      "id": "entradas",
+      "name": "Entradas",
+      "sortOrder": 1,
+      "products": [
+        {
+          "id": "nigiri-atun-ahumado",
+          "name": "Nigiri de Atún Ahumado",
+          "price": 7
+        },
+        {
+          "id": "nigiri-pez-espada",
+          "name": "Nigiri de Pez Espada",
+          "price": 7
+        },
+        {
+          "id": "gunkan-atun",
+          "name": "Gunkan de Atún",
+          "price": 12
+        },
+        {
+          "id": "sashimi-salmon",
+          "name": "Sashimi de Salmón",
+          "price": 12
+        },
+        {
+          "id": "carpaccio-pez-espada",
+          "name": "Carpaccio de Pez Espada",
+          "price": 10
+        },
+        {
+          "id": "carpaccio-atun-ahumado",
+          "name": "Carpaccio de Atún Ahumado",
+          "price": 10
+        },
+        {
+          "id": "camarones-crispy",
+          "name": "Camarones Crispy",
+          "price": 8
+        },
+        {
+          "id": "croquetas-cangrejo",
+          "name": "Croquetas de Cangrejo",
+          "price": 4
+        },
+        {
+          "id": "tequenos-6",
+          "name": "Tequeños",
+          "price": 5,
+          "details": {
+            "quantity": 6,
+            "unit": "tequeños"
+          }
+        }
+      ]
+    },
+    {
+      "id": "piezas-tempura",
+      "name": "Piezas Tempura",
+      "sortOrder": 2,
+      "products": [
+        {
+          "id": "fuji-soky",
+          "name": "Fuji Soky",
+          "price": 7,
+          "description": "Roll relleno de camarón crispy, con topping de camarón troceado y aderezo.",
+          "labels": [
+            "Un clásico"
+          ]
+        },
+        {
+          "id": "tnt-fish",
+          "name": "TNT Fish",
+          "price": 7,
+          "description": "Roll relleno de pasta dinamita y pescado blanco con topping de spicy salad."
+        },
+        {
+          "id": "ninja-roll",
+          "name": "Ninja Roll",
+          "price": 7,
+          "description": "Roll relleno de camarón crispy y cangrejo con topping de hilos de cangrejo y salsas.",
+          "labels": [
+            "Lo vas a amar"
+          ]
+        },
+        {
+          "id": "chicken-roll",
+          "name": "Chicken Roll",
+          "price": 7,
+          "description": "Roll relleno de pollo crispy, con troceados de pollo y salsas."
+        },
+        {
+          "id": "platano-roll",
+          "name": "Plátano Roll",
+          "price": 7,
+          "description": "Roll de plátano relleno de cangrejo, pescado blanco crispy con topping de camarón troceado.",
+          "labels": [
+            "Una fusión de otro mundo"
+          ]
+        },
+        {
+          "id": "alaska-spicy",
+          "name": "Alaska Spicy",
+          "price": 12,
+          "description": "Roll relleno de salmón, cebollín, cangrejo crispy con topping de salmón y salsa spicy."
+        },
+        {
+          "id": "dragon-roll",
+          "name": "Dragon Roll",
+          "price": 8,
+          "description": "Roll relleno de arroz, aguacate, queso crema, camarón y cangrejo crispy con toppings de hilos de cangrejo con salsa spicy."
+        }
+      ]
+    },
+    {
+      "id": "piezas-frias",
+      "name": "Piezas Frías",
+      "sortOrder": 3,
+      "products": [
+        {
+          "id": "california",
+          "name": "California",
+          "price": 7,
+          "description": "Roll relleno de cangrejo con topping de masago."
+        },
+        {
+          "id": "spicy-tuna",
+          "name": "Spicy Tuna",
+          "price": 12,
+          "description": "Roll relleno de atún rojo con topping de tartar de atún picante, aguacate y masago."
+        },
+        {
+          "id": "crazy-roll",
+          "name": "Crazy Roll",
+          "price": 7,
+          "description": "Roll relleno de camarón crispy y cangrejo con masago.",
+          "labels": [
+            "Una explosión de sabor"
+          ]
+        },
+        {
+          "id": "fuji-roll",
+          "name": "Fuji Roll",
+          "price": 7,
+          "description": "Roll relleno de camarón con topping de camarón crispy, quinoa y spicy."
+        },
+        {
+          "id": "fish-roll",
+          "name": "Fish Roll",
+          "price": 7,
+          "description": "Roll relleno de pescado blanco crispy con topping de pescado troceado con cebollín."
+        },
+        {
+          "id": "alaska-roll",
+          "name": "Alaska Roll",
+          "price": 12,
+          "description": "Roll relleno de salmón con topping de aguacate y wakame."
+        },
+        {
+          "id": "alaska-tuna",
+          "name": "Alaska Tuna",
+          "price": 14,
+          "description": "Roll relleno de atún, salmón con topping de wakame."
+        },
+        {
+          "id": "acevichado",
+          "name": "Acevichado",
+          "price": 14,
+          "description": "Roll relleno de aguacate, cebollín, camarón, cangrejo con topping de atún rojo y ceviche."
+        },
+        {
+          "id": "proteina-roll",
+          "name": "Proteína Roll",
+          "price": 15,
+          "description": "Roll relleno de atún, salmón, cangrejo, aguacate y queso crema."
+        }
+      ]
+    },
+    {
+      "id": "ensaladas",
+      "name": "Ensaladas",
+      "sortOrder": 4,
+      "products": [
+        {
+          "id": "dinamita",
+          "name": "Dinamita",
+          "price": 7,
+          "description": "Kanikama, cebollín y aderezo."
+        },
+        {
+          "id": "neptuno",
+          "name": "Neptuno",
+          "price": 8,
+          "description": "Wakame, cangrejo, salmón, atún rojo, semillas de sésamo, masago, salsa dragon y aderezo especial."
+        },
+        {
+          "id": "soky-salad",
+          "name": "Soky Salad",
+          "price": 10,
+          "description": "Wakame, cangrejo, atún rojo, salmón chileno, pulpo, semillas de sésamo, masago, salsa dragon y aderezo especial."
+        },
+        {
+          "id": "poke-mahalo",
+          "name": "Poke Mahalo",
+          "price": 10,
+          "description": "Arroz, salmón chileno, cebollín, aguacate, wakame, cangrejo, camarón crispy, semillas de sésamo, hilos de cangrejo crunchy y salsa de dragon."
+        }
+      ]
+    },
+    {
+      "id": "tartar",
+      "name": "Tartar",
+      "sortOrder": 5,
+      "products": [
+        {
+          "id": "tartar-atun",
+          "name": "Atún",
+          "price": 10,
+          "description": "Atún rojo, aguacate, wakame y salsa ponzu."
+        },
+        {
+          "id": "tartar-salmon",
+          "name": "Salmón",
+          "price": 10,
+          "description": "Salmón, aguacate, wakame y salsa ponzu."
+        }
+      ]
+    },
+    {
+      "id": "ceviches",
+      "name": "Ceviches",
+      "sortOrder": 6,
+      "products": [
+        {
+          "id": "ceviche-clasico",
+          "name": "Clásico",
+          "price": 10,
+          "description": "Pescado blanco, limón, ají, cilantro, pimentón, ajimoto, cebolla morada.",
+          "labels": [
+            "♥"
+          ]
+        },
+        {
+          "id": "ceviche-especial",
+          "name": "Especial",
+          "price": 14,
+          "description": "Camarón, pescado blanco, limón, ají, cilantro, pimentón, ajimoto, cebolla morada.",
+          "labels": [
+            "★"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "combo-boxs",
+      "name": "Combo Boxs",
+      "sortOrder": 7,
+      "products": [
+        {
+          "id": "box-kiyomi",
+          "name": "Box Kiyomi",
+          "price": 24,
+          "details": {
+            "pieces": 72,
+            "composition": [
+              {
+                "type": "tempura",
+                "quantity": 72
+              }
+            ]
+          }
+        },
+        {
+          "id": "box-kurama",
+          "name": "Box Kurama",
+          "price": 22,
+          "details": {
+            "pieces": 66,
+            "composition": [
+              {
+                "type": "frías",
+                "quantity": 30
+              },
+              {
+                "type": "tempura",
+                "quantity": 36
+              }
+            ]
+          }
+        },
+        {
+          "id": "box-osaka",
+          "name": "Box Osaka",
+          "price": 13,
+          "details": {
+            "pieces": 34,
+            "composition": [
+              {
+                "type": "frías",
+                "quantity": 10
+              },
+              {
+                "type": "tempura",
+                "quantity": 24
+              }
+            ]
+          }
+        },
+        {
+          "id": "box-kyoto",
+          "name": "Box Kyoto",
+          "price": 15,
+          "details": {
+            "pieces": 36,
+            "composition": [
+              {
+                "type": "tempura",
+                "quantity": 36
+              }
+            ]
+          }
+        },
+        {
+          "id": "box-soky",
+          "name": "Box Soky",
+          "price": 12,
+          "details": {
+            "pieces": 36,
+            "composition": [
+              {
+                "type": "tempura",
+                "quantity": 36
+              }
+            ]
+          }
+        },
+        {
+          "id": "box-samurai",
+          "name": "Box Samurai",
+          "price": 12,
+          "details": {
+            "pieces": 30,
+            "composition": [
+              {
+                "type": "frías",
+                "quantity": 30
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "especiales",
+      "name": "Especiales",
+      "sortOrder": 8,
+      "products": [
+        {
+          "id": "soky-mix",
+          "name": "Soky Mix",
+          "price": 20,
+          "labels": [
+            "★"
+          ],
+          "details": {
+            "components": [
+              {
+                "name": "Cortes de Sashimi",
+                "quantity": 4
+              },
+              {
+                "name": "Piezas de Nigiri",
+                "quantity": 4
+              },
+              {
+                "name": "Temaki",
+                "quantity": 2
+              },
+              {
+                "name": "Gukans",
+                "quantity": 4
+              },
+              {
+                "name": "Piezas Frías",
+                "quantity": 5
+              }
+            ]
+          }
+        },
+        {
+          "id": "soky-burger",
+          "name": "Soky Burger",
+          "price": 8,
+          "description": "Arroz, aguacate, salmón, ensalada dinamita, camarón, cebollín y queso crema.",
+          "labels": [
+            "★"
+          ]
+        },
+        {
+          "id": "soky-dog",
+          "name": "Soky Dog",
+          "price": 10,
+          "description": "Atún rojo, wakame, ensalada dinamita, pulpo, salsas y masago.",
+          "labels": [
+            "★"
+          ]
+        },
+        {
+          "id": "soky-pizza",
+          "name": "Soky Pizza",
+          "price": 8,
+          "description": "6 piezas de arroz crispy, con topping de atún, aguacate y ensalada dinamita.",
+          "labels": [
+            "★"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menu-kids",
+      "name": "Menú Kids",
+      "sortOrder": 9,
+      "products": [
+        {
+          "id": "menu-kids",
+          "name": "Menú Kids",
+          "price": 7,
+          "details": {
+            "components": [
+              "Chicken Tenders",
+              "Papas Fritas",
+              "Jugo Pequeño"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "postres",
+      "name": "Postres",
+      "sortOrder": 10,
+      "products": [
+        {
+          "id": "ponque-zanahoria",
+          "name": "Ponqué de Zanahoria",
+          "price": 4,
+          "description": "Un clásico lleno de sabor, dos capas con una textura esponjosa, cubierto y relleno de delicioso frosting."
+        },
+        {
+          "id": "ponque-chocolate",
+          "name": "Ponqué de Chocolate",
+          "price": 4,
+          "description": "Terciopelo de chocolate húmedo, con un corazón de ganache de chocolate oscuro irresistible."
+        },
+        {
+          "id": "torta-3-leches",
+          "name": "Torta 3 Leches",
+          "price": 4,
+          "description": "Una trilogía de sabores lácteos, en un bizcocho esponjoso que enamora al primer bocado."
+        },
+        {
+          "id": "brownie",
+          "name": "Brownie",
+          "price": 4,
+          "description": "Cremoso por dentro, crujiente por fuera, una explosión de chocolate.",
+          "labels": [
+            "Con helado de vainilla"
+          ]
+        },
+        {
+          "id": "pie-limon",
+          "name": "Pie de Limón",
+          "price": 4,
+          "description": "Delicada base de crujiente con un relleno cremoso de limón."
+        },
+        {
+          "id": "cheesecake-vasco",
+          "name": "Cheesecake Vasco",
+          "price": 5,
+          "description": "El equilibrio perfecto entre el tostado exterior y un interior increíblemente cremoso que se deshace en el paladar."
+        }
+      ]
+    },
+    {
+      "id": "bebidas",
+      "name": "Bebidas",
+      "sortOrder": 11,
+      "products": [
+        {
+          "id": "agua-335ml",
+          "name": "Agua 335 ml",
+          "price": 1,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "malta-botella",
+          "name": "Malta de Botella",
+          "price": 1,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "gatorade",
+          "name": "Gatorade",
+          "price": 3,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "soda",
+          "name": "Soda",
+          "price": 2,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "te-lipton-500ml",
+          "name": "Té Lipton 500 ml",
+          "price": 3,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "yukery-250ml",
+          "name": "Yukery 250 ml",
+          "price": 2,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "jugos-naturales",
+          "name": "Jugos Naturales",
+          "price": 3,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "refrescos-1l",
+          "name": "Refrescos de 1 L",
+          "price": 2,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "refrescos-lata",
+          "name": "Refrescos de Lata",
+          "price": 3,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "limonada",
+          "name": "Limonada",
+          "price": 3,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "limonada-hierbabuena",
+          "name": "Limonada con hierbabuena",
+          "price": 3,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "cafe-pequeno",
+          "name": "Café Pequeño",
+          "price": 1.5,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "cafe-grande",
+          "name": "Café Grande",
+          "price": 3,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "nestea-vaso",
+          "name": "Nestea de Vaso",
+          "price": 1.5,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "jarra-nestea",
+          "name": "Jarra de Nestea",
+          "price": 5,
+          "group": "sin_alcohol"
+        },
+        {
+          "id": "smirnoff",
+          "name": "Smirnoff",
+          "price": 7,
+          "group": "ready_to_drink"
+        },
+        {
+          "id": "breeze-ice",
+          "name": "Breeze Ice",
+          "price": 7,
+          "group": "ready_to_drink"
+        },
+        {
+          "id": "whisky-8",
+          "name": "Whisky 8 años",
+          "price": 34,
+          "group": "botellas"
+        },
+        {
+          "id": "whisky-12",
+          "name": "Whisky 12 años",
+          "price": 50,
+          "group": "botellas"
+        },
+        {
+          "id": "whisky-18",
+          "name": "Whisky 18 años",
+          "price": 130,
+          "group": "botellas"
+        },
+        {
+          "id": "trago-whisky-8",
+          "name": "Tragos 8 años",
+          "price": 3.5,
+          "group": "tragos"
+        },
+        {
+          "id": "trago-whisky-12",
+          "name": "Tragos 12 años",
+          "price": 6,
+          "group": "tragos"
+        },
+        {
+          "id": "trago-whisky-18",
+          "name": "Tragos 18 años",
+          "price": 15,
+          "group": "tragos"
+        },
+        {
+          "id": "ron-cacique",
+          "name": "Ron Cacique",
+          "price": 25,
+          "group": "botellas"
+        },
+        {
+          "id": "ron-santa-teresa-anejo",
+          "name": "Ron Santa Teresa Añejo",
+          "price": 25,
+          "group": "botellas"
+        },
+        {
+          "id": "trago-cacique",
+          "name": "Trago Cacique",
+          "price": 4,
+          "group": "tragos"
+        },
+        {
+          "id": "ron-cacique-500-linaje",
+          "name": "Ron Cacique 500 | Linaje",
+          "price": 35,
+          "group": "botellas"
+        },
+        {
+          "id": "trago-cacique-500-linaje",
+          "name": "Trago Cacique 500 | Linaje",
+          "price": 4,
+          "group": "tragos"
+        },
+        {
+          "id": "vodka-gordons",
+          "name": "Vodka Gordon's",
+          "price": 25,
+          "group": "botellas"
+        },
+        {
+          "id": "ginebra-gordons",
+          "name": "Ginebra Gordon's",
+          "price": 30,
+          "group": "botellas"
+        },
+        {
+          "id": "tobo-cerveza-light-zulia-negra",
+          "name": "Tobo de Cerveza",
+          "price": 10,
+          "group": "cervezas",
+          "details": {
+            "quantity": 12,
+            "unit": "UND",
+            "variants": [
+              "Light",
+              "Zulia",
+              "Negra"
+            ]
+          }
+        },
+        {
+          "id": "tobo-cerveza-solera",
+          "name": "Tobo de Cerveza",
+          "price": 12,
+          "group": "cervezas",
+          "details": {
+            "quantity": 12,
+            "unit": "UND",
+            "variants": [
+              "Solera azul",
+              "Solera Verde"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "cocteles",
+      "name": "Cócteles",
+      "sortOrder": 12,
+      "products": [
+        {
+          "id": "daiquiri",
+          "name": "Daiquiri",
+          "price": 5
+        },
+        {
+          "id": "pina-colada",
+          "name": "Piña Colada",
+          "price": 5
+        },
+        {
+          "id": "mojito",
+          "name": "Mojito",
+          "price": 5
+        }
+      ]
+    }
+  ]
+}

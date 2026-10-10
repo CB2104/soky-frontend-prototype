@@ -1,17 +1,20 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useLayoutEffect, useRef, useState, useTransition } from "react";
 import type { CartQuoteResponseDto, FulfillmentType } from "@/contracts/api";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { quoteCart } from "@/features/cart/api";
 import { useCartStore } from "@/features/cart/store";
+import { trackEvent } from "@/features/analytics/client";
 import {
   createOrderIntent,
   registerWhatsappClicked,
 } from "@/features/checkout/api";
-import { trackEvent } from "@/features/analytics/client";
+import { useCurrentExchangeRate } from "@/features/exchange-rates/useCurrentExchangeRate";
+import { isUsableExchangeRate } from "@/features/exchange-rates/rate-validation";
 import { formatMoney } from "@/lib/money";
+import { getCartIntentItemsKey, getCartQuoteKey } from "../reconcile-cart";
 import { useCartHydration } from "../useCartHydration";
 
 type CheckoutForm = {
@@ -37,38 +40,83 @@ export function CartCheckout() {
   const items = hasHydrated ? storedItems : [];
   const removeItem = useCartStore((state) => state.removeItem);
   const [form, setForm] = useState<CheckoutForm>(initialForm);
-  const [quote, setQuote] = useState<CartQuoteResponseDto | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
-
+  const [fulfillmentRevision, setFulfillmentRevision] = useState(0);
+  const catalogStatus = useCartStore((state) => state.catalogStatus);
+  const catalogRevision = useCartStore((state) => state.catalogRevision);
+  const cartRevision = useCartStore((state) => state.cartRevision);
+  const retryCatalog = useCartStore((state) => state.retryCatalog);
+  const { rate, status: rateStatus } = useCurrentExchangeRate();
+  const [quoteRecord, setQuoteRecord] = useState<{
+    key: string;
+    response: CartQuoteResponseDto;
+  } | null>(null);
+  const [errorRecord, setErrorRecord] = useState<{
+    key: string;
+    message: string;
+  } | null>(null);
+  const quoteRequestId = useRef(0);
+  const intentRequestId = useRef(0);
   const quoteItems = items.map((item) => ({
     productId: item.productId,
     quantity: item.quantity,
     notes: item.notes,
   }));
 
+  const rateKey = JSON.stringify(rate);
+  const quoteKey = getCartQuoteKey(items, form.fulfillmentType, catalogRevision, cartRevision, fulfillmentRevision) + rateKey;
+  const quoteKeyRef = useRef(quoteKey);
+  useLayoutEffect(() => {
+    quoteKeyRef.current = quoteKey;
+    quoteRequestId.current += 1;
+    intentRequestId.current += 1;
+  }, [quoteKey]);
+
+  const quote = catalogStatus === "ready" && isUsableExchangeRate(rate, "EUR")
+    && quoteRecord?.key === quoteKey ? quoteRecord.response : null;
+  const error = errorRecord?.key === quoteKey ? errorRecord.message : null;
+  const cartReady = catalogStatus === "ready" && items.length > 0
+    && items.every((item) => !item.catalogIssue);
+  const canCreateIntent = !!quote && cartReady && quote.invalidItems.length === 0
+    && isUsableExchangeRate(quote.rateSnapshot, "EUR")
+    && quote.rateSnapshot.rate === rate?.rate;
+  const [isPending, startTransition] = useTransition();
+
   function handleQuote() {
-    setError(null);
+    if (!cartReady) return;
+
+    const requestedKey = quoteKey;
+    const requestId = ++quoteRequestId.current;
+    setQuoteRecord(null);
+    setErrorRecord(null);
     startTransition(async () => {
       try {
         const response = await quoteCart({
           items: quoteItems,
           fulfillmentType: form.fulfillmentType,
         });
-        setQuote(response);
+        if (requestId !== quoteRequestId.current || requestedKey !== quoteKeyRef.current) return;
+        setQuoteRecord({ key: requestedKey, response });
         trackEvent({ eventType: "checkout_started", entityType: "cart" });
       } catch (currentError) {
-        setError(
-          currentError instanceof Error
+        if (requestId !== quoteRequestId.current || requestedKey !== quoteKeyRef.current) return;
+        setErrorRecord({
+          key: requestedKey,
+          message: currentError instanceof Error
             ? currentError.message
             : "No se pudo calcular el pedido.",
-        );
+        });
       }
     });
   }
 
   function handleOrderIntent() {
-    setError(null);
+    if (!canCreateIntent) return;
+
+    const submittedQuoteKey = quoteKey;
+    const submittedItemsKey = getCartIntentItemsKey(items);
+    const submittedCatalogRevision = catalogRevision;
+    const requestId = ++intentRequestId.current;
+    setErrorRecord(null);
     startTransition(async () => {
       try {
         const response = await createOrderIntent({
@@ -82,25 +130,29 @@ export function CartCheckout() {
               : undefined,
           notes: form.notes || undefined,
         });
+        if (requestId !== intentRequestId.current || submittedQuoteKey !== quoteKeyRef.current) return;
+
         await registerWhatsappClicked(response.id);
+        if (requestId !== intentRequestId.current || submittedQuoteKey !== quoteKeyRef.current) return;
+
         trackEvent({ eventType: "whatsapp_clicked", entityType: "cart" });
         window.open(response.whatsappUrl, "_blank", "noopener,noreferrer");
-        clearCart();
+        const currentState = useCartStore.getState();
+        if (getCartIntentItemsKey(currentState.items) === submittedItemsKey
+          && currentState.catalogRevision === submittedCatalogRevision) {
+          clearCart();
+        }
       } catch (currentError) {
-        setError(
-          currentError instanceof Error
+        if (requestId !== intentRequestId.current || submittedQuoteKey !== quoteKeyRef.current) return;
+        setErrorRecord({
+          key: submittedQuoteKey,
+          message: currentError instanceof Error
             ? currentError.message
             : "No se pudo abrir WhatsApp.",
-        );
+        });
       }
     });
   }
-
-  const canCreateIntent =
-    quote &&
-    quote.invalidItems.length === 0 &&
-    items.length > 0 &&
-    !quote.rateSnapshot.stale;
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
@@ -108,6 +160,12 @@ export function CartCheckout() {
         <h1 className="soky-heading text-4xl text-soky-blue md:text-5xl">
           Tu pedido
         </h1>
+        {items.length > 0 && catalogStatus !== "ready" ? (
+          <p role="status" className="mt-4 text-sm text-soky-muted">
+            {catalogStatus === "error" ? "No pudimos actualizar los productos." : "Verificando productos y precios…"}
+            {catalogStatus === "error" ? <button type="button" onClick={retryCatalog} className="ml-2 min-h-11 font-bold underline">Reintentar</button> : null}
+          </p>
+        ) : null}
         {items.length === 0 ? (
           <p className="mt-4 rounded-2xl bg-soky-paper p-5 text-soky-muted">
             Tu carrito está vacío. Vuelve al menú para agregar tus boxes
@@ -124,7 +182,10 @@ export function CartCheckout() {
                   <div>
                     <p className="font-black">{item.titleSnapshot}</p>
                     <p className="text-sm text-soky-muted">
-                      Cantidad: {item.quantity}
+                      Cantidad: {item.quantity}{" "}
+                      {catalogStatus === "ready" && item.catalogIssue
+                        ? `· ${item.catalogIssue === "UNAVAILABLE" ? "Agotado" : "Producto por revisar"}`
+                        : null}
                     </p>
                   </div>
                   <Button
@@ -147,34 +208,31 @@ export function CartCheckout() {
           <label className="grid gap-2 text-sm font-bold">
             Nombre
             <input
+              disabled={isPending}
               className="min-h-12 rounded-xl border border-soky-border bg-soky-white px-4 text-soky-ink"
               value={form.customerName}
-              onChange={(event) =>
-                setForm({ ...form, customerName: event.target.value })
-              }
+              onChange={(event) => setForm({ ...form, customerName: event.target.value })}
             />
           </label>
           <label className="grid gap-2 text-sm font-bold">
             Teléfono
             <input
+              disabled={isPending}
               className="min-h-12 rounded-xl border border-soky-border bg-soky-white px-4 text-soky-ink"
               value={form.customerPhone}
-              onChange={(event) =>
-                setForm({ ...form, customerPhone: event.target.value })
-              }
+              onChange={(event) => setForm({ ...form, customerPhone: event.target.value })}
             />
           </label>
           <label className="grid gap-2 text-sm font-bold">
             Tipo de entrega
             <select
+              disabled={isPending}
               className="min-h-12 rounded-xl border border-soky-border bg-soky-white px-4 text-soky-ink"
               value={form.fulfillmentType}
-              onChange={(event) =>
-                setForm({
-                  ...form,
-                  fulfillmentType: event.target.value as FulfillmentType,
-                })
-              }
+              onChange={(event) => {
+                setFulfillmentRevision((revision) => revision + 1);
+                setForm({ ...form, fulfillmentType: event.target.value as FulfillmentType });
+              }}
             >
               <option value="PICKUP">Retiro</option>
               <option value="DELIVERY">Delivery</option>
@@ -184,22 +242,20 @@ export function CartCheckout() {
             <label className="grid gap-2 text-sm font-bold">
               Dirección
               <textarea
+                disabled={isPending}
                 className="min-h-24 rounded-xl border border-soky-border bg-soky-white px-4 py-3 text-soky-ink"
                 value={form.deliveryAddress}
-                onChange={(event) =>
-                  setForm({ ...form, deliveryAddress: event.target.value })
-                }
+                onChange={(event) => setForm({ ...form, deliveryAddress: event.target.value })}
               />
             </label>
           ) : null}
           <label className="grid gap-2 text-sm font-bold">
             Notas
             <textarea
+              disabled={isPending}
               className="min-h-24 rounded-xl border border-soky-border bg-soky-white px-4 py-3 text-soky-ink"
               value={form.notes}
-              onChange={(event) =>
-                setForm({ ...form, notes: event.target.value })
-              }
+              onChange={(event) => setForm({ ...form, notes: event.target.value })}
             />
           </label>
         </div>
@@ -208,10 +264,18 @@ export function CartCheckout() {
           <Button
             type="button"
             onClick={handleQuote}
-            disabled={items.length === 0 || isPending}
+            disabled={!cartReady || !isUsableExchangeRate(rate, "EUR") || isPending}
           >
             {isPending ? "Calculando" : "Calcular total"}
           </Button>
+          {items.length > 0 && !isUsableExchangeRate(rate, "EUR") ? (
+            <p role="status" className="text-sm text-soky-muted">
+              {rateStatus === "error" ? "No pudimos consultar la tasa. Vuelve a esta ventana para reintentar." : "La tasa debe estar disponible y validada para calcular el pedido."}
+            </p>
+          ) : null}
+          {items.length > 0 && !quote && cartReady ? (
+            <p role="status" className="text-sm text-soky-muted">Calcula el total para continuar con este pedido.</p>
+          ) : null}
           {quote ? (
             <div className="rounded-2xl bg-soky-paper p-4">
               <p className="text-sm font-bold text-soky-muted">
@@ -221,19 +285,15 @@ export function CartCheckout() {
                 {formatMoney(quote.totals.totalVes, "VES")}
               </p>
               <p className="mt-2 text-sm text-soky-muted">
-                Tasa: {quote.rateSnapshot.rate} VES por{" "}
-                {quote.rateSnapshot.baseCurrency}
+                Tasa: {quote.rateSnapshot.rate} VES por {quote.rateSnapshot.baseCurrency}
               </p>
+              {quote.warnings.map((warning) => <p key={warning} className="mt-2 text-sm text-soky-muted">{warning}</p>)}
               {quote.rateSnapshot.stale ? (
-                <Badge className="mt-3" variant="promo">
-                  Tasa por validar
-                </Badge>
+                <Badge className="mt-3" variant="promo">Tasa por validar</Badge>
               ) : null}
               {quote.invalidItems.length > 0 ? (
                 <div className="mt-4 space-y-2">
-                  <p className="font-bold text-japan-seal">
-                    Corrige estos productos:
-                  </p>
+                  <p className="font-bold text-japan-seal">Corrige estos productos:</p>
                   {quote.invalidItems.map((item) => (
                     <button
                       key={`${item.productId}-${item.reason}`}

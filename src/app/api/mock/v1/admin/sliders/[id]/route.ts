@@ -9,6 +9,7 @@ import type {
 } from "@/contracts/api";
 import { mockSliderItems } from "@/mock/db";
 import { errorResponse } from "@/mock/helpers";
+import { getPatchedModernSliderFields } from "@/mock/slider-modern-fields";
 
 const DEFAULT_MEDIA_MODE: Exclude<SliderMediaMode, "cutout-product"> =
   "promo-image";
@@ -115,9 +116,11 @@ function getMediaFields(
   const mediaBase = {
     desktopImageUrl,
     mobileImageUrl: body.mobileImageUrl ?? current.mobileImageUrl,
+    imageSources: body.imageSources ?? current.imageSources,
     imageAlt: body.imageAlt ?? current.imageAlt,
     mediaFit: body.mediaFit ?? current.mediaFit,
     mediaPosition: body.mediaPosition ?? current.mediaPosition,
+    rotatorImages: body.rotatorImages ?? current.rotatorImages,
   };
 
   if (mediaMode === "cutout-product") {
@@ -150,7 +153,9 @@ export async function PATCH(request: Request, context: RouteContext) {
     return errorResponse("NOT_FOUND", "Slider no encontrado.", 404);
   }
 
-  const body = (await request.json().catch(() => null)) as AdminSliderUpdateRequest | null;
+  const body = (await request
+    .json()
+    .catch(() => null)) as AdminSliderUpdateRequest | null;
 
   if (!body) {
     return errorResponse("VALIDATION_ERROR", "Payload inválido.", 422);
@@ -159,13 +164,17 @@ export async function PATCH(request: Request, context: RouteContext) {
   const current = mockSliderItems[index];
   const timestamp = new Date().toISOString();
   const status = getStatus(body, current);
+  const modernFields = getPatchedModernSliderFields(body, current);
   const updatedSlider: AdminSliderItemDto = {
     id: current.id,
     title: body.title ?? current.title,
     description: body.description ?? current.description,
     eyebrow: body.eyebrow ?? current.eyebrow,
     badgeLabel: body.badgeLabel ?? current.badgeLabel,
+    productName: body.productName ?? current.productName,
+    promoNote: body.promoNote ?? current.promoNote,
     highlightText: body.highlightText ?? current.highlightText,
+    ...modernFields,
     ...getMediaFields(body, current),
     background: body.background ?? current.background,
     primaryCta: getPrimaryCta(body, current),
@@ -179,8 +188,10 @@ export async function PATCH(request: Request, context: RouteContext) {
     updatedAt: timestamp,
     archivedAt:
       status === "ARCHIVED"
-        ? body.archivedAt ?? current.archivedAt ?? timestamp
+        ? (body.archivedAt ?? current.archivedAt ?? timestamp)
         : body.archivedAt,
+
+    backgroundVariant: body.backgroundVariant ?? current.backgroundVariant,
   };
 
   if (hasActivePlacementLimit(updatedSlider)) {

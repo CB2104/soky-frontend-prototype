@@ -1,0 +1,226 @@
+/* Anton / Montserrat match the established slides 2 and 4. */
+.root [data-hero-copy] {
+  container-type: inline-size;
+}
+
+.root {
+  --content-x: 0px;
+  --content-y: 15px;
+}
+
+.root [data-welcome-copy],
+.root [data-welcome-actions] {
+  left: var(--content-x);
+  top: var(--content-y);
+}
+
+.heading {
+  margin: 0;
+  max-width: 100%;
+  font-size: clamp(2.75rem, 13vw, 4rem);
+  line-height: 0.94;
+  letter-spacing: -0.015em;
+  text-shadow: 0 2px 0 rgb(7 5 74 / 0.1);
+}
+
+.headlineLine {
+  display: block;
+}
+
+.brandLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.12em;
+  row-gap: 0;
+}
+
+.closingLine {
+  flex: 0 0 100%;
+}
+
+.titleWord {
+  display: inline-block;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.brandLine > [data-hero-title-text] {
+  flex: 0 0 auto;
+}
+
+.headlineLogo {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  width: 1.48em;
+  height: 0.8em;
+  transform: translateY(0.035em);
+}
+
+.underline {
+  margin-top: 12px;
+  height: 5px;
+  width: min(100%, 176px);
+}
+
+.description {
+  margin-top: 16px;
+  max-width: 34ch;
+  font-size: clamp(0.9375rem, 4vw, 1.0625rem);
+  line-height: 1.4;
+  text-wrap: pretty;
+}
+
+@media (min-width: 768px) {
+  .heading {
+    font-size: clamp(3rem, min(6vw, 20cqw), 7rem);
+    line-height: 0.9;
+  }
+
+  .underline {
+    width: 208px;
+  }
+
+  .description {
+    margin-top: 20px;
+    font-size: clamp(1rem, 1.3vw, 1.25rem);
+    line-height: 1.45;
+  }
+}
+
+.root [data-hero-underline] {
+  box-shadow: none;
+  background-color: var(--color-soky-white);
+}
+
+.root [data-hero-description] {
+  font-weight: 500;
+  color: rgb(255 253 247 / 0.96);
+}
+
+/* One complete transparent product; CSS controls placement across viewports. */
+.product {
+  inset: auto 0 8% auto;
+  width: min(65%, 1180px);
+  height: auto;
+  aspect-ratio: 3 / 2;
+}
+
+.product img {
+  filter: drop-shadow(0 5px 3px rgb(37 15 5 / 0.15))
+    drop-shadow(0 12px 12px rgb(37 15 5 / 0.12));
+}
+
+@media (min-width: 1101px) and (orientation: landscape) {
+  .product {
+    width: min(60%, 1062px);
+    bottom: calc(5% - 4px);
+  }
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
+  .root :global(.soky-container-wide) {
+    width: calc(100% - 3rem);
+    margin-inline: 16px;
+    padding-top: 20svh;
+  }
+
+  .heading {
+    font-size: clamp(2.4rem, min(13vw, 6svh), 4rem);
+  }
+
+  .product {
+    inset: auto 0 10% auto;
+    width: 100%;
+  }
+
+  .product img {
+    filter: drop-shadow(0 3px 2px rgb(37 15 5 / 0.14))
+      drop-shadow(0 7px 7px rgb(37 15 5 / 0.12));
+  }
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
+  .root {
+    --content-x: 0px;
+    --content-y: -12px;
+  }
+}
+
+@media (max-width: 767px) and (max-height: 700px) and (orientation: portrait) {
+  .heading {
+    font-size: clamp(2rem, 5.4svh, 2.6rem);
+  }
+  .description {
+    margin-top: 12px;
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
+  .heading {
+    font-size: clamp(3.4rem, 7.4vw, 4.5rem);
+  }
+
+  .description {
+    max-width: 23ch;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1100px) and (orientation: landscape) and (min-height: 501px) {
+  .heading {
+    font-size: clamp(3rem, 6vw, 4rem);
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .root :global(.soky-container-wide) {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0;
+    padding-top: 64px;
+    padding-bottom: 40px;
+  }
+
+  .root [data-welcome-copy],
+  .root [data-welcome-actions] {
+    width: min(46%, 23rem);
+    align-self: flex-start;
+  }
+
+  .root [data-welcome-actions] {
+    margin-top: 4px;
+  }
+
+  .heading {
+    /* Height sets the rhythm; copy width keeps logo + EMPIEZA AQUÍ together. */
+    font-size: clamp(2rem, min(10svh, 15cqw), 3.25rem);
+    max-width: 100%;
+    line-height: 0.88;
+  }
+
+  .closingLine {
+    flex: 0 0 auto;
+  }
+
+  .underline {
+    margin-top: 4px;
+    height: 4px;
+    width: 144px;
+  }
+
+  .description {
+    margin-top: 4px;
+    max-width: 35ch;
+    font-size: clamp(0.8rem, 3svh, 1rem);
+    line-height: 1.1;
+  }
+
+  .product {
+    width: 62%;
+    max-height: 82%;
+  }
+}

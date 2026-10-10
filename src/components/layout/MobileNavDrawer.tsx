@@ -196,7 +196,7 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
   }, [closeMobileNav, isOpen]);
 
   return (
-    <div className="relative z-60 md:hidden">
+    <div className="relative z-60 md:hidden [@media(max-height:500px)_and_(orientation:landscape)]:!block">
       <button
         ref={triggerRef}
         type="button"
@@ -237,6 +237,7 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
             strokeWidth="2.5"
           />
           <motion.path
+            initial={false}
             animate={isOpen ? "open" : "closed"}
             variants={{
               closed: { opacity: 1 },
@@ -320,7 +321,7 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
                   <AnimatedSokyLogo title="" className="h-10 w-auto" />
                 </div>
               </header>
-              <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain bg-soky-paper bg-[url('/images/endless-clouds.svg')] bg-size-[56px_28px] bg-repeat px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+              <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain bg-soky-paper bg-[url('/images/patterns/endless-clouds.svg')] bg-size-[56px_28px] bg-repeat px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
                 <motion.nav
                   className="mt-6 flex flex-col gap-2"
                   variants={reduceMotion ? undefined : linksVariants}
@@ -373,14 +374,15 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
                       className="mt-3 flex flex-col gap-1"
                     >
                       {contextualSection.items.map((item) => (
-                        <Link
+                        <a
                           href={item.href}
+                          data-transition-ignore="true"
                           key={item.href}
                           onClick={() => closeMobileNav()}
                           className="flex min-h-11 items-center rounded-xl px-4 py-2 font-extrabold transition-colors hover:bg-soky-blue hover:text-soky-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-orange focus-visible:ring-offset-2"
                         >
                           {item.title}
-                        </Link>
+                        </a>
                       ))}
                     </nav>
                   </section>
@@ -410,7 +412,7 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
                         className="group inline-flex w-full touch-manipulation rounded-full bg-soky-orange p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2"
                         onClick={() => closeMobileNav()}
                       >
-                        <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-blue bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-navy group-active:scale-[0.98] group-active:bg-soky-navy">
+                        <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-blue bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-navy group-active:scale-[0.98] group-active:bg-soky-navy">
                           <span
                             aria-hidden="true"
                             className="grid size-5 shrink-0 place-items-center [&_svg]:size-5"
@@ -427,7 +429,7 @@ export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
                         onClick={() => closeMobileNav()}
                       >
                         <span
-                          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-blue bg-[url('/images/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat
+                          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-blue bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat
                          px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-navy group-active:scale-[0.98] group-active:bg-soky-navy"
                         >
                           <span

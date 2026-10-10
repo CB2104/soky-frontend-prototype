@@ -1,22 +1,36 @@
 import type {
+  HeroResponsiveSources,
   SliderBackgroundDto,
   SliderBackgroundImageDto,
   SliderBackgroundLayerDto,
+  SliderColorLayerDto,
+  SliderHeadlinePartDto,
   PublicSliderItemDto,
   SliderCtaDto,
   SliderImageFit,
+  SliderImageSourcesDto,
   SliderImagePosition,
   SliderIntent,
   SliderLayoutHint,
   SliderMediaMode,
+  SliderPatternBlendMode,
+  SliderPatternOverlayDto,
+  SliderPatternPosition,
+  SliderPatternSize,
+  SliderProductLayerDto,
+  SliderRotatorImageSourcesDto,
 } from "@/contracts/api";
 import type {
   HeroBackground,
   HeroBackgroundImage,
   HeroBackgroundLayer,
   HeroBadgeTone,
+  HeroColorLayer,
   HeroCtaViewModel,
+  HeroHeadlinePart,
   HeroPattern,
+  HeroPatternOverlay,
+  HeroProductLayer,
   HeroPresentationVariant,
   HeroSlideViewModel,
 } from "./types";
@@ -24,6 +38,145 @@ import type {
 const HERO_IMAGE_SIZES = "(min-width: 1024px) 58vw, 100vw";
 const HERO_CUTOUT_IMAGE_SIZES = "(min-width: 1024px) 48vw, 92vw";
 const DEFAULT_MEDIA_MODE: SliderMediaMode = "promo-image";
+const HEX_COLOR_PATTERN = /^#[0-9a-f]{6}$/i;
+
+function normalizeHeroResponsiveSources(
+  sources: SliderImageSourcesDto | SliderRotatorImageSourcesDto,
+): HeroResponsiveSources | null {
+  if ("desktop" in sources) {
+    const normalizedSources = {
+      desktop: sources.desktop.trim(),
+      desktopWide: sources.desktopWide.trim(),
+      tabletLandscape: sources.tabletLandscape.trim(),
+      tabletPortrait: sources.tabletPortrait.trim(),
+      mobile: sources.mobile.trim(),
+    } satisfies HeroResponsiveSources;
+
+    return Object.values(normalizedSources).every(Boolean)
+      ? normalizedSources
+      : null;
+  }
+
+  if ("src" in sources) {
+    const source = sources.src.trim();
+
+    return source
+      ? {
+          desktop: source,
+          desktopWide: source,
+          tabletLandscape: source,
+          tabletPortrait: source,
+          mobile: source,
+        }
+      : null;
+  }
+
+  const desktopSource = sources.desktopUrl.trim();
+  const mobileSource = sources.mobileUrl?.trim() || desktopSource;
+
+  return desktopSource
+    ? {
+        desktop: desktopSource,
+        desktopWide: desktopSource,
+        tabletLandscape: desktopSource,
+        tabletPortrait: mobileSource,
+        mobile: mobileSource,
+      }
+    : null;
+}
+
+function mapColorLayer(
+  colorLayer?: SliderColorLayerDto,
+): HeroColorLayer | undefined {
+  const value = colorLayer?.value?.trim();
+
+  if (!value || !HEX_COLOR_PATTERN.test(value)) {
+    return undefined;
+  }
+
+  const label = colorLayer?.label?.trim();
+
+  return label
+    ? { value: value.toUpperCase(), label }
+    : { value: value.toUpperCase() };
+}
+
+function mapPatternBlendMode(
+  blendMode?: SliderPatternBlendMode,
+): SliderPatternBlendMode | undefined {
+  if (
+    blendMode === "normal" ||
+    blendMode === "overlay" ||
+    blendMode === "soft-light" ||
+    blendMode === "multiply" ||
+    blendMode === "screen"
+  ) {
+    return blendMode;
+  }
+
+  return undefined;
+}
+
+function mapPatternSize(
+  size?: SliderPatternSize,
+): SliderPatternSize | undefined {
+  if (
+    size === "auto" ||
+    size === "cover" ||
+    size === "contain" ||
+    size === "repeat"
+  ) {
+    return size;
+  }
+
+  return undefined;
+}
+
+function mapPatternPosition(
+  position?: SliderPatternPosition,
+): SliderPatternPosition | undefined {
+  if (
+    position === "center" ||
+    position === "top" ||
+    position === "bottom" ||
+    position === "left" ||
+    position === "right"
+  ) {
+    return position;
+  }
+
+  return undefined;
+}
+
+function mapPatternOverlay(
+  patternOverlay?: SliderPatternOverlayDto,
+): HeroPatternOverlay | undefined {
+  if (
+    !patternOverlay ||
+    typeof patternOverlay.enabled !== "boolean" ||
+    patternOverlay.assetKey !== "endless-clouds-light"
+  ) {
+    return undefined;
+  }
+
+  const opacity =
+    typeof patternOverlay.opacity === "number" &&
+    Number.isFinite(patternOverlay.opacity)
+      ? Math.min(Math.max(patternOverlay.opacity, 0), 1)
+      : undefined;
+  const blendMode = mapPatternBlendMode(patternOverlay.blendMode);
+  const size = mapPatternSize(patternOverlay.size);
+  const position = mapPatternPosition(patternOverlay.position);
+
+  return {
+    enabled: patternOverlay.enabled,
+    assetKey: patternOverlay.assetKey,
+    ...(opacity !== undefined ? { opacity } : {}),
+    ...(blendMode ? { blendMode } : {}),
+    ...(size ? { size } : {}),
+    ...(position ? { position } : {}),
+  };
+}
 
 function toNullableText(value?: string) {
   return value ?? null;
@@ -136,9 +289,23 @@ function mapHeroImage(
   index: number,
 ): HeroSlideViewModel["image"] {
   const mediaMode = getMediaMode(dto.mediaMode);
+  const legacySources = normalizeHeroResponsiveSources({
+    desktopUrl: dto.desktopImageUrl,
+    ...(dto.mobileImageUrl ? { mobileUrl: dto.mobileImageUrl } : {}),
+  });
+
+  if (!legacySources) {
+    throw new Error(`Slider ${dto.id} has no valid hero image source.`);
+  }
+
+  const sources = dto.imageSources
+    ? (normalizeHeroResponsiveSources(dto.imageSources) ?? legacySources)
+    : legacySources;
+
   const imageBase = {
-    desktopSrc: dto.desktopImageUrl,
-    mobileSrc: dto.mobileImageUrl ?? dto.desktopImageUrl,
+    sources,
+    desktopSrc: legacySources.desktop,
+    mobileSrc: legacySources.mobile,
     alt: dto.imageAlt,
     fit: getMediaFit(mediaMode, dto.mediaFit),
     position: getMediaPosition(dto.mediaPosition),
@@ -161,6 +328,56 @@ function mapHeroImage(
   };
 }
 
+function mapRotatorImages(
+  dto: PublicSliderItemDto,
+): HeroSlideViewModel["rotatorImages"] {
+  const rotatorImages = dto.rotatorImages?.flatMap((image) => {
+    const sources = normalizeHeroResponsiveSources(image);
+    const alt = image.alt.trim();
+
+    if (!sources || !alt) {
+      return [];
+    }
+
+    return [
+      {
+        sources,
+        src: sources.desktop,
+        alt,
+        name: image.name?.trim() || null,
+        priceLabel: image.priceLabel?.trim() || null,
+      },
+    ];
+  });
+
+  return rotatorImages && rotatorImages.length > 0 ? rotatorImages : undefined;
+}
+
+function mapHeadlinePart(part: SliderHeadlinePartDto): HeroHeadlinePart[] {
+  if (part.type === "text") {
+    const text = part.text.trim();
+
+    return text ? [{ type: "text", text }] : [];
+  }
+
+  const label = part.label?.trim();
+
+  return [
+    {
+      type: "brand-logo",
+      label: label || null,
+    },
+  ];
+}
+
+function mapHeadlineParts(
+  dto: PublicSliderItemDto,
+): HeroSlideViewModel["headlineParts"] {
+  const headlineParts = dto.headlineParts?.flatMap(mapHeadlinePart);
+
+  return headlineParts && headlineParts.length > 0 ? headlineParts : undefined;
+}
+
 function mapBackgroundImage(
   image: SliderBackgroundImageDto | undefined,
 ): HeroBackgroundImage | null {
@@ -168,9 +385,16 @@ function mapBackgroundImage(
     return null;
   }
 
+  const sources = normalizeHeroResponsiveSources(image);
+
+  if (!sources) {
+    return null;
+  }
+
   return {
-    desktopSrc: image.desktopUrl,
-    mobileSrc: image.mobileUrl ?? image.desktopUrl,
+    sources,
+    desktopSrc: sources.desktop,
+    mobileSrc: sources.mobile,
     decorative: true,
     fit: image.fit ?? "cover",
     position: image.position ?? "center",
@@ -209,16 +433,82 @@ function mapBackground(background?: SliderBackgroundDto): HeroBackground {
   };
 }
 
+function mapExplicitProductLayer(
+  productLayer?: SliderProductLayerDto,
+): HeroProductLayer | null {
+  if (!productLayer) {
+    return null;
+  }
+
+  const sources = normalizeHeroResponsiveSources(productLayer);
+  const alt = productLayer.alt.trim();
+  const decorative = productLayer.decorative ?? false;
+
+  if (!sources || (!decorative && !alt)) {
+    return null;
+  }
+
+  return {
+    sources,
+    desktopSrc: sources.desktop,
+    mobileSrc:
+      "desktopUrl" in productLayer
+        ? productLayer.mobileUrl?.trim() || null
+        : null,
+    alt,
+    decorative,
+    fit: productLayer.fit ?? "cover",
+    position: productLayer.position ?? "center",
+  };
+}
+
+function mapProductLayer(dto: PublicSliderItemDto): HeroProductLayer | null {
+  const explicitProductLayer = mapExplicitProductLayer(dto.productLayer);
+
+  if (explicitProductLayer) {
+    return explicitProductLayer;
+  }
+
+  if (getMediaMode(dto.mediaMode) !== "cutout-product" || !dto.imageSources) {
+    return null;
+  }
+
+  const sources = normalizeHeroResponsiveSources(dto.imageSources);
+  const alt = dto.imageAlt.trim();
+
+  if (!sources || !alt) {
+    return null;
+  }
+
+  return {
+    sources,
+    desktopSrc: sources.desktop,
+    mobileSrc: sources.mobile,
+    alt,
+    decorative: false,
+    fit: "cover",
+    position: "center",
+  };
+}
+
 function getPresentationVariant(
   intent: SliderIntent,
   layoutHint: SliderLayoutHint,
 ): HeroPresentationVariant {
-  if (intent === "welcome" && layoutHint === "split") {
+  if (intent === "promotion" && layoutHint === "split") {
+    return "boxes-showcase";
+  }
+
+  if (layoutHint === "split" && intent !== "conversion") {
     return "welcome-split";
   }
 
-  if (intent === "promotion") {
-    return "promo-poster";
+  if (intent === "promotion" && layoutHint === "image-led") {
+    return "most-ordered-promo";
+  }
+
+  if (layoutHint === "poster") {
+    return "announcement-poster";
   }
 
   return "conversion-cta";
@@ -269,17 +559,25 @@ export function mapPublicSliderToHeroSlide(
     description: toNullableText(dto.description),
     eyebrow: toNullableText(dto.eyebrow),
     badgeLabel: toNullableText(dto.badgeLabel),
+    productName: toNullableText(dto.productName),
+    promoNote: toNullableText(dto.promoNote),
+    headlineParts: mapHeadlineParts(dto),
     highlightText: toNullableText(dto.highlightText),
     intent: dto.intent,
     layoutHint: dto.layoutHint,
     background: mapBackground(dto.background),
+    productLayer: mapProductLayer(dto),
+    colorLayer: mapColorLayer(dto.colorLayer),
+    patternOverlay: mapPatternOverlay(dto.patternOverlay),
     image: mapHeroImage(dto, index),
+    rotatorImages: mapRotatorImages(dto),
     primaryCta: mapCta(dto.primaryCta),
     secondaryCta: mapCta(dto.secondaryCta),
     presentation: {
       variant: getPresentationVariant(dto.intent, dto.layoutHint),
       pattern: getPresentationPattern(dto.intent),
       badgeTone: getPresentationBadgeTone(dto.intent, dto.layoutHint),
+      backgroundVariant: dto.backgroundVariant ?? "default",
     },
   };
 }

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="320" height="96" viewBox="0 0 320 96" fill="none">
+  <title>SOKY — olas y arcos</title>
+  <desc>Patrón vectorial transparente repetible en ambos ejes. Azul #1729A6. Módulo 320 × 96.</desc>
+  <defs>
+    <!-- Each row is shifted 80 units; two rows form a 160 x 96 repeat. -->
+    <clipPath id="fan-window" clipPathUnits="userSpaceOnUse">
+      <path d="M-84-84H84V-32H80A80 80 0 0 0 0 48A80 80 0 0 0-80-32H-84Z"/>
+    </clipPath>
+    <g id="wave-fan" clip-path="url(#fan-window)" fill="none" stroke="#1729A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M-80 0a80 80 0 0 1 160 0 M-68 0a68 68 0 0 1 136 0"/>
+        <path d="M-55 0C-32-7-30-35-9-45C11-56 38-44 39-27C40-13 26-9 20-17C14-24 20-34 27-29C25-39 10-40 3-29C-7-12 5-2 24 0"/>
+        <path d="M-43 0C-25-7-22-26-11-33 M-29 0C-15-4-13-14-12-20 M36-9C49-17 49-35 38-45C23-60 0-59-17-49C-38-37-43-17-61-11"/>
+    </g>
+  </defs>
+  <use xlink:href="#wave-fan" transform="translate(0 0)"/>
+  <use xlink:href="#wave-fan" transform="translate(160 0)"/>
+  <use xlink:href="#wave-fan" transform="translate(320 0)"/>
+  <use xlink:href="#wave-fan" transform="translate(-80 48)"/>
+  <use xlink:href="#wave-fan" transform="translate(80 48)"/>
+  <use xlink:href="#wave-fan" transform="translate(240 48)"/>
+  <use xlink:href="#wave-fan" transform="translate(400 48)"/>
+  <use xlink:href="#wave-fan" transform="translate(0 96)"/>
+  <use xlink:href="#wave-fan" transform="translate(160 96)"/>
+  <use xlink:href="#wave-fan" transform="translate(320 96)"/>
+  <use xlink:href="#wave-fan" transform="translate(-80 144)"/>
+  <use xlink:href="#wave-fan" transform="translate(80 144)"/>
+  <use xlink:href="#wave-fan" transform="translate(240 144)"/>
+  <use xlink:href="#wave-fan" transform="translate(400 144)"/>
+</svg>

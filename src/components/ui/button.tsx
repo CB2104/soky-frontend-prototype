@@ -39,6 +39,7 @@ type ButtonAsButton = CommonProps &
 type ButtonAsLink = CommonProps &
   AnchorHTMLAttributes<HTMLAnchorElement> & {
     href: string;
+    scroll?: boolean;
   };
 
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
