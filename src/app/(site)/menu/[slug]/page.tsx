@@ -7,10 +7,9 @@ import type { ProductDto } from "@/contracts/api";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { getCategories } from "@/features/categories/api";
-import { ProductCard } from "@/features/products/components/ProductCard";
+import { ProductRecommendations } from "@/features/products/components/ProductRecommendations";
 import { ProductDetailContent } from "@/features/products/components/ProductDetailContent";
 import { ProductDetailLoadError } from "@/features/products/components/ProductDetailLoadError";
-import styles from "@/features/products/components/ProductDetailContent.module.css";
 import { getFeaturedProducts } from "@/features/products/api";
 import { mapProductToCard } from "@/features/products/mappers";
 import { loadProductDetail } from "@/features/products/detail-loader";
@@ -50,22 +49,7 @@ async function RelatedProducts({
 
   if (!related.length) return null;
 
-  return (
-    <section className={styles.related} aria-labelledby="related-products-title">
-      <h2 id="related-products-title" className={styles.relatedTitle}>
-        También puede gustarte
-      </h2>
-      <div className={styles.relatedGrid}>
-        {related.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            imageSizes="(max-width: 639px) and (orientation: portrait) calc(50vw - 1.5rem), 340px"
-          />
-        ))}
-      </div>
-    </section>
-  );
+  return <ProductRecommendations products={related} presentation="detail" />;
 }
 
 export default async function ProductPage({ params, searchParams }: Props) {

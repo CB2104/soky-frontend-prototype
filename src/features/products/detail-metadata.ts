@@ -32,6 +32,17 @@ export async function getProductDetailMetadata(
     title: product.title,
     description,
     alternates: { canonical },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
     openGraph: {
       title: product.title + " | SOKY",
       description,

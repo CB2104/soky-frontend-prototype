@@ -2,9 +2,14 @@ import { SeigaihaHeader } from "@/components/brand/SeigaihaHeader";
 import type { ProductCardViewModel } from "../mappers";
 import { ProductCard } from "./ProductCard";
 import styles from "./ProductRecommendations.module.css";
+import detailStyles from "./ProductDetailContent.module.css";
 
-export function ProductRecommendations({products,presentation="card",onAdd}:{products:ProductCardViewModel[];presentation?:"card"|"compact";onAdd?:(product:ProductCardViewModel)=>void}) {
+export function ProductRecommendations({products,presentation="card",onAdd}:{products:ProductCardViewModel[];presentation?:"card"|"compact"|"detail";onAdd?:(product:ProductCardViewModel)=>void}) {
   if (!products.length) return null;
+  if (presentation === "detail") return <section className={detailStyles.related} aria-labelledby="related-products-title">
+    <h2 id="related-products-title" className={detailStyles.relatedTitle}>También puede gustarte</h2>
+    <div className={detailStyles.relatedGrid}>{products.map(product=><ProductCard key={product.id} product={product} imageSizes="(max-width: 639px) and (orientation: portrait) calc(50vw - 1.5rem), 340px"/>)}</div>
+  </section>;
   if (presentation === "card") return <section aria-label="También puede gustarte">
     <h2 className="text-2xl font-black">También puede gustarte</h2>
     <div className="mt-5 grid gap-5 md:grid-cols-2">{products.map(product=><ProductCard key={product.id} product={product}/>)}</div>

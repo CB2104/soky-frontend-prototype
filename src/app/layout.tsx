@@ -125,10 +125,10 @@ export const metadata: Metadata = {
     description: siteDescription,
   },
   robots: {
-    index: true,
+    index: false,
     follow: true,
     googleBot: {
-      index: true,
+      index: false,
       follow: true,
       "max-video-preview": -1,
       "max-image-preview": "large",

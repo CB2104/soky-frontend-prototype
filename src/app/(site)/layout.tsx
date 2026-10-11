@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { getPublicSettings } from "@/features/settings/api";
 import { SiteFooter } from "@/components/layout/footer/SiteFooter";
@@ -9,6 +10,20 @@ import { ContactSpeedDial } from "@/features/contact/components/ContactSpeedDial
 import TransitionProvider from "@/providers/TransitionProvider";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: true,
+    googleBot: {
+      index: false,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+};
 
 type SiteLayoutProps = {
   children: ReactNode;

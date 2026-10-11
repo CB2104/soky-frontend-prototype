@@ -1,7 +1,7 @@
 import { SiteReadySignal } from "@/providers/SiteLoadingProvider";
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { EmptyState, ErrorState } from "@/components/ui/states";
+import { EmptyState } from "@/components/ui/states";
 import { getCategories } from "@/features/categories/api";
 import { getCurrentExchangeRate } from "@/features/exchange-rates/api";
 import { isUsableExchangeRate } from "@/features/exchange-rates/rate-validation";
@@ -9,6 +9,7 @@ import { MenuCatalog } from "@/features/menu/components/MenuCatalog";
 import { buildMenuSections, getMenuDestination } from "@/features/menu/menu-sections";
 import { getAllProducts } from "@/features/products/api";
 import { getPublicSettings } from "@/features/settings/api";
+import { MenuRecoveryFallback } from "@/features/menu/components/MenuRecoveryFallback";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,17 @@ export const metadata: Metadata = {
   title: "Menú",
   description: "Explora el menú SOKY: boxes, rolls, ensaladas, entradas y más.",
   alternates: { canonical: "/menu" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 type Props = {
@@ -40,15 +52,10 @@ export default async function MenuPage({ searchParams }: Props) {
     return (
       <main className="bg-soky-paper text-soky-ink">
         <Container className="py-12">
-          <ErrorState
-            title="No pudimos cargar el menú"
-            description="Revisa la conexión o intenta de nuevo en unos segundos."
-            actionHref="/menu"
-            actionLabel="Reintentar"
-          />
+          <MenuRecoveryFallback />
         </Container>
         <SiteReadySignal />
-    </main>
+      </main>
     );
   }
 

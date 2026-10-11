@@ -19,6 +19,7 @@ export function ProductDialog({ children }: { children: ReactNode }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closingRef = useRef(false);
+  const restoreOriginRef = useRef(false);
   const [closing, setClosing] = useState(false);
 
   useEffect(() => {
@@ -26,13 +27,30 @@ export function ProductDialog({ children }: { children: ReactNode }) {
     const opener = document.activeElement instanceof HTMLElement
       ? document.activeElement
       : null;
+    const origin = { x: window.scrollX, y: window.scrollY };
     const releaseScroll = lockBodyScroll();
+    const markHistoryReturn = () => { restoreOriginRef.current = true; };
+    window.addEventListener("popstate", markHistoryReturn);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      window.removeEventListener("popstate", markHistoryReturn);
       dialog?.close();
       releaseScroll();
-      // Evita robar foco a un nuevo diálogo, como el carrito.
+
+      const shouldRestoreOrigin = closingRef.current || restoreOriginRef.current;
+      if (shouldRestoreOrigin) {
+        // Espera el commit de Next y su restauración del hash.
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          if (!opener?.isConnected || useCartStore.getState().isOpen) return;
+          if (document.querySelector('dialog[open], [role="dialog"][aria-modal="true"]')) return;
+          window.scrollTo({ left: origin.x, top: origin.y, behavior: "instant" });
+          opener.focus({ preventScroll: true });
+        }));
+        return;
+      }
+
+      // Al ir a categoría/carrito se respeta el scroll del nuevo destino.
       queueMicrotask(() => {
         const active = document.activeElement;
         if (opener?.isConnected && (active === document.body || active === opener)) {

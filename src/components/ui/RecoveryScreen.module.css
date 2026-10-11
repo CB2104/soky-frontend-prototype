@@ -1,0 +1,423 @@
+.screen {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  align-items: center;
+  overflow: visible;
+  padding: 1rem clamp(1rem, 4vw, 3.5rem) clamp(2rem, 5vh, 3.5rem);
+  background: #fffdf7;
+  color: #001525;
+  font-family: var(--font-outfit), Outfit, sans-serif;
+}
+
+.header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(100%, 76rem);
+  min-height: 3.5rem;
+  align-items: center;
+}
+
+.logoLink {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: 0.5rem;
+}
+
+.logo {
+  display: block;
+  width: 5.75rem;
+  height: auto;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-block: clamp(1rem, 3.5vh, 2.75rem);
+  text-align: center;
+}
+
+.visual {
+  position: relative;
+  width: min(100%, 40rem);
+}
+
+.visualWithCode {
+  height: clamp(10rem, 23vw, 18rem);
+  margin-bottom: clamp(0.75rem, 2.2vh, 1.5rem);
+}
+
+.visualWithoutCode {
+  width: clamp(8rem, 18vw, 13rem);
+  height: auto;
+  aspect-ratio: 1024 / 369;
+  margin-bottom: clamp(1.25rem, 3vh, 2rem);
+}
+
+.code {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  color: #1729a6;
+  font-family: var(--font-anton), Anton, Impact, sans-serif;
+  font-size: clamp(9rem, 20vw, 18rem);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 0.82;
+  white-space: nowrap;
+}
+
+.illustration {
+  position: absolute;
+  right: 6%;
+  bottom: -2%;
+  display: block;
+  width: clamp(7.5rem, 16vw, 13.75rem);
+  height: auto;
+  animation: illustration-in 180ms ease-out both;
+  pointer-events: none;
+}
+
+.visualWithoutCode .illustration {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.message {
+  width: min(100%, 42rem);
+}
+
+.title {
+  margin: 0;
+  color: #001525;
+  font-size: clamp(1.625rem, 3vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.description {
+  max-width: 38rem;
+  margin: 0.85rem auto 0;
+  color: #001525;
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.primaryAction {
+  min-height: 3rem !important;
+  padding-inline: 1.5rem !important;
+  border: 2px solid #fe6402 !important;
+  background: #fe6402 !important;
+  color: #001525 !important;
+  box-shadow: none !important;
+  font-size: 1rem !important;
+  text-decoration: none;
+}
+
+.primaryAction:hover:not(:disabled) {
+  border-color: #d84f00 !important;
+  background: #f57217 !important;
+  color: #001525 !important;
+}
+
+.primaryAction:focus-visible,
+.secondaryAction:focus-visible,
+.logoLink:focus-visible {
+  outline: 3px solid #001525;
+  outline-offset: 3px;
+}
+
+.secondaryAction {
+  min-height: 2.75rem !important;
+  padding: 0.65rem 0.3rem !important;
+  background: transparent !important;
+  color: #001525 !important;
+  font-size: 1rem !important;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.secondaryAction:hover {
+  color: #1729a6 !important;
+  background: transparent !important;
+}
+
+.status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.patternFade {
+  position: absolute;
+  z-index: 0;
+  width: clamp(10rem, 22vw, 19rem);
+  aspect-ratio: 3 / 2;
+  pointer-events: none;
+  opacity: 0.19;
+  -webkit-mask-image: radial-gradient(ellipse at var(--fade-x) var(--fade-y), #000 0%, #000 24%, transparent 78%);
+  mask-image: radial-gradient(ellipse at var(--fade-x) var(--fade-y), #000 0%, #000 24%, transparent 78%);
+}
+
+.patternFadeTop {
+  --fade-x: 100%;
+  --fade-y: 0%;
+  top: 0;
+  right: 0;
+}
+
+.patternFadeBottom {
+  --fade-x: 0%;
+  --fade-y: 100%;
+  bottom: 0;
+  left: 0;
+  transform: rotate(180deg);
+}
+
+.patternMask {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: #fe6402;
+  -webkit-mask-image: url("/images/patterns/card-seigaiha.svg");
+  mask-image: url("/images/patterns/card-seigaiha.svg");
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+.compact {
+  min-height: 0;
+  padding: clamp(1.5rem, 5vh, 3rem) clamp(1rem, 4vw, 2.5rem);
+}
+
+.compact .content {
+  flex: initial;
+  padding-block: 0;
+}
+
+.compact .visualWithCode {
+  height: clamp(8rem, 20vw, 13rem);
+  margin-bottom: 1rem;
+}
+
+.compact .code {
+  font-size: clamp(7rem, 16vw, 12rem);
+}
+
+.compact .visualWithoutCode {
+  width: clamp(7.5rem, 28vw, 11rem);
+  margin-bottom: 1rem;
+}
+
+.compact .visualWithCode .illustration {
+  width: clamp(6.5rem, 14vw, 10rem);
+}
+
+.compact .title {
+  font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+}
+
+.compact .description {
+  font-size: clamp(1rem, 1.3vw, 1.125rem);
+}
+
+.compact .patternFade {
+  width: clamp(8rem, 16vw, 13rem);
+}
+
+@keyframes illustration-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 767px) {
+  .screen {
+    padding-top: 0.5rem;
+    padding-bottom: 2rem;
+  }
+
+  .header {
+    min-height: 3rem;
+  }
+
+  .logo {
+    width: 5rem;
+  }
+
+  .content {
+    padding-block: clamp(1rem, 4vh, 2rem);
+  }
+
+  .visualWithCode {
+    height: clamp(8rem, 42vw, 12.5rem);
+    margin-bottom: 1rem;
+  }
+
+  .code {
+    font-size: clamp(6.25rem, 29vw, 9rem);
+  }
+
+  .illustration {
+    right: 1%;
+    bottom: -14%;
+    width: clamp(7.25rem, 32vw, 10rem);
+  }
+
+  .title {
+    font-size: clamp(1.625rem, 7vw, 2.25rem);
+  }
+
+  .description {
+    margin-top: 0.75rem;
+    font-size: clamp(1rem, 4.5vw, 1.125rem);
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .primaryAction {
+    width: min(100%, 20rem);
+  }
+
+  .secondaryAction {
+    width: min(100%, 20rem);
+  }
+
+  .compact {
+    padding-block: 2rem;
+  }
+
+  .compact .content {
+    padding-block: 0;
+  }
+
+  .compact .visualWithCode {
+    height: clamp(7.5rem, 35vw, 10rem);
+  }
+
+  .compact .code {
+    font-size: clamp(6rem, 24vw, 8rem);
+  }
+
+  .compact .visualWithoutCode {
+    width: clamp(7.5rem, 36vw, 9.5rem);
+  }
+
+  .compact .visualWithCode .illustration {
+    width: clamp(6.25rem, 28vw, 8rem);
+  }
+
+  .compact .patternFade {
+    width: 8rem;
+  }
+}
+
+@media (max-width: 350px) {
+  .actions {
+    align-items: stretch;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    width: 100%;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .screen {
+    padding-top: 0.4rem;
+    padding-bottom: 1rem;
+  }
+
+  .header {
+    min-height: 2.5rem;
+  }
+
+  .logo {
+    width: 4.25rem;
+  }
+
+  .content {
+    padding-block: 0.5rem;
+  }
+
+  .visualWithCode {
+    height: 7rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .code {
+    font-size: 7rem;
+  }
+
+  .illustration {
+    right: 9%;
+    bottom: -10%;
+    width: 6rem;
+  }
+
+  .visualWithoutCode {
+    width: 6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    margin-top: 0.4rem;
+    font-size: 0.95rem;
+  }
+
+  .actions {
+    gap: 0.5rem 1rem;
+    margin-top: 0.65rem;
+  }
+
+  .patternFade {
+    width: 6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .illustration {
+    animation: none;
+  }
+}

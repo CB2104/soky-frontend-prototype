@@ -1,19 +1,26 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { useTransition } from "react";
+import { RecoveryScreen } from "@/components/ui/RecoveryScreen";
 
-export default function ProductDialogError({ reset }: { reset: () => void }) {
+export default function ProductDialogError({ retry }: {
+  error: Error & { digest?: string };
+  retry: () => void;
+}) {
+  const [isPending, startTransition] = useTransition();
+
   return (
-    <section aria-labelledby="product-dialog-error">
-      <h2 id="product-dialog-error" className="soky-heading text-3xl text-soky-blue">
-        No pudimos mostrar este producto
-      </h2>
-      <p className="mt-4 text-soky-muted">
-        Intenta nuevamente o cierra el detalle.
-      </p>
-      <Button type="button" className="mt-6" onClick={reset}>
-        Reintentar
-      </Button>
-    </section>
+    <RecoveryScreen
+      as="section"
+      compact
+      headingTag="h2"
+      titleId="product-dialog-error"
+      title="No pudimos cargar esta página"
+      description="Hubo un problema al cargar el contenido. Intenta de nuevo o vuelve al inicio."
+      primaryActionLabel="Reintentar"
+      primaryActionPendingLabel="Reintentando…"
+      onPrimaryAction={() => startTransition(() => retry())}
+      isPending={isPending}
+    />
   );
 }

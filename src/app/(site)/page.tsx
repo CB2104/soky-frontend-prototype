@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { HomeReadySignal } from "@/features/home/loading/HomeLoadingBoundary";
 import { getCategories } from "@/features/categories/api";
 import { mapProductToCard } from "@/features/products/mappers";
@@ -16,6 +17,20 @@ import { LocationSection } from "@/features/home/sections/location/LocationSecti
 import { getPromoProducts } from "@/features/products/api";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+};
 
 export default async function HomePage() {
   const [sliderDtos, promoProducts, categories, settings] = await Promise.all([

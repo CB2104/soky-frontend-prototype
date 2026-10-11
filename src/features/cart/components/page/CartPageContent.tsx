@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { SiteReadySignal } from "@/providers/SiteLoadingProvider";
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { ProductCardViewModel } from "@/features/products/mappers";
 import { ProductRecommendations } from "@/features/products/components/ProductRecommendations";
 import { useAddProductToCart } from "@/features/products/useAddProductToCart";
@@ -26,9 +26,12 @@ export function CartPageContent({settings,recommendations}:{settings:CartSetting
   const retryCatalog = useCartStore(state=>state.retryCatalog);
   const clearCart = useCartStore(state=>state.clearCart);
   const addProduct = useAddProductToCart();
-  const [feedback,setFeedback] = useState("");
+  const [feedback,setFeedback] = useState<{ message: string } | null>(null);
   const feedbackRef = useRef<HTMLParagraphElement>(null);
   const [confirmClear,setConfirmClear] = useState(false);
+  useLayoutEffect(() => {
+    if (feedback) feedbackRef.current?.focus({ preventScroll: true });
+  }, [feedback]);
   const quote = checkout.quote;
   const invalidIds = new Set(quote?.invalidItems.map(item=>item.productId) ?? []);
   const items = checkout.items.map(item=>{const mapped=mapCartItem(item,checkout.catalogStatus === "ready",settings.currency);return invalidIds.has(item.productId) ? {...mapped,issue:"Producto por revisar",canIncrease:false,unitPrice:"Por confirmar",lineTotal:"Por confirmar"} : mapped;});
@@ -55,8 +58,8 @@ export function CartPageContent({settings,recommendations}:{settings:CartSetting
           <ul className={styles.items}>{items.map(item=><CartPageItemRow key={item.id} item={item} onDecrease={()=>decrement(item.id)} onIncrease={()=>increment(item.id)} onRemove={()=>remove(item.id)} onNotes={notes=>setNotes(item.id,notes)}/>)}</ul>
           <div className={styles.clear}>{confirmClear ? <><span>¿Vaciar el carrito?</span><button type="button" onClick={()=>{clearCart();setConfirmClear(false);}}>Sí, vaciar</button><button type="button" onClick={()=>setConfirmClear(false)}>Cancelar</button></> : <button type="button" onClick={()=>setConfirmClear(true)}>Vaciar carrito</button>}</div>
         </section>
-        <ProductRecommendations products={availableRecommendations} presentation="compact" onAdd={product=>{addProduct(product,{openDrawer:false});setFeedback(`${product.title} agregado al pedido.`);feedbackRef.current?.focus();}}/>
-        <p className={styles.feedback} ref={feedbackRef} role="status" aria-live="polite" tabIndex={-1}>{feedback}</p>
+        <ProductRecommendations products={availableRecommendations} presentation="compact" onAdd={product=>{addProduct(product,{openDrawer:false});setFeedback({ message: `${product.title} agregado al pedido.` });}}/>
+        <p className={styles.feedback} ref={feedbackRef} role="status" aria-live="polite" tabIndex={-1}>{feedback?.message}</p>
         <CartCheckoutForm settings={settings} form={checkout.form} onChange={checkout.updateForm} addressError={checkout.addressError}/>
       </div>
       <CartOrderSummary summary={{subtotal:subtotal ? formatCartMoney(subtotal,settings.currency) : "Por confirmar",equivalent:quote ? formatCartMoney(quote.totals.totalVes,"VES") : "Por confirmar",units,rate:quote ? `${quote.rateSnapshot.rate} Bs./${settings.currency} · Consulta: ${rateDate}` : "Tasa por confirmar",source:quote?.rateSnapshot.source === "MANUAL" ? "TASA MANUAL" : quote ? "TASA DE REFERENCIA" : "",warnings:[...new Set([...(quote?.warnings ?? []),...(quote?.rateSnapshot.source === "MANUAL" ? ["Tasa manual; fecha efectiva por confirmar."] : [])])],delivery:checkout.form.fulfillmentType === "DELIVERY"}}
