@@ -1,6 +1,6 @@
 import type { RefObject } from "react";
 import { SokyLogo } from "@/components/brand/SokyLogo";
-import styles from "./HomeLoadingOverlay.module.css";
+import styles from "./SiteLoadingOverlay.module.css";
 
 type Props = {
   overlayRef?: RefObject<HTMLDivElement | null>;
@@ -9,9 +9,9 @@ type Props = {
   onContinue?: () => void;
 };
 
-export function HomeLoadingOverlay({ overlayRef, error = false, errorDetail, onContinue }: Props) {
+export function SiteLoadingOverlay({ overlayRef, error = false, errorDetail, onContinue }: Props) {
   return (
-    <div ref={overlayRef} className={`soky-home-loading ${styles.overlay}`} data-home-loading-overlay>
+    <div ref={overlayRef} className={`soky-site-loading ${styles.overlay}`} data-site-loading-overlay>
       <div className={styles.grid} aria-hidden="true">
         {[0, 1, 2, 3].map((row) => (
           <div key={row} className={styles.row} data-loading-row style={{ top: `${row * 25}%` }}>
@@ -33,7 +33,7 @@ export function HomeLoadingOverlay({ overlayRef, error = false, errorDetail, onC
           </div>
         ) : <div className={styles.activity} aria-hidden="true" />}
         {error && errorDetail && process.env.NODE_ENV !== "production" ? (
-          <details data-home-loading-diagnostic style={{ width: "min(100%, 640px)", textAlign: "left" }}>
+          <details data-site-loading-diagnostic style={{ width: "min(100%, 640px)", textAlign: "left" }}>
             <summary>Diagnóstico de carga</summary>
             <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", fontSize: 12, maxHeight: "30dvh", overflow: "auto" }}>{errorDetail}</pre>
           </details>

@@ -1,3 +1,4 @@
+import { SiteReadySignal } from "@/providers/SiteLoadingProvider";
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { EmptyState, ErrorState } from "@/components/ui/states";
@@ -46,7 +47,8 @@ export default async function MenuPage({ searchParams }: Props) {
             actionLabel="Reintentar"
           />
         </Container>
-      </main>
+        <SiteReadySignal />
+    </main>
     );
   }
 
@@ -102,6 +104,7 @@ export default async function MenuPage({ searchParams }: Props) {
           />
         )}
       </Container>
+      <SiteReadySignal />
     </main>
   );
 }

@@ -24,7 +24,7 @@ export default async function SiteLayout({ children, product }: SiteLayoutProps)
 
   return (
     <TransitionProvider>
-      <div className="min-h-dvh bg-soky-paper text-soky-ink">
+      <div data-site-loading-root className="min-h-dvh bg-soky-paper text-soky-ink">
         <Navbar whatsappUrl={whatsappUrl} />
         {children}
         {product}

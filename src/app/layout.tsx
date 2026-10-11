@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { HomeLoadingBoundary } from "@/features/home/loading/HomeLoadingBoundary";
+import { SiteLoadingProvider } from "@/providers/SiteLoadingProvider";
 
 const nunitoSans = localFont({
   src: [
@@ -80,6 +80,10 @@ const siteDescription =
   "Sushi casual, colorido y facil de pedir: rolls, boxes generosos, entradas y promos para compartir con pedido directo por WhatsApp.";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
+export const viewport: Viewport = {
+  colorScheme: "only light",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   applicationName: "SOKY",
@@ -146,7 +150,7 @@ export default function RootLayout({
       <body
         className={`${nunitoSans.variable} ${montserrat.variable} ${kalam.variable} ${anton.variable} ${outfit.variable} ${lilitaOne.variable} min-h-dvh bg-background text-foreground antialiased`}
       >
-        <HomeLoadingBoundary>{children}</HomeLoadingBoundary>
+        <SiteLoadingProvider>{children}</SiteLoadingProvider>
       </body>
     </html>
   );

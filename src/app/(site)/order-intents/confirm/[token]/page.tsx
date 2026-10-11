@@ -1,3 +1,4 @@
+import { SiteReadySignal } from "@/providers/SiteLoadingProvider";
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
@@ -35,7 +36,8 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
             actionLabel="Volver al menú"
           />
         </Container>
-      </main>
+        <SiteReadySignal />
+    </main>
     );
   }
 
@@ -76,6 +78,7 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
           </div>
         </aside>
       </Container>
+      <SiteReadySignal />
     </main>
   );
 }

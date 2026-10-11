@@ -1,3 +1,5 @@
+import { SiteLoadingPending } from "@/components/layout/page-loading/SiteLoadingPending";
+import { SiteReadySignal } from "@/providers/SiteLoadingProvider";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
@@ -82,7 +84,8 @@ export default async function ProductPage({ params, searchParams }: Props) {
         <Container className="py-10">
           <ProductDetailLoadError />
         </Container>
-      </main>
+        <SiteReadySignal />
+    </main>
     );
   }
 
@@ -109,13 +112,14 @@ export default async function ProductPage({ params, searchParams }: Props) {
           ← Volver al menú
         </Button>
         <ProductDetailContent product={product} />
-        <Suspense fallback={null}>
+        <Suspense fallback={<SiteLoadingPending />}>
           <RelatedProducts
             products={featuredPromise}
             productId={product.card.id}
           />
         </Suspense>
       </Container>
+      <SiteReadySignal />
     </main>
   );
 }

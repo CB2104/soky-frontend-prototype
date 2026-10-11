@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { SiteReadySignal } from "@/providers/SiteLoadingProvider";
 import { useRef, useState } from "react";
 import type { ProductCardViewModel } from "@/features/products/mappers";
 import { ProductRecommendations } from "@/features/products/components/ProductRecommendations";
@@ -17,6 +18,7 @@ import styles from "./CartPage.module.css";
 
 export function CartPageContent({settings,recommendations}:{settings:CartSettingsViewModel;recommendations:ProductCardViewModel[]}) {
   const checkout = useCheckout(settings);
+  const loadingReady = checkout.hasHydrated && (checkout.items.length === 0 || checkout.catalogStatus === "ready" || checkout.catalogStatus === "error");
   const decrement = useCartStore(state=>state.decrement);
   const increment = useCartStore(state=>state.increment);
   const remove = useCartStore(state=>state.removeItem);
@@ -45,7 +47,7 @@ export function CartPageContent({settings,recommendations}:{settings:CartSetting
   else if (quote?.invalidItems.length) status = "Hay productos que no se pueden comprar. Revisa la selección.";
   else if (checkout.belowMinimum) status = `Pedido mínimo: ${formatCartMoney(formatMoneyCents(settings.minimumOrderCents),settings.currency)}.`;
 
-  return <div className={styles.page}>
+  return <div className={styles.page}><SiteReadySignal ready={loadingReady}/>
     <div className={styles.intro}><div><p className={styles.overline}>EL SABOR ESTÁ A UN PASO</p><h1>TU PEDIDO<span>.</span></h1><p>Revisa tus favoritos y continúa por WhatsApp.</p></div><Link href="/menu" className={styles.back}>← Seguir explorando el menú</Link></div>
     {!checkout.hasHydrated ? <div className={styles.loading} role="status" aria-busy="true">Cargando tu selección…</div> : !items.length ? <section className={styles.empty}><p className={styles.overline}>AÚN NO HAY SABORES ELEGIDOS</p><h2>TU CARRITO ESTÁ VACÍO</h2><p>Elige tus rolls, boxes o entradas favoritos y vuelve para preparar el pedido.</p><Link href="/menu">Explorar menú →</Link></section> : <div className={styles.layout}>
       <div className={styles.main}>

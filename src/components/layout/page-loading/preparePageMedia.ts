@@ -8,7 +8,7 @@ function imageFailure(image: HTMLImageElement, stage: string, error?: unknown) {
   return new Error("[" + stage + "] " + source + " — " + detail);
 }
 
-export async function decodeHomeImage(image: HTMLImageElement, signal: AbortSignal) {
+export async function decodePageImage(image: HTMLImageElement, signal: AbortSignal) {
   cancelled(signal);
   // Preserve <picture>, sizes and srcset: the browser selects the device candidate.
   image.loading = "eager";
@@ -55,17 +55,22 @@ function selectedCssImages(root: HTMLElement) {
   return sources;
 }
 
-export async function prepareHomeMedia(root: HTMLElement, signal: AbortSignal) {
+export async function preparePageMedia(root: HTMLElement, signal: AbortSignal) {
   const images = Array.from(root.querySelectorAll<HTMLImageElement>("img"));
-  const decorations = Array.from(selectedCssImages(root), (src) => {
+  const sources = selectedCssImages(root);
+  for (const image of root.querySelectorAll<SVGImageElement>("svg image")) {
+    const href = image.href.baseVal.trim();
+    if (href && !href.startsWith("#")) sources.add(href);
+  }
+  const decorations = Array.from(sources, (src) => {
     const image = new Image();
     image.src = src;
     return image;
   });
-  await Promise.all([...images, ...decorations].map((image) => decodeHomeImage(image, signal)));
+  await Promise.all([...images, ...decorations].map((image) => decodePageImage(image, signal)));
 }
 
-export function nextHomeFrame(signal: AbortSignal) {
+export function nextPageFrame(signal: AbortSignal) {
   return new Promise<void>((resolve, reject) => {
     cancelled(signal);
     const id = requestAnimationFrame(() => {

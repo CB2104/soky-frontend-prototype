@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: only light;
   --background: #fff3e2;
   --foreground: #141118;
   --navbar-height: 5rem;
@@ -45,13 +46,6 @@
   --font-hand: var(--font-soky-hand);
   --shadow-soky-card: 0 18px 45px rgb(7 5 74 / 0.16);
   --shadow-soky-orange: 0 14px 30px rgb(216 79 0 / 0.22);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #07054a;
-    --foreground: #fffdf7;
-  }
 }
 
 @utility soky-container {

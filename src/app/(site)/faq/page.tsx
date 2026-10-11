@@ -1,3 +1,4 @@
+import { SiteReadySignal } from "@/providers/SiteLoadingProvider";
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 
@@ -51,6 +52,7 @@ export default function FaqPage() {
           ))}
         </div>
       </Container>
+      <SiteReadySignal />
     </main>
   );
 }

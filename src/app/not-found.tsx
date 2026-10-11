@@ -1,3 +1,4 @@
+import { SiteReadySignal } from "@/providers/SiteLoadingProvider";
 import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
@@ -13,6 +14,7 @@ export default function NotFound() {
           Ver menú
         </Button>
       </div>
+      <SiteReadySignal />
     </main>
   );
 }
