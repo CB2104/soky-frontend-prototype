@@ -2,6 +2,7 @@ import Image from "next/image";
 import { MenuBlockIcon } from "@/components/brand/IconsSVG";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { HomeSceneOrnament } from "../HomeSceneOrnament";
 import heroActions from "@/features/hero/components/HeroActions.module.css";
 import { HowToOrderMotion } from "./HowToOrderMotion";
 import styles from "./HowToOrderSection.module.css";
@@ -65,14 +66,16 @@ export function HowToOrderSection() {
       data-contact-speed-dial-hidden-zone
     >
       <Container className={styles.content}>
-        <header className={styles.header}>
-          <h2 id="how-to-order-title" className={styles.title}>
-            Cómo pedir
-          </h2>
-          <p className={styles.intro}>
-            Elige tus favoritos y lleva tu pedido listo a WhatsApp.
-          </p>
-        </header>
+        <HomeSceneOrnament placement="order">
+          <header className={styles.header}>
+            <h2 id="how-to-order-title" className={styles.title}>
+              Cómo pedir
+            </h2>
+            <p className={styles.intro}>
+              Elige tus favoritos y lleva tu pedido listo a WhatsApp.
+            </p>
+          </header>
+        </HomeSceneOrnament>
 
         <HowToOrderMotion>
           <ol className={styles.steps} role="list">
@@ -114,7 +117,7 @@ export function HowToOrderSection() {
           </p>
           <Button
             href="/menu"
-            variant="ghost"
+            variant="tertiary"
             className={[heroActions.primaryAction, styles.cta].join(" ")}
           >
             <span aria-hidden="true" className={heroActions.actionIcon}>

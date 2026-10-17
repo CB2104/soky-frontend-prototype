@@ -13,7 +13,10 @@ import type {
   SliderBackgroundColorToken,
   UserDto,
 } from "@/contracts/api";
-import { preparedMenuCategories, preparedMenuProducts } from "./menu-dto-adapter";
+import {
+  preparedMenuCategories,
+  preparedMenuProducts,
+} from "./menu-dto-adapter";
 
 const now = new Date("2026-06-14T14:00:00.000Z").toISOString();
 
@@ -226,17 +229,21 @@ const heroBlackBackgrounds = {
   }),
 };
 
-export const mockCategories: CategoryDto[] = preparedMenuCategories.map((category) => ({
-  ...category,
-  createdAt: now,
-  updatedAt: now,
-}));
+export const mockCategories: CategoryDto[] = preparedMenuCategories.map(
+  (category) => ({
+    ...category,
+    createdAt: now,
+    updatedAt: now,
+  }),
+);
 
-export const mockProducts: ProductDto[] = preparedMenuProducts.map((product) => ({
-  ...product,
-  createdAt: now,
-  updatedAt: now,
-}));
+export const mockProducts: ProductDto[] = preparedMenuProducts.map(
+  (product) => ({
+    ...product,
+    createdAt: now,
+    updatedAt: now,
+  }),
+);
 
 export const mockSliderItems: AdminSliderItemDto[] = [
   {
@@ -308,19 +315,19 @@ export const mockSliderItems: AdminSliderItemDto[] = [
       {
         ...boxKiyomiRotatorSources,
         alt: "Box Kiyomi de SOKY con sushi y toppings para compartir.",
-        name: "Box Kiyomi",
+        name: "72 Piezas Tempura",
         priceLabel: "24€",
       },
       {
         ...boxKyotoRotatorSources,
         alt: "Box Kyoto de SOKY con piezas tempura y toppings.",
-        name: "Box Kyoto",
+        name: "36 Piezas Tempura",
         priceLabel: "15€",
       },
       {
         ...boxKuramaRotatorSources,
         alt: "Box Kurama de SOKY con selección de sushi para compartir.",
-        name: "Box Kurama",
+        name: "30 Piezas Frías\n+ 36 Tempura",
         priceLabel: "22€",
       },
     ],
@@ -568,9 +575,15 @@ export const mockSettings: PublicSettingsDto = {
   pickupEnabled: true,
   deliveryNotes: "Delivery sujeto a zona y disponibilidad.",
   minimumOrderAmount: mockProducts
-    .filter((product) => product.status === "ACTIVE" && product.isAvailable && product.priceCurrency === "EUR")
+    .filter(
+      (product) =>
+        product.status === "ACTIVE" &&
+        product.isAvailable &&
+        product.priceCurrency === "EUR",
+    )
     .map((product) => Number(product.priceAmount))
-    .toSorted((a, b) => a - b)[0]?.toFixed(2),
+    .toSorted((a, b) => a - b)[0]
+    ?.toFixed(2),
   serviceFeeEnabled: false,
   serviceFeeAmount: "0.00",
 };
@@ -583,7 +596,8 @@ export const mockExchangeRate: ExchangeRateDto = {
   source: "MANUAL",
   fetchedAt: new Date().toISOString(),
   stale: false,
-  warning: "Tasa manual de prueba: 980,61 VES por EUR. Fecha de vigencia pendiente; no es una consulta al proveedor.",
+  warning:
+    "Tasa manual de prueba: 980,61 VES por EUR. Fecha de vigencia pendiente; no es una consulta al proveedor.",
 };
 
 export const mockUser: UserDto = {

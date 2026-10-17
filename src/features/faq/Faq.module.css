@@ -1,0 +1,208 @@
+.page {
+  padding-block: clamp(2.5rem, 5vw, 4.5rem);
+  background: var(--color-soky-white);
+  color: var(--color-soky-ink);
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+.header {
+  position: relative;
+  isolation: isolate;
+  width: calc(100% - 1.5rem);
+  max-width: 58rem;
+  margin-inline: auto;
+  padding: clamp(2rem, 4vw, 3rem) clamp(1rem, 3vw, 3rem);
+  text-align: center;
+}
+
+.header::before,
+.header::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: 3.5rem 5rem 3rem 4.5rem / 2.25rem 3rem 2.75rem 2.5rem;
+}
+
+.header::before {
+  z-index: -1;
+  inset: 0;
+  background-color: var(--color-soky-blue);
+  background-image:
+    linear-gradient(rgb(23 41 166 / 0.72), rgb(23 41 166 / 0.72)),
+    url("/images/patterns/endless-clouds-light.svg");
+  background-size: 5rem 2.5rem;
+  transform: rotate(-1deg);
+}
+
+.header::after {
+  z-index: -2;
+  inset: 0.5rem -0.5rem -0.65rem 0.75rem;
+  background: var(--color-soky-orange);
+  transform: rotate(1deg);
+}
+
+.eyebrow {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0 0 1rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 1.25rem 0.75rem 1.1rem 0.65rem;
+  background: var(--color-soky-white);
+  color: var(--color-soky-orange-ink);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  line-height: 1.6;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  color: var(--color-soky-white);
+  font-family: var(--font-anton), Impact, sans-serif;
+  font-size: clamp(2.4rem, 5.5vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.08;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.titleAccent {
+  color: var(--color-soky-orange);
+}
+
+.intro {
+  margin: 1rem auto 0;
+  max-width: 48ch;
+  color: var(--color-soky-white);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 2rem;
+  row-gap: 2rem;
+  margin-top: clamp(2.5rem, 5vw, 3.75rem);
+}
+
+.item {
+  min-width: 0;
+  padding-top: 1.25rem;
+  background: linear-gradient(
+    to right,
+    var(--color-soky-orange) 2.5rem,
+    color-mix(in srgb, var(--color-soky-blue) 16%, transparent) 2.5rem
+  ) top / 100% 2px no-repeat;
+  scroll-margin-top: calc(var(--navbar-height, 5rem) + 1.5rem);
+}
+
+.question {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin: 0 0 1rem;
+  color: var(--color-soky-blue);
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.icon {
+  display: inline-flex;
+  flex: 0 0 1.5rem;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-soky-orange-ink);
+}
+
+.icon > svg,
+.icon > span {
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.answer {
+  margin: 0;
+  color: var(--color-soky-muted);
+  font-size: 0.9375rem;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+
+.answer strong {
+  color: var(--color-soky-blue);
+  font-weight: 700;
+}
+
+.footer {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  margin-top: clamp(2.75rem, 5vw, 4rem);
+  padding-top: 1.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-soky-blue) 16%, transparent);
+  text-align: center;
+}
+
+.note {
+  margin: 0;
+  color: var(--color-soky-muted);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem 1.5rem;
+}
+
+.locationLink {
+  display: inline-flex;
+  align-items: center;
+  text-underline-offset: 0.25em;
+}
+
+.actions a:not([data-variant]):focus-visible {
+  outline: 3px solid var(--color-soky-blue);
+  outline-offset: 4px;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2.5rem;
+    row-gap: 2.5rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .titleAccent {
+    display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 3rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actions a {
+    transition: none;
+    transform: none;
+  }
+}

@@ -244,7 +244,9 @@ export function BoxesShowcaseHero({
 
       let cancelEntrance = () => {};
       if (isActive) {
-        cancelEntrance = startEntrance(() => { timeline.restart(); });
+        cancelEntrance = startEntrance(() => {
+          timeline.restart();
+        });
       } else {
         timeline.progress(1).pause();
       }
@@ -265,6 +267,21 @@ export function BoxesShowcaseHero({
 
   const priceAmount = activeItem.priceLabel?.replace("€", "").trim();
   const titleLines = slide.title.split(/\s+(?=para\b|cada\b)/i);
+
+  let badgeWordIndex = 0;
+
+  const badgeLines = (activeItem.name ?? "")
+    .split(/\r?\n/)
+    .map((line) => line.trim().split(/\s+/).filter(Boolean))
+    .filter((words) => words.length > 0)
+    .map((words) =>
+      words.map((text) => ({
+        text,
+        bold: badgeWordIndex++ % 2 === 1,
+      })),
+    );
+
+  const hasMultilineBadge = badgeLines.length > 1;
   return (
     <section
       ref={rootRef}
@@ -454,14 +471,14 @@ export function BoxesShowcaseHero({
               ].join(" ")}
             >
               <Button
-                variant="ghost"
+                variant="primary"
                 data-hero-cta
                 href={primaryHref}
                 scroll={primaryHref.startsWith("/menu/") ? false : undefined}
                 data-transition-ignore={
-                  primaryHref.startsWith("/menu/")
-                    || primaryHref.startsWith("#")
-                    || primaryHref.startsWith("/#")
+                  primaryHref.startsWith("/menu/") ||
+                  primaryHref.startsWith("#") ||
+                  primaryHref.startsWith("/#")
                     ? true
                     : undefined
                 }
@@ -596,22 +613,49 @@ export function BoxesShowcaseHero({
                 {activeItem.name ? (
                   <p
                     className={[
-                      "relative z-10 grid aspect-[700/200] w-[94%] shrink-0 place-items-center",
-                      "-rotate-3 bg-contain bg-center bg-no-repeat",
-                      "px-2 pb-0.5 text-center",
-                      "font-soky-support text-[0.8125rem] font-extrabold uppercase",
-                      "whitespace-nowrap leading-none tracking-tight text-soky-white",
+                      "relative z-10 grid w-[94%] shrink-0 place-items-center",
+                      "-rotate-3 bg-center bg-no-repeat",
+                      "px-1 pb-0.5 text-center",
+                      "font-soky-support font-normal uppercase",
+                      "leading-[1.05] tracking-[-0.025em] text-soky-white",
                       "drop-shadow-[0_3px_4px_rgb(7_5_74_/_0.12)]",
-                      "md:px-3 md:text-[1.125rem]",
-                      "[@media(max-height:500px)_and_(orientation:landscape)]:!px-1",
+
+                      hasMultilineBadge
+                        ? "h-[calc(var(--box-price-size)*0.36)] text-[0.8125rem] md:text-[1.125rem]"
+                        : "h-[calc(var(--box-price-size)*0.28)] text-[0.71875rem] md:text-base",
+
+                      "[@media(max-height:500px)_and_(orientation:landscape)]:!h-[calc(var(--box-price-size)*0.38)]",
                       "[@media(max-height:500px)_and_(orientation:landscape)]:!text-[0.6875rem]",
                     ].join(" ")}
                     style={{
                       backgroundImage:
                         "url('/images/hero/box-name-ribbon.svg')",
+                      backgroundSize: "100% 100%",
                     }}
                   >
-                    {activeItem.name}
+                    <span className="block w-full">
+                      {badgeLines.map((words, lineIndex) => (
+                        <span
+                          key={lineIndex}
+                          className={[
+                            "block whitespace-nowrap",
+                            "[@media(max-height:500px)_and_(orientation:landscape)]:whitespace-normal",
+                          ].join(" ")}
+                        >
+                          {words.map((word, wordIndex) => (
+                            <span
+                              key={`${wordIndex}-${word.text}`}
+                              className={
+                                word.bold ? "font-extrabold" : "font-light"
+                              }
+                            >
+                              {wordIndex > 0 ? " " : ""}
+                              {word.text}
+                            </span>
+                          ))}
+                        </span>
+                      ))}
+                    </span>
                   </p>
                 ) : null}
 

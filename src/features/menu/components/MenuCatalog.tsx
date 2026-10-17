@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type MouseEvent } from "react";
+import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/features/products/components/ProductCard";
+import { PRODUCT_CARD_IMAGE_SIZES } from "@/features/products/components/ProductCard.constants";
 import { menuAnchorId, type MenuSection } from "../menu-sections";
+import { getMenuSectionDescription } from "../section-copy";
 import { useMenuNavigation } from "../useMenuNavigation";
 import styles from "./MenuCatalog.module.css";
 
@@ -50,74 +53,87 @@ export function MenuCatalog({ sections, initialDestination }: Props) {
       <div id="menu-start" className={styles.start} />
       <nav ref={navRef} className={styles.nav} aria-label="Secciones del menú">
         <div ref={stripRef} className={styles.strip}>
-          <a
+          <Button
+            size="sm"
+            variant={activeSlug === "all" ? "primary" : "secondary"}
             href="#menu-start"
             data-transition-ignore="true"
             aria-current={activeSlug === "all" ? "location" : undefined}
-            onClick={(event) => navigate(event, "menu-start")}
+            onClick={(event: MouseEvent<HTMLAnchorElement>) => navigate(event, "menu-start")}
             className={styles.chip}
           >
             Todo el menú
-          </a>
+          </Button>
           {sections.map((section) => (
-            <a
+            <Button
+              size="sm"
+              variant={activeSlug === section.slug ? "primary" : "secondary"}
               key={section.slug}
               href={"#" + menuAnchorId(section.slug)}
               data-transition-ignore="true"
               aria-current={activeSlug === section.slug ? "location" : undefined}
-              onClick={(event) => navigate(event, menuAnchorId(section.slug))}
+              onClick={(event: MouseEvent<HTMLAnchorElement>) => navigate(event, menuAnchorId(section.slug))}
               className={styles.chip}
             >
               {section.title}
-            </a>
+            </Button>
           ))}
         </div>
       </nav>
       <div className={styles.sections}>
-        {sections.map((section) => (
-          <section
-            key={section.slug}
-            id={menuAnchorId(section.slug)}
-            className={styles.section}
-            aria-labelledby={menuAnchorId(section.slug) + "-title"}
-          >
-            <header className={styles.sectionHeading}>
-              <h2 id={menuAnchorId(section.slug) + "-title"}>{section.title}</h2>
-              <span>
-                {section.count} {section.count === 1 ? "opción" : "opciones"}
-              </span>
-            </header>
-            {section.subsections.map((subsection) => (
-              <div
-                key={subsection.slug}
-                className={styles.subsection}
-                id={section.subsections.length > 1
-                  ? menuAnchorId(subsection.slug)
-                  : undefined}
-              >
-                {section.subsections.length > 1 ? (
-                  <h3 className={styles.subheading}>{subsection.title}</h3>
-                ) : null}
-                {subsection.products.length === 0 ? (
-                  <p className={styles.empty}>
-                    No hay productos en esta sección por ahora.
+        {sections.map((section) => {
+          const description = getMenuSectionDescription(section.slug);
+          const sectionId = menuAnchorId(section.slug);
+
+          return (
+            <section
+              key={section.slug}
+              id={sectionId}
+              className={styles.section}
+              aria-labelledby={sectionId + "-title"}
+              aria-describedby={description ? sectionId + "-description" : undefined}
+            >
+              <header className={styles.sectionHeading}>
+                <div className={styles.sectionTitleRow}>
+                  <h2 id={sectionId + "-title"}>{section.title}</h2>
+                  <span className={styles.count}>
+                    {section.count} {section.count === 1 ? "opción" : "opciones"}
+                  </span>
+                </div>
+                {description ? (
+                  <p id={sectionId + "-description"} className={styles.description}>
+                    {description}
                   </p>
-                ) : (
-                  <div className={styles.grid}>
-                    {subsection.products.map((product) => (
-                      <ProductCard
-                        key={product.id}
-                        product={product}
-                        priority={priorityIds.has(product.id)}
-                        imageSizes="(max-width: 639px) and (orientation: portrait) calc(50vw - 1.5rem), (min-width: 380px) 340px, calc(100vw - 2rem)"
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </section>
-        ))}
+                ) : null}
+              </header>
+              {section.subsections.map((subsection) => (
+                <div
+                  key={subsection.slug}
+                  className={styles.subsection}
+                  id={section.subsections.length > 1 ? menuAnchorId(subsection.slug) : undefined}
+                >
+                  {section.subsections.length > 1 ? (
+                    <h3 className={styles.subheading}>{subsection.title}</h3>
+                  ) : null}
+                  {subsection.products.length === 0 ? (
+                    <p className={styles.empty}>No hay productos en esta sección por ahora.</p>
+                  ) : (
+                    <div className={styles.grid}>
+                      {subsection.products.map((product) => (
+                        <ProductCard
+                          key={product.id}
+                          product={product}
+                          priority={priorityIds.has(product.id)}
+                          imageSizes={PRODUCT_CARD_IMAGE_SIZES}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </section>
+          );
+        })}
       </div>
     </div>
   );

@@ -1,28 +1,39 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useId, useRef } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useEffect, useId, useRef, useSyncExternalStore } from "react";
+import type { MouseEvent, RefObject } from "react";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "motion/react";
+import type { Variants } from "motion/react";
 import { usePathname } from "next/navigation";
+import { useTransitionRouter } from "next-transition-router";
+import AnimatedSokyLogo from "@/components/brand/AnimatedSokyLogo";
+import { CartSVG, CloseIcon, WhatsAppSVG } from "@/components/brand/IconsSVG";
+import { Button } from "@/components/ui/button";
 import type { NavTabItem } from "@/constants";
-import { cn } from "@/lib/cn";
-import AnimatedSokyLogo from "../brand/AnimatedSokyLogo";
-import { CartSVG, CloseIcon, WhatsAppSVG } from "../brand/IconsSVG";
+import { menuAnchorId } from "@/features/menu/menu-sections";
 import { useUiOverlayStore } from "@/features/ui/store";
+import { cn } from "@/lib/cn";
+import { lockBodyScroll } from "@/lib/body-scroll-lock";
+import styles from "./MobileNavDrawer.module.css";
 
 type MobileNavDrawerProps = {
   items: NavTabItem[];
   whatsappUrl: string;
 };
 
-type ContextualRoute = "/" | "/menu" | "/faq";
-
-type ContextualSection = {
-  title: string;
-  items: readonly NavTabItem[];
+type ContextualSection = { title: string; items: readonly NavTabItem[] };
+type PanelProps = MobileNavDrawerProps & {
+  drawerId: string;
+  pathname: string;
+  reduceMotion: boolean;
+  onClose: () => void;
+  triggerRef: RefObject<HTMLButtonElement | null>;
 };
 
-const contextualSections = {
+const drawerMedia = "(max-width: 767px), (max-height: 500px) and (orientation: landscape)";
+const focusableSelector = 'a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])';
+const contextualSections: Record<string, ContextualSection> = {
   "/": {
     title: "En esta página",
     items: [
@@ -34,11 +45,11 @@ const contextualSections = {
   "/menu": {
     title: "Categorías",
     items: [
-      { href: "/menu#combos", title: "Combos" },
-      { href: "/menu#tempura", title: "Tempura" },
-      { href: "/menu#frios", title: "Fríos" },
-      { href: "/menu#entradas", title: "Entradas" },
-      { href: "/menu#bebidas", title: "Bebidas" },
+      { href: "/menu#" + menuAnchorId("combo-boxs"), title: "Combos" },
+      { href: "/menu#" + menuAnchorId("piezas-tempura"), title: "Tempura" },
+      { href: "/menu#" + menuAnchorId("piezas-frias"), title: "Fríos" },
+      { href: "/menu#" + menuAnchorId("entradas"), title: "Entradas" },
+      { href: "/menu#" + menuAnchorId("bebidas"), title: "Bebidas" },
     ],
   },
   "/faq": {
@@ -49,406 +60,224 @@ const contextualSections = {
       { href: "/faq#delivery", title: "Delivery" },
     ],
   },
-} satisfies Record<ContextualRoute, ContextualSection>;
+};
 
-function getContextualSection(pathname: string): ContextualSection | null {
-  if (pathname === "/" || pathname === "/menu" || pathname === "/faq") {
-    return contextualSections[pathname];
-  }
-  return null;
+const panelVariants: Variants = {
+  initial: (reduce: boolean) => ({ x: reduce ? 0 : "-100%" }),
+  open: (reduce: boolean) => ({ x: 0, transition: { duration: reduce ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] } }),
+  exit: (reduce: boolean) => ({ x: reduce ? 0 : "-100%", transition: { duration: reduce ? 0 : 0.24, ease: [0.4, 0, 0.8, 0.4] } }),
+};
+const backdropVariants: Variants = {
+  initial: (reduce: boolean) => ({ opacity: reduce ? 1 : 0 }),
+  open: (reduce: boolean) => ({ opacity: 1, transition: { duration: reduce ? 0 : 0.18 } }),
+  exit: (reduce: boolean) => ({ opacity: 0, transition: { duration: reduce ? 0 : 0.24 } }),
+};
+function subscribeHydration() { return () => {}; }
+function clientSnapshot() { return true; }
+function serverSnapshot() { return false; }
+function visible(element: HTMLElement | null): element is HTMLElement {
+  return !!element?.isConnected && element.getClientRects().length > 0
+    && getComputedStyle(element).visibility !== "hidden" && !element.closest("[inert]");
 }
 
-const panelVariants = {
-  closed: {
-    x: "-100%",
-  },
-  open: {
-    x: 0,
-  },
-};
+function MobileNavPanel({ items, whatsappUrl, drawerId, pathname, reduceMotion, onClose, triggerRef }: PanelProps) {
+  const isPresent = useIsPresent();
+  const router = useTransitionRouter();
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const glyphRef = useRef<HTMLSpanElement>(null);
+  const glyphSnapshot = useRef<{ transform: string; opacity: string } | null>(null);
+  const contextualSection = contextualSections[pathname];
+  const titleId = drawerId + "-title";
 
-const linksVariants = {
-  closed: {
-    transition: {
-      staggerChildren: 0.04,
-      staggerDirection: -1,
-    },
-  },
-  open: {
-    transition: {
-      delayChildren: 0.08,
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const linkVariants = {
-  closed: {
-    opacity: 0,
-    x: -18,
-  },
-  open: {
-    opacity: 1,
-    x: 0,
-  },
-};
-
-const topPathClosed = "M 4 6.5 L 20 6.5";
-const topPathOpen = "M 6 18 L 18 6";
-const bottomPathClosed = "M 4 17.5 L 20 17.5";
-const bottomPathOpen = "M 6 6 L 18 18";
-
-const focusableElementSelector = [
-  "a[href]",
-  "button:not([disabled])",
-  'input:not([type="hidden"]):not([disabled])',
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  '[tabindex]:not([tabindex="-1"])',
-].join(",");
-
-export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
-  const drawerId = useId();
-  const drawerTitleId = `${drawerId}-title`;
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const drawerRef = useRef<HTMLElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const pathname = usePathname();
-  const reduceMotion = useReducedMotion() ?? false;
-  const contextualSection = getContextualSection(pathname);
-  const isOpen = useUiOverlayStore((state) => state.isMobileNavOpen);
-  const openMobileNav = useUiOverlayStore((state) => state.openMobileNav);
-  const closeMobileNav = useUiOverlayStore((state) => state.closeMobileNav);
-
-  const isItemActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  function navigate(event: MouseEvent<HTMLElement>, href: string) {
+    onClose();
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey
+      || event.shiftKey || event.altKey) return;
+    // Next Link prevents the delegated auto handler from seeing an uncancelled click.
+    event.preventDefault();
+    router.push(href);
+  }
 
   useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const triggerElement = triggerRef.current;
-    const previousOverflow = document.body.style.overflow;
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        closeMobileNav();
-        return;
-      }
-
-      if (event.key !== "Tab") {
-        return;
-      }
-
-      const drawerElement = drawerRef.current;
-
-      if (!drawerElement) {
-        return;
-      }
-
-      const focusableElements = Array.from(
-        drawerElement.querySelectorAll<HTMLElement>(focusableElementSelector),
-      );
-
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-
-      if (!firstElement || !lastElement) {
-        event.preventDefault();
-        drawerElement.focus();
-        return;
-      }
-
-      const activeElement = document.activeElement;
-
-      if (!drawerElement.contains(activeElement)) {
-        event.preventDefault();
-        firstElement.focus();
-        return;
-      }
-
-      if (
-        event.shiftKey &&
-        (activeElement === firstElement || activeElement === drawerElement)
-      ) {
-        event.preventDefault();
-        lastElement.focus();
-        return;
-      }
-
-      if (!event.shiftKey && activeElement === lastElement) {
-        event.preventDefault();
-        firstElement.focus();
-      }
-    }
-
-    document.body.style.overflow = "hidden";
-    closeButtonRef.current?.focus();
-    window.addEventListener("keydown", handleKeyDown);
-
+    const glyph = glyphRef.current;
+    if (!glyph || reduceMotion) return;
+    const current = getComputedStyle(glyph);
+    const start = glyphSnapshot.current ?? { transform: current.transform, opacity: current.opacity };
+    // A filled exit animation keeps hover-out from reversing the closing X.
+    const animation = glyph.animate(isPresent
+      ? [{ transform: "rotate(-90deg) scale(.7)", opacity: 0 }, { transform: "rotate(0) scale(1)", opacity: 1 }]
+      : [start, { transform: "rotate(180deg) scale(.65)", opacity: 0 }], {
+      duration: isPresent ? 360 : 200,
+      easing: isPresent ? "cubic-bezier(.22,1,.36,1)" : "ease-in",
+      fill: isPresent ? "none" : "forwards",
+    });
     return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-      triggerElement?.focus();
+      const computed = getComputedStyle(glyph);
+      glyphSnapshot.current = { transform: computed.transform, opacity: computed.opacity };
+      animation.cancel();
     };
-  }, [closeMobileNav, isOpen]);
+  }, [isPresent, reduceMotion]);
+
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    const panel = panelRef.current;
+    if (!overlay || !panel) return;
+
+    const trigger = triggerRef.current;
+    const releaseScroll = lockBodyScroll();
+    const isolated = new Map<HTMLElement, { inert: boolean; ariaHidden: string | null }>();
+
+    // Move focus before hiding the background that contains the trigger.
+    closeRef.current?.focus({ preventScroll: true });
+    function isolateBackground() {
+      for (const child of document.body.children) {
+        if (!(child instanceof HTMLElement) || child === overlay || child.contains(overlay)
+          || ["SCRIPT", "STYLE", "LINK"].includes(child.tagName) || isolated.has(child)) continue;
+        isolated.set(child, { inert: child.inert, ariaHidden: child.getAttribute("aria-hidden") });
+        child.inert = true;
+        child.setAttribute("aria-hidden", "true");
+      }
+    }
+    isolateBackground();
+    const observer = new MutationObserver(isolateBackground);
+    observer.observe(document.body, { childList: true });
+
+    function focusable() {
+      return Array.from(panel!.querySelectorAll<HTMLElement>(focusableSelector)).filter(visible);
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") { event.preventDefault(); onClose(); return; }
+      if (event.key !== "Tab") return;
+      const elements = focusable();
+      const first = elements[0];
+      const last = elements.at(-1);
+      if (!first || !last) { event.preventDefault(); panel!.focus(); return; }
+      if (!panel!.contains(document.activeElement)) {
+        event.preventDefault(); (event.shiftKey ? last : first).focus();
+      } else if (event.shiftKey && (document.activeElement === first || document.activeElement === panel)) {
+        event.preventDefault(); last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault(); first.focus();
+      }
+    }
+    function handleFocus(event: FocusEvent) {
+      if (event.target instanceof Node && !panel!.contains(event.target)) closeRef.current?.focus({ preventScroll: true });
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("focusin", handleFocus);
+
+    // AnimatePresence keeps this component mounted through the complete exit.
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("focusin", handleFocus);
+      for (const [element, previous] of isolated) {
+        element.inert = previous.inert;
+        if (previous.ariaHidden === null) element.removeAttribute("aria-hidden");
+        else element.setAttribute("aria-hidden", previous.ariaHidden);
+      }
+      releaseScroll();
+      const anotherModal = Array.from(document.querySelectorAll<HTMLElement>('[aria-modal="true"]'))
+        .some(element => element !== panel && visible(element));
+      if (anotherModal) return;
+      const fallback = document.querySelector<HTMLElement>('header a[aria-label="Ir al inicio"]');
+      const target = visible(trigger) ? trigger : visible(fallback) ? fallback : null;
+      target?.focus({ preventScroll: true });
+    };
+  }, [onClose, triggerRef]);
 
   return (
-    <div className="relative z-60 md:hidden [@media(max-height:500px)_and_(orientation:landscape)]:!block">
-      <button
-        ref={triggerRef}
-        type="button"
-        aria-label={isOpen ? "Cerrar menu" : "Abrir menu"}
-        aria-controls={drawerId}
-        aria-expanded={isOpen}
-        aria-hidden={isOpen}
-        tabIndex={isOpen ? -1 : 0}
-        className={cn(
-          "relative z-60 -ml-2 grid size-11 touch-manipulation place-items-center drop-shadow-[0_4px_8px_rgb(7_5_74_/_0.45)] transition-[color,filter,opacity] active:text-soky-orange",
-          isOpen ? "pointer-events-none opacity-0" : "text-soky-white",
-        )}
-        onClick={() => {
-          if (isOpen) {
-            closeMobileNav();
-            return;
-          }
+    <motion.div ref={overlayRef} className={styles.overlay} data-soky-mobile-nav-overlay
+      initial={reduceMotion ? false : "initial"} animate="open" exit="exit" custom={reduceMotion}>
+      <motion.button type="button" tabIndex={-1} aria-hidden="true" className={styles.backdrop}
+        variants={backdropVariants} custom={reduceMotion} onClick={onClose} />
+      <motion.aside ref={panelRef} id={drawerId} role="dialog" aria-modal="true"
+        aria-labelledby={titleId} tabIndex={-1} className={styles.panel}
+        variants={panelVariants} custom={reduceMotion}>
+        <header className={styles.panelHeader}>
+          <h2 id={titleId} className={styles.srOnly}>Navegación de SOKY</h2>
+          <div className={styles.logoSlot} aria-hidden="true">
+            <AnimatedSokyLogo title="" white="#fffdf7" orange="#fe6402"
+              className={styles.logo} wrapperClassName={styles.logoWrapper} />
+          </div>
+          <button ref={closeRef} type="button" aria-label="Cerrar navegación"
+            className={styles.close} onClick={onClose}>
+            <span ref={glyphRef} aria-hidden="true" className={styles.closeGlyph}>
+              <CloseIcon />
+            </span>
+          </button>
+        </header>
+        <div className={styles.scroll}>
+          <nav className={styles.mainNav} aria-label="Navegación principal">
+            {items.map(item => {
+              const active = item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(item.href + "/");
+              return <Button key={item.href} href={item.href} variant="secondary" secondaryTone={active ? "b" : "a"}
+                aria-current={active ? "page" : undefined} className={styles.mainLink} onClick={event => navigate(event, item.href)}>{item.title}</Button>;
+            })}
+          </nav>
+          {contextualSection ? <section className={styles.context} aria-labelledby={drawerId + "-context"}>
+            <h3 id={drawerId + "-context"}>{contextualSection.title}</h3>
+            <nav className={styles.contextLinks} aria-label={contextualSection.title}>
+              {contextualSection.items.map(item => <Button key={item.href} href={item.href} variant="tertiary"
+                data-transition-ignore="true" onClick={onClose}>{item.title}</Button>)}
+            </nav>
+          </section> : null}
+          <section className={styles.order} aria-labelledby={drawerId + "-order"}>
+            <h3 id={drawerId + "-order"}>¿Listo para pedir?</h3>
+            <p>Elige tu box y confirma por WhatsApp.</p>
+            <div className={styles.orderLinks}>
+              <Button href={whatsappUrl} variant="primary" target="_blank" rel="noopener noreferrer" onClick={onClose}>
+                <span className={styles.actionLabel}><WhatsAppSVG aria-hidden="true" />Pedir por WhatsApp</span>
+              </Button>
+              <Button href="/cart" variant="primary" onClick={event => navigate(event, "/cart")}>
+                <span className={styles.actionLabel}><CartSVG aria-hidden="true" />Ver carrito</span>
+              </Button>
+            </div>
+          </section>
+        </div>
+      </motion.aside>
+    </motion.div>
+  );
+}
 
-          openMobileNav();
-        }}
-      >
-        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
-          <motion.path
-            d={topPathClosed}
-            initial={false}
-            animate={isOpen ? "open" : "closed"}
-            variants={{
-              closed: { d: topPathClosed },
-              open: { d: topPathOpen },
-            }}
-            transition={
-              reduceMotion
-                ? { duration: 0 }
-                : { duration: 0.22, ease: [0.16, 1, 0.3, 1] }
-            }
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeWidth="2.5"
-          />
-          <motion.path
-            initial={false}
-            animate={isOpen ? "open" : "closed"}
-            variants={{
-              closed: { opacity: 1 },
-              open: { opacity: 0 },
-            }}
-            transition={{ duration: reduceMotion ? 0 : 0.16 }}
-            d="M 4 12 L 20 12"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeWidth="2.5"
-          />
-          <motion.path
-            d={bottomPathClosed}
-            initial={false}
-            animate={isOpen ? "open" : "closed"}
-            variants={{
-              closed: { d: bottomPathClosed },
-              open: { d: bottomPathOpen },
-            }}
-            transition={
-              reduceMotion
-                ? { duration: 0 }
-                : { duration: 0.22, ease: [0.16, 1, 0.3, 1] }
-            }
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeWidth="2.5"
-          />
+export function MobileNavDrawer({ items, whatsappUrl }: MobileNavDrawerProps) {
+  const hydrated = useSyncExternalStore(subscribeHydration, clientSnapshot, serverSnapshot);
+  const drawerId = useId();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
+  const previousPath = useRef(pathname);
+  const reduceMotion = useReducedMotion() ?? false;
+  const isOpen = useUiOverlayStore(state => state.isMobileNavOpen);
+  const openMobileNav = useUiOverlayStore(state => state.openMobileNav);
+  const closeMobileNav = useUiOverlayStore(state => state.closeMobileNav);
+
+  useEffect(() => {
+    if (previousPath.current !== pathname) { previousPath.current = pathname; closeMobileNav(); }
+  }, [pathname, closeMobileNav]);
+
+  useEffect(() => {
+    const query = window.matchMedia(drawerMedia);
+    const check = () => { if (!query.matches) closeMobileNav(); };
+    check();
+    query.addEventListener("change", check);
+    return () => query.removeEventListener("change", check);
+  }, [closeMobileNav]);
+
+  return <>
+    <div className={styles.shell}>
+      <button ref={triggerRef} type="button" aria-label="Abrir menú" aria-haspopup="dialog"
+        aria-controls={drawerId} aria-expanded={isOpen} aria-hidden={isOpen} tabIndex={isOpen ? -1 : 0}
+        className={cn(styles.trigger, isOpen && styles.triggerHidden)} onClick={openMobileNav}>
+        <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <path d="M 4 6.5 L 20 6.5" /><path d="M 4 12 L 20 12" /><path d="M 4 17.5 L 20 17.5" />
         </svg>
       </button>
-
-      <AnimatePresence>
-        {isOpen ? (
-          <motion.div
-            className="fixed inset-0 z-40"
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={reduceMotion ? undefined : { opacity: 1 }}
-            exit={reduceMotion ? undefined : { opacity: 0 }}
-            transition={reduceMotion ? undefined : { duration: 0.2 }}
-          >
-            <button
-              type="button"
-              aria-hidden="true"
-              tabIndex={-1}
-              className="absolute inset-0 bg-soky-navy/55"
-              onClick={() => closeMobileNav()}
-            />
-
-            <motion.aside
-              ref={drawerRef}
-              id={drawerId}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={drawerTitleId}
-              tabIndex={-1}
-              className="absolute left-0 top-0 flex h-dvh w-[min(82vw,22rem)] overflow-hidden flex-col border-r border-soky-border bg-soky-white text-soky-ink shadow-2xl focus:outline-none"
-              variants={reduceMotion ? undefined : panelVariants}
-              initial={reduceMotion ? false : "closed"}
-              animate={reduceMotion ? undefined : "open"}
-              exit={reduceMotion ? undefined : "closed"}
-              transition={
-                reduceMotion
-                  ? undefined
-                  : { type: "spring", stiffness: 360, damping: 34 }
-              }
-            >
-              <header className="flex min-h-20 shrink-0 items-center gap-3 border-b border-soky-blue/20 bg-soky-white px-5 py-4">
-                <button
-                  ref={closeButtonRef}
-                  type="button"
-                  aria-label="Cerrar navegación"
-                  className="grid size-11 shrink-0 place-items-center rounded-full border border-soky-border bg-soky-paper text-soky-blue transition-colors hover:border-soky-orange hover:bg-soky-orange hover:text-soky-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-orange focus-visible:ring-offset-2"
-                  onClick={() => closeMobileNav()}
-                >
-                  <CloseIcon />
-                </button>
-                <h2 id={drawerTitleId} className="sr-only">
-                  Navegación de SOKY
-                </h2>
-                <div className="ml-auto">
-                  <AnimatedSokyLogo title="" className="h-10 w-auto" />
-                </div>
-              </header>
-              <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain bg-soky-paper bg-[url('/images/patterns/endless-clouds.svg')] bg-size-[56px_28px] bg-repeat px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-                <motion.nav
-                  className="mt-6 flex flex-col gap-2"
-                  variants={reduceMotion ? undefined : linksVariants}
-                  initial={reduceMotion ? false : "closed"}
-                  animate={reduceMotion ? undefined : "open"}
-                  exit={reduceMotion ? undefined : "closed"}
-                >
-                  {items.map((item) => {
-                    const isActive = isItemActive(item.href);
-
-                    return (
-                      <motion.div
-                        key={item.href}
-                        variants={reduceMotion ? undefined : linkVariants}
-                      >
-                        <div className="group inline-flex w-full touch-manipulation rounded-full bg-soky-orange p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2">
-                          <Link
-                            href={item.href}
-                            aria-current={isActive ? "page" : undefined}
-                            className={cn(
-                              "flex min-h-12 w-full items-center rounded-full px-5 py-3 text-lg font-black uppercase transition-colors",
-                              isActive
-                                ? "bg-soky-orange-deep text-soky-white"
-                                : "bg-soky-white text-soky-ink hover:bg-soky-blue hover:text-soky-white active:bg-soky-blue-bright active:text-soky-white",
-                            )}
-                            onClick={() => closeMobileNav()}
-                          >
-                            {item.title}
-                          </Link>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </motion.nav>
-
-                {contextualSection ? (
-                  <section
-                    aria-labelledby={`${drawerId}-context-heading`}
-                    className="mt-8 border-y-2 border-soky-blue py-5"
-                  >
-                    <h2
-                      id={`${drawerId}-context-heading`}
-                      className="px-4 text-sm font-black uppercase tracking-wide text-soky-blue"
-                    >
-                      {contextualSection.title}
-                    </h2>
-
-                    <nav
-                      aria-label={contextualSection.title}
-                      className="mt-3 flex flex-col gap-1"
-                    >
-                      {contextualSection.items.map((item) => (
-                        <a
-                          href={item.href}
-                          data-transition-ignore="true"
-                          key={item.href}
-                          onClick={() => closeMobileNav()}
-                          className="flex min-h-11 items-center rounded-xl px-4 py-2 font-extrabold transition-colors hover:bg-soky-blue hover:text-soky-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-orange focus-visible:ring-offset-2"
-                        >
-                          {item.title}
-                        </a>
-                      ))}
-                    </nav>
-                  </section>
-                ) : null}
-
-                <section
-                  aria-labelledby={`${drawerId}-quick-actions-heading`}
-                  className="mt-auto pt-8"
-                >
-                  <div className="rounded-2xl border border-soky-border bg-soky-white p-4 shadow-soky-card">
-                    <h2
-                      id={`${drawerId}-quick-actions-heading`}
-                      className="text-xl font-black text-soky-blue"
-                    >
-                      ¿Listo para pedir?
-                    </h2>
-
-                    <p className="mt-1 text-sm leading-6 text-soky-muted">
-                      Elige tu box y confirma por WhatsApp.
-                    </p>
-
-                    <div className="mt-4 grid gap-3">
-                      <a
-                        href={whatsappUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="group inline-flex w-full touch-manipulation rounded-full bg-soky-orange p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2"
-                        onClick={() => closeMobileNav()}
-                      >
-                        <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-blue bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-navy group-active:scale-[0.98] group-active:bg-soky-navy">
-                          <span
-                            aria-hidden="true"
-                            className="grid size-5 shrink-0 place-items-center [&_svg]:size-5"
-                          >
-                            <WhatsAppSVG />
-                          </span>
-                          Pedir por WhatsApp
-                        </span>
-                      </a>
-
-                      <Link
-                        href="/cart"
-                        className="group inline-flex w-full touch-manipulation rounded-full bg-soky-orange p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2"
-                        onClick={() => closeMobileNav()}
-                      >
-                        <span
-                          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-blue bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat
-                         px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-navy group-active:scale-[0.98] group-active:bg-soky-navy"
-                        >
-                          <span
-                            aria-hidden="true"
-                            className="grid size-5 shrink-0 place-items-center [&_svg]:size-5"
-                          >
-                            <CartSVG />
-                          </span>
-                          Ver carrito
-                        </span>
-                      </Link>
-                    </div>
-                  </div>
-                </section>
-              </div>
-            </motion.aside>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
     </div>
-  );
+    {hydrated ? createPortal(<AnimatePresence initial={false} custom={reduceMotion}>
+      {isOpen ? <MobileNavPanel key="mobile-navigation" items={items} whatsappUrl={whatsappUrl}
+        drawerId={drawerId} pathname={pathname} reduceMotion={reduceMotion} onClose={closeMobileNav} triggerRef={triggerRef} /> : null}
+    </AnimatePresence>, document.body) : null}
+  </>;
 }

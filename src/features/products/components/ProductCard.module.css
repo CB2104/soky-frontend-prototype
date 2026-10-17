@@ -5,14 +5,11 @@
   --card-accent: var(--color-soky-orange);
   --card-border: rgb(7 48 116 / 0.25);
   --card-pattern-ink: var(--color-soky-white);
-  --card-pattern-opacity: 0.06;
+  --card-pattern-opacity: 0.035;
   --card-wave-height: 4.875rem;
   --card-shadow-color: var(--color-soky-orange);
   --fan-fill: #102c77;
   --fan-line: #2067c4;
-  --button-bg: #e95106;
-  --button-bg-end: #c43f00;
-  --button-text: var(--color-soky-white);
 
   position: relative;
   isolation: isolate;
@@ -39,8 +36,6 @@
   --card-shadow-color: #67ceff;
   --fan-fill: #cef2ff;
   --fan-line: #55bde7;
-  --button-bg: var(--color-soky-blue);
-  --button-bg-end: var(--color-soky-navy);
 }
 
 .card[data-variant="promo"] {
@@ -51,8 +46,6 @@
   --card-shadow-color: var(--color-soky-navy);
   --fan-fill: #081f58;
   --fan-line: #2454ad;
-  --button-bg: var(--color-soky-blue);
-  --button-bg-end: var(--color-soky-navy);
 }
 
 .card:focus-within {
@@ -131,25 +124,21 @@
   top: 1rem;
   left: 1rem;
   z-index: 2;
-
   display: inline-flex;
   align-items: center;
-  gap: 0.5625rem;
-  height: 2.125rem;
-  padding: 0 0.8125rem 0 0;
-  border: 1px solid rgb(255 253 247 / 0.6);
-  border-radius: 0.75rem;
-  background: #081f48;
+  gap: 0.375rem;
+  max-width: calc(100% - 2rem);
+  min-height: 1.6875rem;
+  padding: 0.375rem 0.6875rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-soky-navy);
   color: var(--color-soky-white);
-
-  box-shadow:
-    0 3px 8px rgb(4 17 44 / 0.13),
-    inset 0 1px 0 rgb(255 255 255 / 0.13);
-
+  box-shadow: 0 3px 0 rgb(7 5 74 / 0.13);
   font-family: var(--font-montserrat), sans-serif;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 1.1;
   letter-spacing: 0.035em;
   text-transform: uppercase;
 }
@@ -157,54 +146,34 @@
 .badgeMark {
   display: grid;
   place-items: center;
-  flex-shrink: 0;
-  width: 2.5rem;
-  height: 2.5rem;
-  margin-left: -1px;
-  border-radius: 50%;
-  background: #e95106;
-  color: var(--color-soky-white);
+  flex: 0 0 0.9375rem;
+  width: 0.9375rem;
+  height: 0.9375rem;
+}
 
-  font-family: var(--font-outfit), sans-serif;
-  font-size: 1.4375rem;
-  font-weight: 600;
-  letter-spacing: -0.035em;
+.badgeSlot,
+.panelSurface {
+  display: none;
+}
+
+.percentMark {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .starMark {
   display: block;
-  width: 1.125rem;
+  width: 100%;
   aspect-ratio: 1;
   background: currentColor;
-  clip-path: polygon(
-    50% 0%,
-    61% 35%,
-    98% 35%,
-    68% 57%,
-    79% 93%,
-    50% 71%,
-    21% 93%,
-    32% 57%,
-    2% 35%,
-    39% 35%
-  );
+  clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 93%,50% 71%,21% 93%,32% 57%,2% 35%,39% 35%);
 }
 
 .card[data-variant="featured"] .badge {
-  gap: 0.4375rem;
-  padding-inline: 0.75rem;
-  border-color: #f5fcff;
-  border-radius: 0.625rem;
-  background: linear-gradient(145deg, #dff6ff, #a4e2fa);
-  color: #103984;
-}
-
-.card[data-variant="featured"] .badgeMark {
-  width: 1.125rem;
-  height: 1.25rem;
-  margin: 0;
-  background: none;
-  color: inherit;
+  background: #f9d53a;
+  color: #12327e;
+  box-shadow: 0 3px 0 rgb(216 79 0 / 0.2);
 }
 
 .body {
@@ -290,7 +259,7 @@
 
   font-family: var(--font-outfit), sans-serif;
   font-size: 1.6875rem;
-  font-weight: 700;
+  font-weight: 750;
   line-height: 1.12;
   letter-spacing: -0.035em;
 }
@@ -330,6 +299,7 @@
 }
 
 .price {
+  font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 
   font-family: var(--font-outfit), sans-serif;
@@ -348,41 +318,12 @@
   display: grid;
   place-items: center;
   width: 3rem;
-  height: 3rem;
-  padding: 0;
-  border: 1px solid rgb(255 255 255 / 0.12);
-  border-radius: 50%;
-
-  background: linear-gradient(145deg, var(--button-bg), var(--button-bg-end));
-  color: var(--button-text);
-  cursor: pointer;
-
-  box-shadow:
-    0 4px 8px rgb(7 20 57 / 0.18),
-    inset 0 1px 0 rgb(255 255 255 / 0.18);
-
-  transition: transform 200ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .plusIcon {
   width: 2rem;
   height: 2rem;
   transition: transform 200ms cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.addButton:focus-visible {
-  outline: 3px solid var(--color-soky-white);
-  outline-offset: 3px;
-  box-shadow: 0 0 0 6px var(--color-soky-navy);
-}
-
-.addButton:not(:disabled):active {
-  transform: scale(0.94);
-}
-
-.addButton:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
 }
 
 .unavailable .image {
@@ -465,7 +406,6 @@
     right: 0.5rem;
     bottom: 0.625rem;
     width: 2.75rem;
-    height: 2.75rem;
   }
 
   .plusIcon {
@@ -476,27 +416,268 @@
   .badge {
     top: 0.625rem;
     left: 0.625rem;
-    height: 1.75rem;
-    gap: 0.375rem;
-    padding-right: 0.5rem;
-    font-size: 0.5625rem;
+    max-width: calc(100% - 1.25rem);
+    min-height: 1.4375rem;
+    gap: 0.3125rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.575rem;
   }
 
   .badgeMark {
-    width: 2rem;
-    height: 2rem;
-    font-size: 1.125rem;
+    flex-basis: 0.75rem;
+    width: 0.75rem;
+    height: 0.75rem;
   }
 
-  .card[data-variant="featured"] .badge {
-    gap: 0.375rem;
-    padding-inline: 0.5rem;
+}
+
+@media (max-width: 639.98px) {
+  .card {
+    height: auto;
   }
 
-  .card[data-variant="featured"] .badgeMark,
-  .starMark {
-    width: 0.875rem;
-    height: 0.875rem;
+  .link {
+    display: grid;
+    grid-template-columns: 46% minmax(0, 1fr);
+    grid-template-rows: minmax(10.25rem, auto);
+    height: auto;
+    min-height: 10.25rem;
+  }
+
+  .media {
+    grid-column: 1;
+    grid-row: 1;
+    z-index: 0;
+    min-height: 10.25rem;
+    height: auto;
+    margin-right: -1.125rem;
+    aspect-ratio: auto;
+  }
+
+  .imagePlaceholder {
+    position: absolute;
+    inset: 0;
+    height: auto;
+    padding: 0.625rem;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .fanCluster {
+    right: -1.0625rem;
+    bottom: -0.5rem;
+    width: 4.5rem;
+  }
+
+  .badgeDesktop {
+    display: none;
+  }
+
+  .body,
+  .card[data-variant="promo"] .body {
+    grid-column: 2;
+    grid-row: 1;
+    z-index: 1;
+    min-width: 0;
+    min-height: 10.25rem;
+    padding: 0.625rem 0.75rem 0.625rem 1.0625rem;
+    background: transparent;
+  }
+
+  .bodyPattern {
+    display: none;
+  }
+
+  .panelSurface {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    background: linear-gradient(150deg, var(--card-bg), var(--card-bg-end));
+    pointer-events: none;
+    -webkit-mask-image:
+      url("/images/patterns/card-panel-edge.svg"),
+      linear-gradient(#000, #000);
+    mask-image:
+      url("/images/patterns/card-panel-edge.svg"),
+      linear-gradient(#000, #000);
+    -webkit-mask-size: 30px 100%, calc(100% - 29px) 100%;
+    mask-size: 30px 100%, calc(100% - 29px) 100%;
+    -webkit-mask-position: left top, right top;
+    mask-position: left top, right top;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .card[data-variant="promo"] .panelSurface {
+    background: linear-gradient(150deg, var(--card-bg) 55%, var(--card-bg-end));
+  }
+
+  .panelSurface::before {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background: var(--card-pattern-ink);
+    opacity: var(--card-pattern-opacity);
+    pointer-events: none;
+    -webkit-mask-image: url("/images/patterns/card-seigaiha.svg");
+    mask-image: url("/images/patterns/card-seigaiha.svg");
+    -webkit-mask-size: 144px 96px;
+    mask-size: 144px 96px;
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
+  }
+
+  .divider {
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100cqi;
+    height: 1.875rem;
+    transform: translateY(100cqi) rotate(-90deg);
+    transform-origin: 0 0;
+  }
+
+  .divider path:last-child {
+    display: none;
+  }
+
+  .bodyContent {
+    z-index: 2;
+  }
+
+  .badgeSlot {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex: 0 0 auto;
+    align-items: flex-start;
+    min-height: 1.4375rem;
+    margin-bottom: 0.3125rem;
+  }
+
+  .badgeSlotEmpty {
+    min-height: 0.625rem;
+    margin-bottom: 0.1875rem;
+  }
+
+  .badgeMobile {
+    position: static;
+    top: auto;
+    left: auto;
+    z-index: auto;
+    display: inline-flex;
+    width: max-content;
+    max-width: 100%;
+    min-height: 1.4375rem;
+    gap: 0.3125rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.575rem;
+  }
+
+  .badgeMobile .badgeMark {
+    flex-basis: 0.75rem;
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .title {
+    min-height: 1.08em;
+    font-size: clamp(1.125rem, 5.8cqi, 1.25rem);
+    line-height: 1.08;
+  }
+
+  .metadata {
+    min-height: 1.3em;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .description {
+    min-height: 2.6em;
+    margin-top: 0.3125rem;
+    font-size: 0.71875rem;
+    line-height: 1.3;
+    -webkit-line-clamp: 2;
+  }
+
+  .footer {
+    min-height: 2.75rem;
+    padding-top: 0.5rem;
+    padding-right: 3rem;
+  }
+
+  .price {
+    font-size: clamp(1rem, 5.4cqi, 1.125rem);
+    line-height: 1.05;
+  }
+
+  .addButton {
+    right: 0.625rem;
+    bottom: 0.625rem;
+    width: 2.75rem;
+  }
+
+  .plusIcon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  @container soky-product-card (max-width: 21.25rem) {
+    .link {
+      grid-template-columns: 37% minmax(0, 1fr);
+      min-height: 11.375rem;
+    }
+
+    .media,
+    .body {
+      min-height: 11.375rem;
+    }
+
+    .body,
+    .card[data-variant="promo"] .body {
+      padding-right: 0.5625rem;
+      padding-left: 0.8125rem;
+    }
+
+    .badgeSlot {
+      margin-bottom: 0.25rem;
+    }
+
+    .title {
+      font-size: clamp(1.0625rem, 5.8cqi, 1.1875rem);
+    }
+
+    .metadata,
+    .description {
+      font-size: 0.6875rem;
+    }
+
+    .description {
+      min-height: 1.3em;
+      line-height: 1.3;
+      -webkit-line-clamp: 2;
+    }
+
+    .footer {
+      padding-right: 2.875rem;
+    }
+
+    .price {
+      font-size: clamp(1rem, 5.2cqi, 1.125rem);
+    }
+
+    .addButton {
+      right: 0.5625rem;
+      bottom: 0.625rem;
+    }
+
+    .badgeMobile {
+      gap: 0.25rem;
+      padding-right: 0.4375rem;
+      padding-left: 0.4375rem;
+    }
   }
 }
 
@@ -514,14 +695,6 @@
     transform: scale(1.04);
   }
 
-  .addButton:not(:disabled):hover {
-    transform: scale(1.08);
-  }
-
-  .addButton:not(:disabled):hover .plusIcon {
-    transform: rotate(90deg);
-  }
-
 }
 
 @media (hover: none), (pointer: coarse) {
@@ -534,17 +707,13 @@
   .card,
   .card::before,
   .image,
-  .addButton,
   .plusIcon {
     transition: none;
   }
 
   .card:hover,
   .card:focus-within,
-  .card:hover .image,
-  .addButton:not(:disabled):hover,
-  .addButton:not(:disabled):active,
-  .addButton:not(:disabled):hover .plusIcon {
+  .card:hover .image {
     transform: none;
   }
 
@@ -553,5 +722,40 @@
   .card:focus-within::before,
   .card[data-in-view="true"]::before {
     transform: translate(7px, 8px);
+  }
+}
+
+/* Polish R3: contextual primary; card surfaces remain unchanged. */
+.card .addButton[data-variant="primary"] {
+  --button-surface: var(--color-soky-white);
+  --button-text: var(--color-soky-blue);
+  --button-shadow: var(--color-soky-navy);
+  border-color: var(--color-soky-blue);
+}
+.card[data-variant="featured"] .addButton[data-variant="primary"] {
+  --button-surface: var(--color-soky-blue);
+  --button-text: var(--color-soky-white);
+  --button-shadow: var(--color-soky-orange);
+}
+
+/* Polish R4: align mobile content over the solid panel and restore the plus hover. */
+@media (max-width: 639.98px) {
+  .body,
+  .card[data-variant="promo"] .body {
+    padding-left: 1.625rem;
+  }
+
+  .panelSurface {
+    left: -0.75rem;
+  }
+
+  .divider {
+    left: -0.75rem;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .addButton:not(:disabled):hover .plusIcon {
+    transform: rotate(90deg);
   }
 }

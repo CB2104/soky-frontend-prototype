@@ -1,0 +1,34 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="444"
+  height="263"
+  viewBox="0 0 444 263"
+  role="img"
+  aria-labelledby="mai-logo-title mai-logo-description"
+>
+  <title id="mai-logo-title">MAI</title>
+  <desc id="mai-logo-description">Logo MAI en naranja con contorno marfil tipo sticker, letras dibujadas y una A redondeada con subrayado.</desc>
+
+  <path
+    class="mai-logo-sticker"
+    fill="#F7F7F2"
+    d="M 29 21 C 43 16 59 18 68 32 L 104 86 L 137 30 C 143 19 151 14 163 14 L 177 14 C 193 14 201 23 202 39 L 202 48 C 221 21 249 5 281 5 C 314 5 342 20 360 44 L 371 44 L 371 38 C 371 25 380 18 393 18 L 417 18 C 430 18 436 26 436 39 L 435 239 C 435 252 427 258 414 258 L 392 258 C 379 258 372 252 371 240 C 368 250 359 255 346 255 L 220 255 C 207 255 198 252 192 244 L 163 246 C 150 246 142 239 142 226 L 141 140 L 121 170 C 113 181 99 181 90 170 L 72 143 L 72 226 C 72 239 62 246 49 246 L 28 246 C 15 246 8 238 8 225 L 9 43 C 9 31 16 24 29 21 Z"
+  />
+
+  <g class="mai-letter mai-letter-m" data-letter="M" fill="#FF5A00">
+    <path d="M 30 43 L 34 40 L 53 40 L 57 43 L 104 115 L 151 37 L 156 34 L 176 34 L 180 38 L 182 124 L 183 223 L 180 227 L 160 227 L 156 224 L 155 91 L 121 145 L 116 152 L 96 153 L 92 149 L 58 98 L 56 169 L 55 224 L 51 227 L 31 227 L 28 224 L 29 131 Z" />
+  </g>
+
+  <g class="mai-letter mai-letter-a" data-letter="A" fill="#FF5A00">
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M 202 196 L 202 106 C 202 61 236 25 280 24 C 326 23 364 59 365 105 L 365 195 L 362 198 L 340 198 L 336 195 L 336 160 L 230 161 L 230 196 L 227 199 L 205 199 Z M 230 133 L 336 132 L 336 108 C 335 77 313 51 282 51 C 252 51 230 76 230 107 Z"
+    />
+    <path d="M 220 214 L 345 213 L 348 216 L 348 233 L 345 236 L 220 236 L 217 233 L 217 217 Z" />
+  </g>
+
+  <g class="mai-letter mai-letter-i" data-letter="I" fill="#FF5A00">
+    <path d="M 394 37 L 414 37 L 417 40 L 416 123 L 416 237 L 413 239 L 393 239 L 390 236 L 390 155 L 389 41 L 392 38 Z" />
+  </g>
+</svg>

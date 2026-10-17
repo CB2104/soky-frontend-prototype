@@ -46,7 +46,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
                 href={contact.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                variant="ghost"
+                variant="secondary"
                 className={styles.primaryAction}
               >
                 <WhatsAppSVG aria-hidden="true" />
@@ -82,14 +82,14 @@ export function SiteFooter({ settings }: SiteFooterProps) {
               <address>{contact.address ?? "Dirección por confirmar"}</address>
             </div>
             {contact.mapsUrl ? (
-              <a
+              <Button variant="tertiary"
                 href={contact.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.mapsLink}
               >
                 Abrir en Google Maps <ArrowRightIcon aria-hidden="true" />
-              </a>
+              </Button>
             ) : null}
             {contact.instagramUrl ? (
               <a

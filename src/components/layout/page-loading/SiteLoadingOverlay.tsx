@@ -1,3 +1,5 @@
+
+import { Button } from "@/components/ui/button";
 import type { RefObject } from "react";
 import { SokyLogo } from "@/components/brand/SokyLogo";
 import styles from "./SiteLoadingOverlay.module.css";
@@ -28,8 +30,8 @@ export function SiteLoadingOverlay({ overlayRef, error = false, errorDetail, onC
         <p role="status">{error ? "La preparación está tardando más de lo esperado." : "Preparando SOKY"}</p>
         {error ? (
           <div className={styles.actions}>
-            <button type="button" onClick={() => window.location.reload()}>Reintentar</button>
-            <button type="button" onClick={onContinue}>Continuar de todos modos</button>
+            <Button variant="primary" type="button" onClick={() => window.location.reload()}>Reintentar</Button>
+            <Button variant="secondary" type="button" onClick={onContinue}>Continuar de todos modos</Button>
           </div>
         ) : <div className={styles.activity} aria-hidden="true" />}
         {error && errorDetail && process.env.NODE_ENV !== "production" ? (

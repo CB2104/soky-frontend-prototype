@@ -1,4 +1,6 @@
 "use client";
+
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { SeigaihaHeader } from "@/components/brand/SeigaihaHeader";
@@ -18,11 +20,11 @@ export function CartOrderSummary({summary,status,preview,canSubmit,pending,onSub
       <div className={styles.conversion}><div><span>Equivalente ref. en Bs.</span><strong>{summary.equivalent}</strong></div><p>{summary.rate}<b>{summary.source}</b></p></div>
       {summary.warnings.map(warning=><p key={warning} className={styles.warning}>{warning}</p>)}
       {summary.delivery ? <p className={styles.warning}>Costo de delivery por confirmar por WhatsApp.</p> : null}
-      <button type="button" className={styles.previewToggle} aria-expanded={expanded} aria-controls="cart-message-preview" onClick={()=>setExpanded(value=>!value)}>Vista previa del mensaje <span aria-hidden="true">{expanded ? "⌃" : "⌄"}</span></button>
+      <Button variant="tertiary" type="button" className={styles.previewToggle} aria-expanded={expanded} aria-controls="cart-message-preview" onClick={()=>setExpanded(value=>!value)}>Vista previa del mensaje <span aria-hidden="true">{expanded ? "⌃" : "⌄"}</span></Button>
       {expanded ? <pre id="cart-message-preview" className={styles.preview}>{finalMessage ?? preview}</pre> : null}
       {error ? <p className={styles.error} role="alert">{error}</p> : null}
-      {fallbackUrl ? <div className={styles.fallback}><p>Tu solicitud está preparada. Si WhatsApp no abrió, continúa aquí:</p><a href={fallbackUrl} target="_blank" rel="noopener noreferrer" onClick={onFallback}>Abrir WhatsApp</a><button type="button" onClick={()=>void copyMessage()}>Copiar mensaje</button><p role="status">{copyStatus}</p></div> : null}
+      {fallbackUrl ? <div className={styles.fallback}><p>Tu solicitud está preparada. Si WhatsApp no abrió, continúa aquí:</p><Button variant="secondary" href={fallbackUrl} target="_blank" rel="noopener noreferrer" onClick={onFallback}>Abrir WhatsApp</Button><Button variant="secondary" type="button" onClick={()=>void copyMessage()}>Copiar mensaje</Button><p role="status">{copyStatus}</p></div> : null}
     </div>
-    <div className={styles.summaryFooter}><button type="button" className={styles.send} disabled={!canSubmit || pending} onClick={onSubmit}><WhatsAppSVG aria-hidden="true" focusable="false"/>{pending ? "Preparando pedido…" : "Enviar pedido por WhatsApp"}</button><p>Tu pedido queda confirmado cuando el restaurante valida los detalles contigo por WhatsApp.</p></div>
+    <div className={styles.summaryFooter}><Button aria-busy={pending} variant="primary" type="button" className={styles.send} disabled={!canSubmit || pending} onClick={onSubmit}><WhatsAppSVG aria-hidden="true" focusable="false"/>{pending ? "Preparando pedido…" : "Enviar pedido por WhatsApp"}</Button><p>Tu pedido queda confirmado cuando el restaurante valida los detalles contigo por WhatsApp.</p></div>
   </aside>;
 }

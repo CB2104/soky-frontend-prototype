@@ -347,7 +347,7 @@ export function ConversionCtaHero({
               <div className="mt-2 flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:gap-3 md:mt-6">
                 {primaryCta && primaryHref ? (
                   <Button
-                    variant="ghost"
+                    variant="primary"
                     data-hero-cta
                     href={primaryHref}
                     scroll={primaryHref.startsWith("/menu/") ? false : undefined}
@@ -363,7 +363,7 @@ export function ConversionCtaHero({
 
                 {secondaryCta && secondaryHref ? (
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     data-hero-cta
                     href={secondaryHref}
                     scroll={secondaryHref.startsWith("/menu/") ? false : undefined}

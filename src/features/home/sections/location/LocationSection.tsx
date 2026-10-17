@@ -100,7 +100,7 @@ export function LocationSection({ location }: LocationSectionProps) {
               href={location.whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              variant="ghost"
+              variant="primary"
               className={styles.primaryAction}
               data-location-motion="action"
               aria-label="Pedir por WhatsApp"
@@ -117,7 +117,7 @@ export function LocationSection({ location }: LocationSectionProps) {
             <Button
               disabled
               aria-describedby="location-contact-pending"
-              variant="ghost"
+              variant="primary"
               className={styles.primaryAction}
               data-location-motion="action"
               aria-label="Pedir por WhatsApp"
@@ -150,7 +150,7 @@ export function LocationSection({ location }: LocationSectionProps) {
               href={location.mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              variant="ghost"
+              variant="secondary"
               className={styles.secondaryAction}
               data-location-motion="action"
               aria-label="Abrir en Google Maps"
@@ -191,7 +191,7 @@ export function LocationSection({ location }: LocationSectionProps) {
           </div>
           {location.instagramUrl ? (
             <div className={styles.social}>
-              <a
+              <Button variant="tertiary"
                 href={location.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -199,7 +199,7 @@ export function LocationSection({ location }: LocationSectionProps) {
               >
                 <InstagramIcon aria-hidden="true" />
                 <span>{location.instagramLabel ?? "Instagram"}</span>
-              </a>
+              </Button>
             </div>
           ) : null}
         </div>

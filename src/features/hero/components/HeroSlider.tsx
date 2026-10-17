@@ -11,7 +11,6 @@ import type {
 } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import type { Transition } from "motion/react";
-import { WaveDivider } from "@/components/ui/wave-divider";
 import type { HeroSlideViewModel } from "../types";
 import { HeroBackgroundLayers } from "./HeroBackgroundLayers";
 import { HeroFullCanvasLayer } from "./HeroFullCanvasLayer";
@@ -544,7 +543,6 @@ export function HeroSlider({
         ) : null}
       </div>
 
-      <WaveDivider tone="paper" />
     </section>
   );
 }

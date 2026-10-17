@@ -1,4 +1,5 @@
-import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
 
 type CartEmptyStateProps = {
   onClose: () => void;
@@ -36,15 +37,15 @@ export const CartEmptyState = ({ onClose }: CartEmptyStateProps) => {
           </p>
 
           <div className="grid mt-4 gap-3">
-            <Link
+            <Button variant="secondary"
               href="/menu"
-              className="group inline-flex w-full touch-manipulation rounded-full bg-soky-white p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2 shadow-[0_12px_24px_rgb(236_99_35/0.18)]"
+              className="inline-flex w-full"
               onClick={onClose}
             >
-              <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-orange bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-orange-deep group-active:scale-[0.98] group-active:bg-soky-orange-deep">
+              <span className="inline-flex items-center justify-center gap-2">
                 Explorar men&uacute;
               </span>
-            </Link>
+            </Button>
           </div>
 
           <p className="relative mt-3 text-xs leading-5 text-soky-muted">

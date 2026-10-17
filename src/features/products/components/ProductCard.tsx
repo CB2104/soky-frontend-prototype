@@ -1,12 +1,15 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+
 import Image from "next/image";
 import Link from "next/link";
-import { PlusSVG } from "@/components/brand/IconsSVG";
+import { PercentIcon, PlusSVG } from "@/components/brand/IconsSVG";
 import { CardFans, CardWaves } from "@/components/brand/CardArtwork";
 import { useAddProductToCart } from "../useAddProductToCart";
 import { CompactProductCard } from "./CompactProductCard";
 import type { ProductCardViewModel } from "@/features/products/mappers";
+import { PRODUCT_CARD_IMAGE_SIZES } from "./ProductCard.constants";
 import styles from "./ProductCard.module.css";
 import { useRef, useState } from "react";
 import { useInView } from "motion/react";
@@ -24,7 +27,7 @@ export function ProductCard({
   priority = false,
   presentation = "card",
   onAdd,
-  imageSizes = "(min-width: 768px) 33vw, 100vw",
+  imageSizes = PRODUCT_CARD_IMAGE_SIZES,
 }: ProductCardProps) {
   const cardRef = useRef<HTMLElement>(null);
   const isInView = useInView(cardRef, { amount: 0.35, once: false });
@@ -32,6 +35,18 @@ export function ProductCard({
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
 
   const imageFailed = failedImageUrl === product.imageUrl;
+  const badgeContent = product.badge ? (
+    <>
+      <span className={styles.badgeMark} aria-hidden="true">
+        {product.variant === "featured" ? (
+          <span className={styles.starMark} />
+        ) : (
+          <PercentIcon className={styles.percentMark} />
+        )}
+      </span>
+      <span>{product.badge}</span>
+    </>
+  ) : null;
   const cardClassName = [
     styles.card,
     !product.isAvailable ? styles.unavailable : "",
@@ -83,16 +98,9 @@ export function ProductCard({
 
           <CardFans className={styles.fanCluster} />
 
-          {product.badge ? (
-            <span className={styles.badge}>
-              <span className={styles.badgeMark} aria-hidden="true">
-                {product.variant === "featured" ? (
-                  <span className={styles.starMark} />
-                ) : (
-                  "%"
-                )}
-              </span>
-              <span>{product.badge}</span>
+          {badgeContent ? (
+            <span className={`${styles.badge} ${styles.badgeDesktop}`}>
+              {badgeContent}
             </span>
           ) : null}
 
@@ -106,9 +114,21 @@ export function ProductCard({
         <div className={styles.body}>
           <CardWaves className={styles.divider} />
 
+          <span className={styles.panelSurface} aria-hidden="true" />
+
           <span className={styles.bodyPattern} aria-hidden="true" />
 
           <div className={styles.bodyContent}>
+            <div
+              className={`${styles.badgeSlot} ${badgeContent ? "" : styles.badgeSlotEmpty}`}
+            >
+              {badgeContent ? (
+                <span className={`${styles.badge} ${styles.badgeMobile}`}>
+                  {badgeContent}
+                </span>
+              ) : null}
+            </div>
+
             <h3 className={styles.title}>{product.title}</h3>
 
             <p className={styles.metadata}>{product.metadata}</p>
@@ -122,7 +142,7 @@ export function ProductCard({
         </div>
       </Link>
 
-      <button
+      <Button size="icon" variant="primary"
         type="button"
         className={styles.addButton}
         disabled={!product.isAvailable}
@@ -139,7 +159,7 @@ export function ProductCard({
           aria-hidden="true"
           focusable="false"
         />
-      </button>
+      </Button>
     </article>
   );
 }

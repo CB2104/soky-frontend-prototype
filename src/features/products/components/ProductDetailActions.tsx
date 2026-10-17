@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/features/analytics/client";
 import { useCartStore } from "@/features/cart/store";
@@ -51,13 +50,13 @@ export function ProductDetailActions({ product, hasValidPrice }: Props) {
             ? "Precio por confirmar"
             : "Agregar al pedido"}
       </Button>
-      <Link
+      <Button variant="tertiary"
         href="/cart"
         data-transition-ignore="true"
         className={styles.cartLink}
       >
         Ver carrito
-      </Link>
+      </Button>
     </div>
   );
 }

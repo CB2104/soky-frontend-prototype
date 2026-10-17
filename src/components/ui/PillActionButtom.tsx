@@ -1,144 +1,23 @@
 "use client";
-
-import type { ReactNode } from "react";
-import { motion } from "motion/react";
-import type { HTMLMotionProps } from "motion/react";
+import type { ComponentPropsWithRef, ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
-type PillActionButtonProps = Omit<HTMLMotionProps<"button">, "children"> & {
+type PillActionButtonProps = Omit<ComponentPropsWithRef<"button">, "children"> & {
   icon: ReactNode;
   badge?: number;
   children: ReactNode;
   isActive?: boolean;
   variant?: "full" | "compact";
 };
-
-const buttonVariants = {
-  rest: {
-    y: 0,
-    scale: 1,
-  },
-  hover: {
-    y: -1,
-    scale: 1,
-  },
-  active: {
-    y: 0,
-    scale: 1,
-  },
-  tap: {
-    scale: 0.97,
-  },
-};
-
-const orangePillVariants = {
-  rest: {
-    opacity: 0,
-    scale: 0.96,
-  },
-  hover: {
-    opacity: 1,
-    scale: 1,
-  },
-  active: {
-    opacity: 1,
-    scale: 1,
-  },
-  tap: {
-    opacity: 1,
-    scale: 1,
-  },
-};
-
-export function PillActionButton({
-  icon,
-  badge,
-  children,
-  className,
-  isActive = false,
-  type = "button",
-  variant = "full",
-  ...props
-}: PillActionButtonProps) {
-  const showBadge = typeof badge === "number" && badge > 0;
-  const isCompact = variant === "compact";
-
-  return (
-    <motion.button
-      type={type}
-      initial="rest"
-      animate={isActive ? "active" : "rest"}
-      whileHover="hover"
-      whileTap="tap"
-      variants={buttonVariants}
-      transition={{ type: "spring", stiffness: 420, damping: 24 }}
-      className={cn(
-        "group relative inline-flex shrink-0 touch-manipulation rounded-full border border-soky-border bg-soky-white shadow-lg shadow-soky-navy/20",
-        isCompact
-          ? "p-0.5"
-          : [
-              "p-1",
-              "[@media(max-height:500px)_and_(orientation:landscape)]:p-0.5",
-              "[@media(max-height:500px)_and_(orientation:landscape)]:rounded-[1.35rem]",
-            ].join(" "),
-        className,
-      )}
-      {...props}
-    >
-      <span
-        className={cn(
-          "relative isolate inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full",
-          isCompact
-            ? "h-11 min-h-11 w-11 min-w-11"
-            : [
-                "h-12 min-h-12",
-                "gap-2 px-5 pr-6",
-
-                "[@media(max-height:500px)_and_(orientation:landscape)]:h-10",
-                "[@media(max-height:500px)_and_(orientation:landscape)]:min-h-10",
-                "[@media(max-height:500px)_and_(orientation:landscape)]:gap-3",
-                "[@media(max-height:500px)_and_(orientation:landscape)]:px-4",
-                "[@media(max-height:500px)_and_(orientation:landscape)]:pr-5",
-                "[@media(max-height:500px)_and_(orientation:landscape)]:rounded-[1.15rem]",
-              ].join(" "),
-        )}
-      >
-        <motion.span
-          aria-hidden="true"
-          variants={orangePillVariants}
-          transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-0 z-0 rounded-full bg-soky-orange-deep bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat"
-        />
-
-        <span
-          className={cn(
-            "relative z-10 grid size-5 shrink-0 -translate-y-px place-items-center transition-colors duration-300 group-active:text-soky-white group-hover:text-soky-white [&_svg]:size-5",
-            isActive ? "text-soky-white" : "text-soky-blue",
-          )}
-          aria-hidden="true"
-        >
-          {icon}
-        </span>
-
-        {isCompact ? (
-          <span className="sr-only">{children}</span>
-        ) : (
-          <span
-            className={cn(
-              "relative z-10 font-medium transition-colors duration-300 group-active:text-soky-white group-hover:text-soky-white",
-              isActive ? "text-soky-white" : "text-soky-ink",
-            )}
-          >
-            {children}
-          </span>
-        )}
-      </span>
-
-      {showBadge ? (
-        <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-soky-blue px-1 text-xs font-black leading-none text-soky-white ring-2 ring-soky-white">
-          {badge}
-        </span>
-      ) : null}
-    </motion.button>
-  );
+export function PillActionButton({icon,badge,children,className,isActive=false,type="button",variant="full",...props}:PillActionButtonProps) {
+  const compact = variant === "compact";
+  return <span className="relative inline-flex shrink-0">
+    <Button {...props} type={type} variant="secondary" size={compact ? "icon" : "md"}
+      className={cn(isActive && "outline-2 outline-offset-4 outline-soky-white", className)}>
+      <span aria-hidden="true" className="inline-flex shrink-0">{icon}</span>
+      <span className={compact ? "sr-only" : undefined}>{children}</span>
+    </Button>
+    {typeof badge === "number" && badge > 0 ? <span aria-hidden="true" className="pointer-events-none absolute -right-2 -top-2 grid h-5 min-w-5 place-items-center rounded-full bg-soky-orange px-1 text-xs font-black leading-none text-soky-white ring-2 ring-soky-white">{badge}</span> : null}
+  </span>;
 }

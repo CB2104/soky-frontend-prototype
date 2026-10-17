@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { HomeSharedScene } from "@/features/home/sections/HomeSharedScene";
 import { HomeReadySignal } from "@/features/home/loading/HomeLoadingBoundary";
 import { getCategories } from "@/features/categories/api";
 import { mapProductToCard } from "@/features/products/mappers";
@@ -76,9 +77,11 @@ export default async function HomePage() {
         slides={heroSlides}
         whatsappUrl={whatsappUrl}
       />
-      <BrandStripSection />
-      <MenuShowcase products={products} categories={categoryCards} />
-      <HowToOrderSection />
+      <HomeSharedScene>
+        <BrandStripSection />
+        <MenuShowcase products={products} categories={categoryCards} />
+        <HowToOrderSection />
+      </HomeSharedScene>
       <LocationSection location={location} />
       <HomeReadySignal />
     </main>

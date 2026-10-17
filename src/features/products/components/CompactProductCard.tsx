@@ -1,4 +1,6 @@
 "use client";
+
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -14,6 +16,6 @@ export function CompactProductCard({product,onAdd}:{product:ProductCardViewModel
     </Link>
     <div className={styles.productInfo}><Link href={`/menu/${encodeURIComponent(product.slug)}`} scroll={false} data-transition-ignore="true" className={styles.productTitle}>{product.title}</Link>
       <p className={styles.price}>{formatCartMoney(product.priceAmount,product.priceCurrency)}</p></div>
-    <button type="button" className={styles.add} onClick={onAdd} disabled={!product.isAvailable} aria-label={`Agregar ${product.title} al carrito`}>+ Agregar</button>
+    <Button size="sm" variant="primary" type="button" className={styles.add} onClick={onAdd} disabled={!product.isAvailable} aria-label={`Agregar ${product.title} al carrito`}>+ Agregar</Button>
   </article>;
 }

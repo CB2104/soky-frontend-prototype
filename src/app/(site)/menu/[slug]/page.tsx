@@ -90,8 +90,8 @@ export default async function ProductPage({ params, searchParams }: Props) {
         />
         <Button
           href={product.categoryHref}
-          variant="ghost"
-          className="mb-6 -ml-5 text-soky-blue"
+          variant="tertiary"
+          className="mb-6"
         >
           ← Volver al menú
         </Button>

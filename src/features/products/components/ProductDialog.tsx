@@ -34,28 +34,42 @@ export function ProductDialog({ children }: { children: ReactNode }) {
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-      window.removeEventListener("popstate", markHistoryReturn);
       dialog?.close();
       releaseScroll();
 
-      const shouldRestoreOrigin = closingRef.current || restoreOriginRef.current;
-      if (shouldRestoreOrigin) {
-        // Espera el commit de Next y su restauración del hash.
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          if (!opener?.isConnected || useCartStore.getState().isOpen) return;
-          if (document.querySelector('dialog[open], [role="dialog"][aria-modal="true"]')) return;
-          window.scrollTo({ left: origin.x, top: origin.y, behavior: "instant" });
-          opener.focus({ preventScroll: true });
-        }));
-        return;
-      }
+      // Mantener el listener hasta que termine el evento popstate del router.
+      requestAnimationFrame(() => {
+        window.removeEventListener("popstate", markHistoryReturn);
+        const shouldRestoreOrigin =
+          closingRef.current || restoreOriginRef.current;
 
-      // Al ir a categoría/carrito se respeta el scroll del nuevo destino.
-      queueMicrotask(() => {
-        const active = document.activeElement;
-        if (opener?.isConnected && (active === document.body || active === opener)) {
-          opener.focus({ preventScroll: true });
+        if (shouldRestoreOrigin) {
+          // Esperar el commit y cancelar el reposicionamiento nativo del hash.
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            if (!opener?.isConnected || useCartStore.getState().isOpen) return;
+            if (document.querySelector(
+              'dialog[open], [role="dialog"][aria-modal="true"]',
+            )) return;
+            window.scrollTo({
+              left: origin.x,
+              top: origin.y,
+              behavior: "instant",
+            });
+            opener.focus({ preventScroll: true });
+          }));
+          return;
         }
+
+        // En categoría/carrito se respeta el scroll del nuevo destino.
+        queueMicrotask(() => {
+          const active = document.activeElement;
+          if (
+            opener?.isConnected
+            && (active === document.body || active === opener)
+          ) {
+            opener.focus({ preventScroll: true });
+          }
+        });
       });
     };
   }, []);

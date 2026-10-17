@@ -723,7 +723,7 @@ export function MostOrderedHero({
         >
           {primaryCta && primaryHref ? (
             <Button
-              variant="ghost"
+              variant="primary"
               data-hero-cta
               href={primaryHref}
               scroll={primaryHref.startsWith("/menu/") ? false : undefined}
@@ -739,7 +739,7 @@ export function MostOrderedHero({
 
           {secondaryCta && secondaryHref ? (
             <Button
-              variant="ghost"
+              variant="secondary"
               data-hero-cta
               href={secondaryHref}
               scroll={secondaryHref.startsWith("/menu/") ? false : undefined}

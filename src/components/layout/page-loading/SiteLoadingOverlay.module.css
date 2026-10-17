@@ -49,16 +49,6 @@
   animation: activity 1.25s ease-in-out infinite alternate;
 }
 .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
-.actions button {
-  min-height: 44px;
-  padding: 10px 16px;
-  border: 1px solid currentColor;
-  border-radius: 8px;
-  color: inherit;
-  background: transparent;
-  cursor: pointer;
-}
-.actions button:focus-visible { outline: 3px solid var(--color-soky-orange, #fe6402); outline-offset: 4px; }
 @keyframes activity { from { transform: translateX(-30%); } to { transform: translateX(180%); } }
 @media (max-width: 767px) {
   .overlay { --loading-columns: 8; }

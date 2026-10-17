@@ -348,7 +348,7 @@ export function WelcomeSplitHero({
             <div data-welcome-actions className="relative z-20 order-2 mt-1 flex flex-col gap-3 self-start md:col-span-5 md:row-start-2 md:self-start [@media(max-height:500px)_and_(orientation:landscape)]:col-span-6 [@media(max-height:500px)_and_(orientation:landscape)]:col-start-1">
               <div className="grid grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] items-center gap-2 sm:flex sm:flex-row sm:items-center sm:gap-3 [@media(max-height:500px)_and_(orientation:landscape)]:grid [@media(max-height:500px)_and_(orientation:landscape)]:gap-2 [@media(max-height:500px)_and_(orientation:landscape)]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
                 <Button
-                  variant="ghost"
+                  variant="primary"
                   data-hero-cta
                   href={primaryHref}
                   scroll={primaryHref.startsWith("/menu/") ? false : undefined}
@@ -361,7 +361,7 @@ export function WelcomeSplitHero({
                   <span className={styles.actionLabel}>{primaryCta?.label ?? "Ver Menú"}</span>
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   data-hero-cta
                   href={secondaryHref}
                   scroll={secondaryHref.startsWith("/menu/") ? false : undefined}

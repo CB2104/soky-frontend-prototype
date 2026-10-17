@@ -1,46 +1,15 @@
 .section {
   position: relative;
-  isolation: isolate;
-  overflow: clip;
   padding-block: clamp(2.5rem, 4vw, 3.5rem);
   scroll-margin-top: calc(var(--navbar-height) + 1rem);
-  background: var(--color-soky-white);
+  background: var(--home-scene-white, #fffdf7);
   color: var(--color-soky-ink);
   font-family: var(--font-outfit), sans-serif;
 }
 
-.section::before,
-.section::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: auto;
-  left: 0;
-  width: 100%;
-  height: 180px;
-  pointer-events: none;
-  background-image: url("/images/patterns/endless-clouds.svg");
-  background-size: 112px 56px;
-  opacity: 0.8;
-  mask-composite: add;
-}
-
-.section::before {
-  top: 0;
-  mask-image:
-    radial-gradient(ellipse 280px 180px at top left, #000, transparent 85%),
-    radial-gradient(ellipse 280px 180px at top right, #000, transparent 85%);
-}
-
-.section::after {
-  bottom: 0;
-  mask-image:
-    radial-gradient(ellipse 280px 180px at bottom left, #000, transparent 85%),
-    radial-gradient(ellipse 280px 180px at bottom right, #000, transparent 85%);
-}
-
 .content {
   position: relative;
+  z-index: 2;
 }
 
 .header {
@@ -283,13 +252,6 @@
   }
 }
 
-@media (max-width: 639px) {
-  .section::before,
-  .section::after {
-    opacity: 0.55;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .imagePulse,
   .connector {
@@ -298,9 +260,5 @@
 
   .connector {
     opacity: 0.7 !important;
-  }
-
-  .section .cta {
-    transition: none;
   }
 }

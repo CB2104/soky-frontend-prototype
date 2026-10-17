@@ -163,7 +163,7 @@ export function CartCheckout() {
         {items.length > 0 && catalogStatus !== "ready" ? (
           <p role="status" className="mt-4 text-sm text-soky-muted">
             {catalogStatus === "error" ? "No pudimos actualizar los productos." : "Verificando productos y precios…"}
-            {catalogStatus === "error" ? <button type="button" onClick={retryCatalog} className="ml-2 min-h-11 font-bold underline">Reintentar</button> : null}
+            {catalogStatus === "error" ? <Button variant="tertiary" type="button" onClick={retryCatalog} className="ml-2">Reintentar</Button> : null}
           </p>
         ) : null}
         {items.length === 0 ? (
@@ -295,14 +295,14 @@ export function CartCheckout() {
                 <div className="mt-4 space-y-2">
                   <p className="font-bold text-japan-seal">Corrige estos productos:</p>
                   {quote.invalidItems.map((item) => (
-                    <button
+                    <Button variant="tertiary"
                       key={`${item.productId}-${item.reason}`}
                       type="button"
-                      className="block text-sm font-bold text-japan-seal underline"
+                      className="block"
                       onClick={() => removeItem(item.productId)}
                     >
                       Quitar {item.productId}: {item.reason}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               ) : null}
@@ -315,7 +315,7 @@ export function CartCheckout() {
           ) : null}
           <Button
             type="button"
-            variant="whatsapp"
+            variant="primary"
             onClick={handleOrderIntent}
             disabled={!canCreateIntent || isPending}
           >

@@ -128,43 +128,13 @@
   margin-top: 1.5rem;
 }
 
-.primaryAction {
-  min-height: 3rem !important;
-  padding-inline: 1.5rem !important;
-  border: 2px solid #fe6402 !important;
-  background: #fe6402 !important;
-  color: #001525 !important;
-  box-shadow: none !important;
-  font-size: 1rem !important;
-  text-decoration: none;
-}
-
-.primaryAction:hover:not(:disabled) {
-  border-color: #d84f00 !important;
-  background: #f57217 !important;
-  color: #001525 !important;
-}
-
-.primaryAction:focus-visible,
-.secondaryAction:focus-visible,
 .logoLink:focus-visible {
   outline: 3px solid #001525;
   outline-offset: 3px;
 }
 
 .secondaryAction {
-  min-height: 2.75rem !important;
-  padding: 0.65rem 0.3rem !important;
-  background: transparent !important;
-  color: #001525 !important;
-  font-size: 1rem !important;
-  text-decoration: underline;
   text-underline-offset: 0.2em;
-}
-
-.secondaryAction:hover {
-  color: #1729a6 !important;
-  background: transparent !important;
 }
 
 .status {

@@ -1,7 +1,8 @@
+
+import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/money";
 import { useCurrentExchangeRate } from "@/features/exchange-rates/useCurrentExchangeRate";
 import { useCartStore } from "../store";
-import Link from "next/link";
 import { getEstimatedCartTotals } from "../cartTotals";
 import type { CartItem } from "../store";
 import { WhatsAppSVG } from "@/components/brand/IconsSVG";
@@ -68,19 +69,19 @@ export function CartDrawerFooter({ items, onClose }: CartDrawerFooterProps) {
       </div>
 
       {catalogStatus === "error" ? (
-        <button type="button" onClick={retryCatalog} className="mt-3 min-h-11 font-bold text-soky-blue underline">Reintentar actualización</button>
+        <Button variant="tertiary" type="button" onClick={retryCatalog} className="mt-3">Reintentar actualización</Button>
       ) : null}
       <div className="mt-4 grid gap-3">
-        <Link
+        <Button variant="secondary"
           href="/cart"
           onClick={onClose}
-          className="group inline-flex w-full touch-manipulation rounded-full bg-soky-paper p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soky-focus focus-visible:ring-offset-2"
+          className="inline-flex w-full"
         >
-          <span className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-soky-orange bg-[url('/images/patterns/endless-clouds-light.svg')] bg-size-[56px_28px] bg-repeat px-4 text-sm font-bold text-soky-white transition-[background-color,transform] duration-200 group-hover:bg-soky-orange-deep group-active:scale-[0.98]">
+          <span className="inline-flex items-center justify-center gap-2">
             Continuar pedido
             <WhatsAppSVG width={20} />
           </span>
-        </Link>
+        </Button>
       </div>
     </footer>
   );

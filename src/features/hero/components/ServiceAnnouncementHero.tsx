@@ -509,7 +509,7 @@ export default function ServiceAnnouncementHero({
             >
               {primaryCta && primaryHref ? (
                 <Button
-                  variant="ghost"
+                  variant="primary"
                   data-hero-cta
                   aria-label={
                     primaryCta.type === "WHATSAPP"
@@ -537,7 +537,7 @@ export default function ServiceAnnouncementHero({
               ) : null}
               {secondaryCta && secondaryHref ? (
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   data-hero-cta
                   aria-label={
                     secondaryCta.type === "LOCATION"

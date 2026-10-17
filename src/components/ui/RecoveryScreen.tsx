@@ -105,7 +105,7 @@ export function RecoveryScreen({
                 {primaryActionLabel}
               </Button>
             ) : (
-              <Button
+              <Button aria-busy={isPending}
                 type="button"
                 className={styles.primaryAction}
                 size="lg"
@@ -118,7 +118,7 @@ export function RecoveryScreen({
             <Button
               href={secondaryActionHref}
               className={styles.secondaryAction}
-              variant="ghost"
+              variant="secondary"
               data-transition-ignore="true"
             >
               {secondaryActionLabel}

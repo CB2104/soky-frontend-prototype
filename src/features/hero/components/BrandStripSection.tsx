@@ -1,8 +1,9 @@
+
+import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Section } from "@/components/ui/section";
 import { cn } from "@/lib/cn";
 import Image from "next/image";
-import Link from "next/link";
 import { BrandStripMotion } from "./BrandStripMotion";
 
 type BrandStripImageSlot = {
@@ -257,31 +258,35 @@ function BrandStripConveyorArrow() {
 }
 
 function BrandStripCta({
+  ribbonId,
   category,
   isClone,
 }: {
+  ribbonId: BrandStripRibbonData["id"];
   category: BrandStripCategory;
   isClone: boolean;
 }) {
   const className =
-    "brand-strip-category-cta inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-soky-focus px-4 font-soky-support text-xs font-black uppercase tracking-[0.05em] text-soky-blue shadow-[0_4px_0_rgba(7,5,74,0.13)] focus-visible:outline-3 focus-visible:outline-soky-focus focus-visible:outline-offset-3";
+    "brand-strip-category-cta shrink-0";
   const content = <span>Explorar</span>;
 
   if (isClone) {
     return (
-      <Link
+      <Button size="sm" variant="secondary"
+        secondaryTone={ribbonId === "orange" ? "b" : "a"}
         href={category.href}
         aria-hidden="true"
         tabIndex={-1}
         className={className}
       >
         {content}
-      </Link>
+      </Button>
     );
   }
 
   return (
-    <Link
+    <Button size="sm" variant="secondary"
+        secondaryTone={ribbonId === "orange" ? "b" : "a"}
       href={category.href}
       aria-label={category.accessibleLabel}
       data-brand-strip-cta
@@ -289,14 +294,16 @@ function BrandStripCta({
       tabIndex={-1}
     >
       {content}
-    </Link>
+    </Button>
   );
 }
 
 function BrandStripConveyorItem({
+  ribbonId,
   category,
   copyIndex,
 }: {
+  ribbonId: BrandStripRibbonData["id"];
   category: BrandStripCategory;
   copyIndex: number;
 }) {
@@ -346,7 +353,7 @@ function BrandStripConveyorItem({
         ))}
       </div>
 
-      <BrandStripCta category={category} isClone={isClone} />
+      <BrandStripCta ribbonId={ribbonId} category={category} isClone={isClone} />
       <BrandStripConveyorArrow />
     </li>
   );
@@ -367,6 +374,7 @@ function BrandStripConveyor({ ribbon }: { ribbon: BrandStripRibbonData }) {
       {Array.from({ length: brandStripCopyCount }, (_, copyIndex) => (
         <BrandStripConveyorItem
           key={`${ribbon.id}-${copyIndex}`}
+          ribbonId={ribbon.id}
           category={ribbon.categories[copyIndex % ribbon.categories.length]}
           copyIndex={copyIndex}
         />
