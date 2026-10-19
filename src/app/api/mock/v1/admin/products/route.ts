@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import type { AdminProductCreateDto, ProductDto } from "@/contracts/api";
 import { mockProducts } from "@/mock/db";
@@ -42,5 +43,7 @@ export async function POST(request: Request) {
   };
 
   mockProducts.push(product);
+  revalidateTag("soky-menu-products", { expire: 0 });
+
   return NextResponse.json(product, { status: 201 });
 }

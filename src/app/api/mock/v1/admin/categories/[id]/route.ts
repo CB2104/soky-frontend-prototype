@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import type { AdminCategoryUpdateDto } from "@/contracts/api";
 import { mockCategories } from "@/mock/db";
@@ -30,6 +31,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     updatedAt: new Date().toISOString(),
   };
 
+  revalidateTag("soky-menu-categories", { expire: 0 });
   return NextResponse.json(mockCategories[index]);
 }
 
@@ -51,5 +53,6 @@ export async function DELETE(request: Request, context: RouteContext) {
     updatedAt: new Date().toISOString(),
   };
 
+  revalidateTag("soky-menu-categories", { expire: 0 });
   return NextResponse.json(mockCategories[index]);
 }

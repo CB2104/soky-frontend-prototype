@@ -9,8 +9,10 @@
 }
 
 .section {
+  --scene-section-space: clamp(2rem, 4vw, 3.5rem);
+
   position: relative;
-  padding-block: clamp(3.5rem, 8vw, 6rem);
+  padding-block: var(--scene-section-space);
   scroll-margin-top: calc(var(--navbar-height) + 1.5rem);
 }
 
@@ -34,7 +36,7 @@
 
 .heading {
   max-width: 52rem;
-  margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
 }
 
 .eyebrow {
@@ -97,12 +99,12 @@
 .menuLink {
   display: flex;
   justify-content: center;
-  margin-top: clamp(1.75rem, 4vw, 2.5rem);
+  margin-top: clamp(1.5rem, 3vw, 2rem);
 }
 
 .productGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 21.25rem));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21.25rem), 21.25rem));
   justify-content: center;
   gap: 1.25rem;
 }
@@ -124,4 +126,36 @@
     padding-right: 0.75rem;
     padding-bottom: 0.875rem;
   }
+}
+
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  .productGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) and (min-width: 480px) and (max-width: 1439.98px) {
+  .section {
+    --scene-section-space: clamp(1rem, 4svh, 1.5rem);
+  }
+
+  .heading {
+    margin-bottom: 1rem;
+  }
+
+  .menuLink {
+    margin-top: 1.25rem;
+  }
+}
+
+/* R7: centrar filas incompletas solo con capacidad para tres o más cards. */
+
+.productsSurface .content { container-name: soky-showcase-products; container-type: inline-size; }
+
+@media (min-width: 1024px) {
+  @container soky-showcase-products (min-width: 66.25rem) {
+    .productGrid { display: flex; flex-wrap: wrap; justify-content: center; }
+    .productGrid > article { flex: 0 0 21.25rem; min-width: 0; height: auto; }
+  }
+
 }

@@ -1,0 +1,41 @@
+.sushi {
+  position: absolute;
+  top: 2rem;
+  right: -1.5rem;
+  width: 9rem;
+  height: auto;
+  pointer-events: none;
+  transform-origin: center;
+}
+
+@media (max-width: 359.98px) {
+  .sushi {
+    top: 1rem;
+    right: -0.75rem;
+    width: 5.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .sushi {
+    top: calc(50% - clamp(5rem, 16vw, 10rem));
+    right: clamp(-2rem, -2vw, -1rem);
+    width: clamp(14rem, 30vw, 17rem);
+    translate: 0 -50%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sushi {
+    top: calc(50% - clamp(10rem, 12vw, 16rem));
+    right: clamp(-3rem, -3vw, -2rem);
+    width: auto;
+    height: min(24rem, calc(100% - 1rem));
+    max-width: 32rem;
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .sushi {
+    display: none;
+  }
+}

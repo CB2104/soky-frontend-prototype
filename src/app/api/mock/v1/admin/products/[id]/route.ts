@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import type { AdminProductUpdateDto } from "@/contracts/api";
 import { mockProducts } from "@/mock/db";
@@ -30,6 +31,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     updatedAt: new Date().toISOString(),
   };
 
+  revalidateTag("soky-menu-products", { expire: 0 });
   return NextResponse.json(mockProducts[index]);
 }
 
@@ -46,5 +48,7 @@ export async function DELETE(request: Request, context: RouteContext) {
   }
 
   mockProducts.splice(index, 1);
+  revalidateTag("soky-menu-products", { expire: 0 });
+
   return new NextResponse(null, { status: 204 });
 }

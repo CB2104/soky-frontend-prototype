@@ -1,6 +1,8 @@
 .section {
+  --scene-section-space: clamp(2rem, 3vw, 3rem);
+
   position: relative;
-  padding-block: clamp(2.5rem, 4vw, 3.5rem);
+  padding-block: var(--scene-section-space);
   scroll-margin-top: calc(var(--navbar-height) + 1rem);
   background: var(--home-scene-white, #fffdf7);
   color: var(--color-soky-ink);
@@ -41,8 +43,8 @@
 .steps {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 5rem;
-  margin: clamp(1.75rem, 3vw, 2.5rem) 0 0;
+  gap: 3.5rem;
+  margin: clamp(1.5rem, 2.5vw, 2rem) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -117,9 +119,9 @@
 .connector {
   position: absolute;
   left: calc(50% - 16px);
-  bottom: -3.25rem;
+  bottom: -2.875rem;
   width: 32px;
-  height: 44px;
+  height: 36px;
   color: var(--color-soky-orange);
   opacity: 0.7;
   pointer-events: none;
@@ -147,7 +149,7 @@
   display: grid;
   justify-items: center;
   gap: 1.25rem;
-  margin-top: 2rem;
+  margin-top: clamp(1.5rem, 3vw, 2rem);
   text-align: center;
 }
 
@@ -170,7 +172,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 3rem;
     row-gap: 2.5rem;
-    margin-top: 2.25rem;
+    margin-top: 2rem;
   }
 
   .visual {
@@ -227,7 +229,8 @@
 
 @media (max-height: 500px) and (orientation: landscape) and (min-width: 640px) and (max-width: 1023px) {
   .section {
-    padding-block: 2rem;
+    --scene-section-space: 2rem;
+    padding-block: var(--scene-section-space);
   }
 
   .steps {
@@ -260,5 +263,19 @@
 
   .connector {
     opacity: 0.7 !important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) and (min-width: 480px) and (max-width: 1439.98px) {
+  .section {
+    --scene-section-space: clamp(1rem, 4svh, 1.5rem);
+  }
+
+  .steps {
+    margin-top: 1rem;
+  }
+
+  .footer {
+    margin-top: 1.25rem;
   }
 }

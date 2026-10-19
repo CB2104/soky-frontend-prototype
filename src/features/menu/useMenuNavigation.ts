@@ -42,6 +42,31 @@ export function useMenuNavigation(
       if (!frame) frame = window.requestAnimationFrame(update);
     }
 
+    function restoreFromHistory() {
+      let hash = "";
+      try {
+        hash = decodeURIComponent(window.location.hash.slice(1));
+      } catch {
+        // Hash inválido: se usa la categoría solicitada.
+      }
+
+      const hashNode = hash ? document.getElementById(hash) : null;
+      const destination = hashNode && catalog.contains(hashNode)
+        ? hashNode
+        : initialDestination !== "menu-start"
+          ? document.getElementById(initialDestination)
+          : null;
+
+      if (destination && catalog.contains(destination)) {
+        window.requestAnimationFrame(() => {
+          destination.scrollIntoView({ behavior: "instant", block: "start" });
+          schedule();
+        });
+      } else {
+        schedule();
+      }
+    }
+
     const historyState = window.history.state ?? {};
 
     if (!historyState.sokyMenuVisited) {
@@ -74,14 +99,14 @@ export function useMenuNavigation(
     observer.observe(navigation);
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
-    window.addEventListener("popstate", schedule);
+    window.addEventListener("popstate", restoreFromHistory);
 
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
       observer.disconnect();
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
-      window.removeEventListener("popstate", schedule);
+      window.removeEventListener("popstate", restoreFromHistory);
     };
   }, [sections, initialDestination]);
 

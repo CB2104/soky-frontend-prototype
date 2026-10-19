@@ -1,7 +1,8 @@
 .main {
-  --menu-surface: #f7f3eb;
+  --menu-surface: #fffdf7;
   position: relative;
   isolation: isolate;
+  container-type: inline-size;
   min-width: 0;
   color: var(--color-soky-ink);
   background: var(--menu-surface);
@@ -30,14 +31,6 @@
   background: #dce7f0;
   mask: url("/images/soky-purple-unified-arc.svg") center / contain no-repeat;
   -webkit-mask: url("/images/soky-purple-unified-arc.svg") center / contain no-repeat;
-}
-
-.sushi {
-  position: absolute;
-  top: 4.75rem;
-  right: -0.875rem;
-  width: 7rem;
-  height: auto;
 }
 
 .heroInner {
@@ -131,7 +124,6 @@
 }
 
 @media (max-width: 359.98px) {
-  .sushi { display: none; }
   .title { padding-right: 0; }
 }
 
@@ -143,16 +135,10 @@
   .main { --menu-surface: #fffdf7; }
 
   .artboard {
-    background: #eaf1f5 url("/images/menu/menu-header-scene.svg") center / 100% 100% no-repeat;
+    background: var(--menu-surface) url("/images/menu/menu-header-scene.svg") center / 100% 100% no-repeat;
   }
 
   .arc { display: none; }
-
-  .sushi {
-    top: 3rem;
-    right: -1.25rem;
-    width: 11.5rem;
-  }
 
   .heroInner { padding-block: 2.625rem 2rem; }
   .heroContent { max-width: calc(100% - 11rem); }
@@ -162,12 +148,6 @@
 }
 
 @media (min-width: 1024px) {
-  .sushi {
-    top: 2.75rem;
-    right: max(-5rem, calc((100% - 1180px) / 2 - 8rem));
-    width: 17.5rem;
-  }
-
   .heroContent { max-width: calc(100% - 15rem); }
   .title { font-size: clamp(3.75rem, 5vw, 4.5rem); }
   .titleLead { display: inline; }
@@ -176,7 +156,6 @@
 @media (max-height: 500px) and (orientation: landscape) {
   .heroInner { padding-block: 1.25rem 1.5rem; }
   .heroContent { max-width: 100%; }
-  .sushi { display: none; }
   .title { padding-right: 0; font-size: 2.5rem; }
   .titleLead { display: inline; }
   .introduction { margin-top: 1.25rem; }
@@ -185,4 +164,76 @@
 @media (forced-colors: active) {
   .artboard,
   .titleWord::after { display: none; }
+}
+
+/* R3: scoped visual proposal, preserving the current silhouette and assets. */
+.arc { display: none; }
+.heroInner { padding-block: 1.5rem; }
+.eyebrow { color: var(--color-soky-orange-ink); }
+.introduction { margin-top: 1.25rem; }
+.operations { margin-top: 0.75rem; }
+.rateWarning {
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.625rem;
+  background: #fff3e2;
+}
+.titleWord::after {
+  bottom: -0.16em;
+  width: 100%;
+  height: 0.3em;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+.artboard::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  right: 0;
+  width: clamp(112px, 24vw, 360px);
+  background: url("/images/patterns/card-seigaiha.svg") right top / 180px 120px repeat;
+  opacity: 0.08;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000);
+  mask-image: linear-gradient(90deg, transparent, #000);
+}
+.main > :global(.soky-container) { position: relative; isolation: isolate; }
+.main > :global(.soky-container)::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  right: calc((100% - 100cqw) / 2);
+  width: clamp(32px, calc((100cqw - 1180px) / 2 + 56px), 240px);
+  z-index: -1;
+  pointer-events: none;
+  background: url("/images/patterns/card-seigaiha.svg") right top / 180px 120px repeat;
+  opacity: 0.1;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000), linear-gradient(180deg, transparent, #000 7rem, #000 calc(100% - 4rem), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000), linear-gradient(180deg, transparent, #000 7rem, #000 calc(100% - 4rem), transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+@media (max-width: 767.98px) {
+  .artboard { background: var(--menu-surface) url("/images/menu/menu-header-scene.svg") center top / 100% 210px no-repeat; }
+  .operations { display: flex; flex-direction: row; gap: 0.5rem 1.125rem; }
+  .operations > p:nth-child(3) { flex-basis: 100%; }
+  .rateWarning { padding: 0.625rem 0.75rem; }
+  .main > :global(.soky-container)::after { opacity: 0.065; }
+}
+@media (min-width: 768px) {
+  .heroInner { padding-block: 2.25rem 1.75rem; }
+  .heroContent { max-width: calc(100% - 12rem); }
+  .introduction { max-width: 36rem; }
+}
+@media (min-width: 1024px) {
+  .heroContent { max-width: calc(100% - 18rem); }
+}
+@media (max-width: 359.98px) {
+  .title { padding-right: 84px; }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .heroInner { padding-block: 1.25rem 1.5rem; }
+  .heroContent { max-width: 100%; }
+}
+@media (forced-colors: active) {
+  .main > :global(.soky-container)::after { display: none; }
+  .rateWarning { border: 1px solid CanvasText; }
 }

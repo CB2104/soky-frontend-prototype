@@ -49,7 +49,7 @@ export default async function SiteLayout({ children, product }: SiteLayoutProps)
           instagramUrl={settings.instagramUrl}
         />
         <CartCatalogSync />
-        <CartDrawer />
+        <CartDrawer currency={settings.defaultCurrency} />
       </div>
     </TransitionProvider>
   );

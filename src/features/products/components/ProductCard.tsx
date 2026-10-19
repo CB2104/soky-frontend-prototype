@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 
 import Image from "next/image";
 import Link from "next/link";
-import { PercentIcon, PlusSVG } from "@/components/brand/IconsSVG";
+import { PlusSVG } from "@/components/brand/IconsSVG";
 import { CardFans, CardWaves } from "@/components/brand/CardArtwork";
 import { useAddProductToCart } from "../useAddProductToCart";
 import { CompactProductCard } from "./CompactProductCard";
+import { ProductBadgeMark } from "./ProductBadgeMark";
 import type { ProductCardViewModel } from "@/features/products/mappers";
 import { PRODUCT_CARD_IMAGE_SIZES } from "./ProductCard.constants";
 import styles from "./ProductCard.module.css";
@@ -17,6 +18,7 @@ import { useInView } from "motion/react";
 type ProductCardProps = {
   product: ProductCardViewModel;
   priority?: boolean;
+  prefetchDetails?: boolean;
   imageSizes?: string;
   presentation?: "card" | "compact";
   onAdd?: (product: ProductCardViewModel) => void;
@@ -25,6 +27,7 @@ type ProductCardProps = {
 export function ProductCard({
   product,
   priority = false,
+  prefetchDetails = true,
   presentation = "card",
   onAdd,
   imageSizes = PRODUCT_CARD_IMAGE_SIZES,
@@ -37,13 +40,13 @@ export function ProductCard({
   const imageFailed = failedImageUrl === product.imageUrl;
   const badgeContent = product.badge ? (
     <>
-      <span className={styles.badgeMark} aria-hidden="true">
-        {product.variant === "featured" ? (
-          <span className={styles.starMark} />
-        ) : (
-          <PercentIcon className={styles.percentMark} />
-        )}
-      </span>
+      <ProductBadgeMark
+        variant={product.variant}
+        kind={product.badgeKind}
+        className={styles.badgeMark}
+        starClassName={styles.starMark}
+        percentClassName={styles.percentMark}
+      />
       <span>{product.badge}</span>
     </>
   ) : null;
@@ -68,11 +71,15 @@ export function ProductCard({
       ref={cardRef}
       className={cardClassName}
       data-variant={product.variant}
+      data-theme={product.theme}
+      data-badge-kind={product.badgeKind}
+      data-editorial={product.isEditorial || undefined}
       data-in-view={isInView}
     >
       <Link
         href={"/menu/" + encodeURIComponent(product.slug)}
         scroll={false}
+        prefetch={prefetchDetails ? null : false}
         data-transition-ignore="true"
         className={styles.link}
         aria-label={
@@ -112,7 +119,11 @@ export function ProductCard({
         </div>
 
         <div className={styles.body}>
-          <CardWaves className={styles.divider} />
+          <CardWaves className={`${styles.divider} ${styles.dividerHorizontal}`} />
+          <CardWaves
+            className={`${styles.divider} ${styles.dividerVertical}`}
+            orientation="vertical"
+          />
 
           <span className={styles.panelSurface} aria-hidden="true" />
 

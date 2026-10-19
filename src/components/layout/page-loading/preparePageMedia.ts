@@ -56,9 +56,21 @@ function selectedCssImages(root: HTMLElement) {
 }
 
 export async function preparePageMedia(root: HTMLElement, signal: AbortSignal) {
-  const images = Array.from(root.querySelectorAll<HTMLImageElement>("img"));
-  const sources = selectedCssImages(root);
-  for (const image of root.querySelectorAll<SVGImageElement>("svg image")) {
+  // Opt-in per page: Home and other routes retain full media preparation.
+  const criticalPage = root.dataset.mediaPreparation === "critical"
+    ? root
+    : root.querySelector<HTMLElement>('main[data-media-preparation="critical"]');
+  const scopes = criticalPage
+    ? Array.from(criticalPage.querySelectorAll<HTMLElement>("[data-site-media-critical]"))
+    : [root];
+  const images = Array.from(new Set(scopes.flatMap((scope) =>
+    Array.from(scope.querySelectorAll<HTMLImageElement>("img")),
+  )));
+  const sources = new Set(scopes.flatMap((scope) => Array.from(selectedCssImages(scope))));
+  const vectorImages = scopes.flatMap((scope) =>
+    Array.from(scope.querySelectorAll<SVGImageElement>("svg image")),
+  );
+  for (const image of vectorImages) {
     const href = image.href.baseVal.trim();
     if (href && !href.startsWith("#")) sources.add(href);
   }

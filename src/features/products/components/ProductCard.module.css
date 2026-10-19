@@ -89,12 +89,12 @@
   flex-shrink: 0;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  background: var(--color-soky-navy);
+  background: #10151b;
 }
 
 .image {
-  object-fit: cover;
-  transition: transform 500ms ease;
+  object-fit: contain;
+  object-position: center;
 }
 
 .imagePlaceholder {
@@ -245,6 +245,10 @@
   width: 100%;
   height: var(--card-wave-height);
   pointer-events: none;
+}
+
+.dividerVertical {
+  display: none;
 }
 
 
@@ -431,7 +435,7 @@
 
 }
 
-@media (max-width: 639.98px) {
+@media (max-width: 1023.98px) {
   .card {
     height: auto;
   }
@@ -532,14 +536,17 @@
     top: 0;
     left: 0;
     z-index: 1;
-    width: 100cqi;
-    height: 1.875rem;
-    transform: translateY(100cqi) rotate(-90deg);
-    transform-origin: 0 0;
+    width: 1.875rem;
+    height: 100%;
+    transform: none;
   }
 
-  .divider path:last-child {
+  .dividerHorizontal {
     display: none;
+  }
+
+  .dividerVertical {
+    display: block;
   }
 
   .bodyContent {
@@ -681,6 +688,96 @@
   }
 }
 
+/* R8: tema editorial separado del tipo comercial del producto. */
+.card[data-theme="ivory"] {
+  --card-bg: var(--color-soky-white);
+  --card-bg-end: #f1faff;
+  --card-text: var(--color-soky-navy);
+  --card-accent: #67ceff;
+  --card-border: #7ed5fa;
+  --card-pattern-ink: #158cd0;
+  --card-shadow-color: #67ceff;
+  --fan-fill: #cef2ff;
+  --fan-line: #55bde7;
+}
+.card[data-theme="orange"] {
+  --card-bg: #c44306;
+  --card-bg-end: #eb590a;
+  --card-text: var(--color-soky-white);
+  --card-accent: var(--color-soky-orange);
+  --card-border: rgb(254 100 2 / 0.42);
+  --card-pattern-ink: var(--color-soky-white);
+  --card-shadow-color: var(--color-soky-navy);
+  --fan-fill: #081f58;
+  --fan-line: #2454ad;
+}
+.card[data-badge-kind="favorite"] .badge,
+.card[data-badge-kind="selection"] .badge {
+  background: #f9d53a;
+  color: #12327e;
+  box-shadow: 0 3px 0 rgb(216 79 0 / 0.2);
+}
+.card[data-theme="ivory"] .addButton[data-variant="primary"] {
+  --button-surface: var(--color-soky-blue);
+  --button-text: var(--color-soky-white);
+  --button-shadow: var(--color-soky-orange);
+}
+
+/* Mantener las recomendaciones detail y su composición específica. */
+@media (max-width: 1023.98px) {
+  .card:not([data-presentation="detail"]) .media {
+    /* La foto continúa detrás de la onda; no aparece fondo oscuro en la unión. */
+    margin-right: -2.25rem;
+  }
+  .card:not([data-presentation="detail"]) .image {
+    object-fit: cover;
+    object-position: center;
+    padding: 0;
+  }
+  .card:not([data-presentation="detail"]) .body {
+    padding-left: 2.75rem;
+  }
+  .card:not([data-presentation="detail"]) .panelSurface {
+    left: -2.25rem;
+    z-index: 1;
+    -webkit-mask-size: 72px 100%, calc(100% - 71px) 100%;
+    mask-size: 72px 100%, calc(100% - 71px) 100%;
+  }
+  .card:not([data-presentation="detail"]) .dividerVertical {
+    left: -2.25rem;
+    width: 4.5rem;
+    height: 100%;
+    z-index: 0;
+  }
+  .card:not([data-presentation="detail"]) .dividerVertical path:last-child {
+    /* El frente lo dibuja el panel enmascarado: mismo degradado, sin costura. */
+    display: none;
+  }
+  .card:not([data-presentation="detail"]) .fanCluster {
+    right: 1.5rem;
+    bottom: -0.5rem;
+    width: 4.5rem;
+  }
+  .card:not([data-presentation="detail"]) .metadata:empty,
+  .card:not([data-presentation="detail"]) .badgeSlotEmpty {
+    display: none;
+  }
+  @container soky-product-card (max-width: 34.5rem) {
+    .card:not([data-presentation="detail"]) .footer {
+      min-height: 5.25rem;
+      padding-top: 0;
+      padding-right: 0;
+      align-items: flex-start;
+    }
+  }
+  @container soky-product-card (max-width: 21.25rem) {
+    .card:not([data-presentation="detail"]) .description {
+      -webkit-line-clamp: 1;
+      min-height: 1.3em;
+    }
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
   .card:hover,
   .card:focus-within {
@@ -689,10 +786,6 @@
 
   .card:hover::before {
     transform: translate(10px, 12px);
-  }
-
-  .card:hover .image {
-    transform: scale(1.04);
   }
 
 }
@@ -706,14 +799,12 @@
 @media (prefers-reduced-motion: reduce) {
   .card,
   .card::before,
-  .image,
   .plusIcon {
     transition: none;
   }
 
   .card:hover,
-  .card:focus-within,
-  .card:hover .image {
+  .card:focus-within {
     transform: none;
   }
 
@@ -738,8 +829,8 @@
   --button-shadow: var(--color-soky-orange);
 }
 
-/* Polish R4: align mobile content over the solid panel and restore the plus hover. */
-@media (max-width: 639.98px) {
+/* Polish R4: align horizontal content over the solid panel and restore the plus hover. */
+@media (max-width: 1023.98px) {
   .body,
   .card[data-variant="promo"] .body {
     padding-left: 1.625rem;
@@ -757,5 +848,113 @@
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .addButton:not(:disabled):hover .plusIcon {
     transform: rotate(90deg);
+  }
+}
+
+/* Panel y onda vertical amplia desde tablet landscape, con independencia del alto. */
+@media (min-width: 1024px) {
+  .body,
+  .card[data-variant="promo"] .body {
+    --card-wave-height: 4.5rem;
+    min-height: 13.5rem;
+    padding: calc(var(--card-wave-height) * 0.4 + 0.375rem) 1rem 0.625rem;
+  }
+
+  .fanCluster {
+    right: -0.25rem;
+    bottom: -0.5rem;
+    width: 5rem;
+  }
+
+  .title {
+    min-height: 1.08em;
+    font-size: 1.25rem;
+    line-height: 1.08;
+  }
+
+  .metadata {
+    margin-top: 0.1875rem;
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .description {
+    min-height: 1.3em;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    -webkit-line-clamp: 1;
+  }
+
+  .footer {
+    min-height: 2.75rem;
+    padding-top: 0;
+    padding-right: 3.25rem;
+  }
+
+  .price {
+    font-size: 1.375rem;
+    line-height: 1;
+  }
+
+  .addButton {
+    right: 1rem;
+    bottom: 0.625rem;
+    width: 2.75rem;
+  }
+
+  .plusIcon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+/* R7: marco 4:3 vertical, imagen a sangre; layout determinado solo por ancho. */
+@media (min-width: 1024px) {
+  .media {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+  }
+
+  /* The source is also 4:3, so cover fills this frame without cropping. */
+  .image {
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 1023.98px) {
+  .link {
+    grid-template-columns: 50% minmax(0, 1fr);
+    grid-template-rows: minmax(37.5cqi, auto);
+    min-height: 0;
+  }
+
+  .media {
+    min-height: 0;
+    height: auto;
+    margin-right: 0;
+    aspect-ratio: auto;
+  }
+
+  .body,
+  .card[data-variant="promo"] .body {
+    min-height: 10.25rem;
+  }
+
+  @container soky-product-card (min-width: 27.5rem) {
+    .link {
+      grid-template-columns: 60% minmax(0, 1fr);
+      grid-template-rows: minmax(45cqi, auto);
+    }
+  }
+
+  @container soky-product-card (max-width: 22.5rem) {
+    .footer {
+      min-height: 4.75rem;
+      align-items: flex-start;
+      padding-top: 0.5rem;
+      padding-right: 0;
+    }
   }
 }

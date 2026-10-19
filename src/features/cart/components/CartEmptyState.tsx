@@ -1,58 +1,16 @@
-
+import type { MouseEvent } from "react";
+import { ArrowRightIcon, SushiSetIcon } from "@/components/brand/IconsSVG";
 import { Button } from "@/components/ui/button";
+import styles from "./CartDrawer.module.css";
 
-type CartEmptyStateProps = {
-  onClose: () => void;
-};
+type CartEmptyStateProps = { onNavigate: (event: MouseEvent<HTMLAnchorElement>, href: string) => void };
 
-export const CartEmptyState = ({ onClose }: CartEmptyStateProps) => {
-  return (
-    <div className="relative overflow-hidden rounded-[1.75rem] bg-soky-white p-1 shadow-[0_14px_36px_rgb(7_5_74/0.08)] ring-1 ring-soky-blue/10">
-      <div className="relative overflow-hidden rounded-3xl bg-soky-paper bg-[url('/images/patterns/endless-clouds.svg')] bg-size-[56px_28px] bg-repeat text-center">
-        <div className="relative overflow-hidden rounded-3xl bg-soky-paper/80 px-5 py-7 text-center">
-          <span
-            aria-hidden="true"
-            className="absolute -left-10 top-6 size-24 rounded-full bg-soky-blue/10 blur-2xl"
-          />
-          <span
-            aria-hidden="true"
-            className="absolute -right-8 bottom-2 size-24 rounded-full bg-soky-orange/15 blur-2xl"
-          />
-
-          <div className="relative mx-auto grid size-16 place-items-center rounded-full bg-soky-white shadow-[0_12px_28px_rgb(7_5_74/0.1),inset_0_1px_0_rgb(255_255_255/0.9)] ring-1 ring-soky-blue/10">
-            <span className="text-2xl font-black text-soky-blue">0</span>
-          </div>
-
-          <p className="relative mt-5 text-[11px] font-black uppercase tracking-[0.18em] text-soky-orange-deep">
-            Carrito vac&iacute;o
-          </p>
-
-          <h3 className="relative mt-2 text-2xl font-black leading-none tracking-[-0.03em] text-soky-navy">
-            Todav&iacute;a no hay productos
-          </h3>
-
-          <p className="relative mx-auto mt-3 max-w-65 text-sm leading-6 text-soky-muted">
-            Explora el men&uacute; y agrega tus piezas favoritas para revisar el
-            pedido aqu&iacute; antes de continuar.
-          </p>
-
-          <div className="grid mt-4 gap-3">
-            <Button variant="secondary"
-              href="/menu"
-              className="inline-flex w-full"
-              onClick={onClose}
-            >
-              <span className="inline-flex items-center justify-center gap-2">
-                Explorar men&uacute;
-              </span>
-            </Button>
-          </div>
-
-          <p className="relative mt-3 text-xs leading-5 text-soky-muted">
-            Puedes volver al carrito cuando agregues un producto.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
+export function CartEmptyState({ onNavigate }: CartEmptyStateProps) {
+  return <div className={styles.empty}>
+    <SushiSetIcon className={styles.emptyArt} />
+    <h3>EL PRIMER ANTOJO<br />LO ELIGES TÚ.</h3>
+    <p>Explora el menú y agrega tus favoritos para empezar tu pedido.</p>
+    <Button href="/menu" variant="secondary" className={styles.emptyAction} data-cart-empty-action
+      onClick={event => onNavigate(event, "/menu")}>Explorar menú <ArrowRightIcon aria-hidden="true" /></Button>
+  </div>;
+}

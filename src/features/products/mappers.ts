@@ -1,3 +1,4 @@
+import { getProductCardSelection, type ProductCardTheme, type ProductBadgeKind } from "./product-card-editorial";
 import type { ProductDto, PriceCurrency } from "@/contracts/api";
 import { formatPriceLabel } from "@/lib/money";
 
@@ -5,6 +6,9 @@ export type ProductCardVariant = "default" | "featured" | "promo";
 
 export type ProductCardViewModel = {
   variant: ProductCardVariant;
+  theme?: ProductCardTheme;
+  badgeKind?: ProductBadgeKind;
+  isEditorial?: boolean;
   badge?: string;
   metadata?: string;
   description: string;
@@ -39,6 +43,8 @@ export function mapProductToCard(product: ProductDto): ProductCardViewModel {
     /^\d+\s+piezas?$/i.test(tag.trim()),
   );
 
+  const selection = getProductCardSelection(product);
+
   return {
     id: product.id,
     slug: product.slug,
@@ -51,8 +57,11 @@ export function mapProductToCard(product: ProductDto): ProductCardViewModel {
     priceCurrency: product.priceCurrency,
     isAvailable: product.status === "ACTIVE" && product.isAvailable,
     variant,
-    badge,
+    theme: selection?.theme,
+    badgeKind: selection?.badgeKind ?? (badge ? variant === "promo" ? "promo" : "favorite" : undefined),
+    isEditorial: Boolean(selection),
+    badge: selection?.badge ?? badge,
     metadata,
-    tags: product.tags,
+    tags: selection ? [...product.tags, "editorial:" + selection.badgeKind] : product.tags,
   };
 }

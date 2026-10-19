@@ -47,22 +47,35 @@ export function CardFans({ className }: CardArtworkProps) {
           </svg>);
 }
 
-export function CardWaves({ className }: CardArtworkProps) {
-  return (<svg
-            className={className}
-            viewBox="0 0 400 120"
-            preserveAspectRatio="none"
-            shapeRendering="geometricPrecision"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path
-              fill="var(--card-accent, #fe6402)"
-              d="M0 43C34 13 60 17 94 33C128 49 152 67 190 67C228 67 260 42 302 42C344 42 372 55 400 60L400 120H0Z"
-            />
-            <path
-              fill="var(--card-bg, #163a9a)"
-              d="M0 67C36 44 72 45 112 60C152 75 218 92 270 92C322 92 365 81 400 81L400 120H0Z"
-            />
-          </svg>);
+type CardWavesProps = CardArtworkProps & {
+  orientation?: "horizontal" | "vertical";
+};
+
+export function CardWaves({
+  className,
+  orientation = "horizontal",
+}: CardWavesProps) {
+  const isVertical = orientation === "vertical";
+
+  return (
+    <svg
+      className={className}
+      viewBox={isVertical ? "0 0 120 400" : "0 0 400 120"}
+      preserveAspectRatio="none"
+      shapeRendering="geometricPrecision"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g transform={isVertical ? "translate(0 400) rotate(-90)" : undefined}>
+        <path
+          fill="var(--card-accent, #fe6402)"
+          d="M0 43C34 13 60 17 94 33C128 49 152 67 190 67C228 67 260 42 302 42C344 42 372 55 400 60L400 120H0Z"
+        />
+        <path
+          fill="var(--card-bg, #163a9a)"
+          d="M0 67C36 44 72 45 112 60C152 75 218 92 270 92C322 92 365 81 400 81L400 120H0Z"
+        />
+      </g>
+    </svg>
+  );
 }

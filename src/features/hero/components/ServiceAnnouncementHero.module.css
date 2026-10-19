@@ -1,39 +1,45 @@
-
-@media (orientation: landscape) and (min-width: 768px) and (max-width: 1024px) and (500px < height <= 600px) {
-  .compactLandscapeActions {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: stretch;
-    gap: 8px;
-    width: 95%;
-    margin-top: 16px;
+/* R4: lengths belong to this context; hierarchy stays on Button. */
+.actions {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: min(100%, 30rem);
+  max-width: 100%;
+  margin-top: 1rem;
+}
+.actions[data-slide4-actions] > [data-variant] {
+  flex: 0 1 auto;
+  min-width: 0;
+  margin: 0 0 9px;
+}
+.actions[data-slide4-actions] > [data-variant="primary"] {
+  --hero-action-inline-size: 16rem;
+}
+.actions[data-slide4-actions] > [data-variant="secondary"] {
+  --hero-action-inline-size: 11.25rem;
+}
+@media (min-width: 640px) {
+  .actions { flex-direction: row; }
+}
+@media (min-width: 768px) {
+  .actions { margin-top: 1.25rem; }
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  .actions {
+    flex-direction: row;
+    width: min(100%, 24rem);
+    gap: 0.625rem;
+    margin-top: 1rem;
   }
-
-  .compactLandscapeActions > a {
-    flex: 1 1 0;
-    min-width: 0;
-    width: auto;
-    min-height: 44px;
+  .actions[data-slide4-actions] > [data-variant="primary"] {
+    --hero-action-inline-size: 12.5rem;
   }
-
-  .compactLandscapeActions > a:first-child {
-    flex-grow: 1.4;
+  .actions[data-slide4-actions] > [data-variant="secondary"] {
+    --hero-action-inline-size: 9.5rem;
   }
-
-  .compactLandscapeActions > a {
-    gap: 4px;
-    padding-inline: 8px;
-    font-size: 12px;
-    letter-spacing: 0.01em;
-  }
-
-  .compactLandscapeActions > a > [aria-hidden="true"] {
-    width: 20px;
-    height: 20px;
-  }
-
-  .compactLandscapeActions > a > [aria-hidden="true"] > svg {
-    width: 14px;
-    height: 14px;
-  }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .actions { margin-top: 0.25rem; }
 }

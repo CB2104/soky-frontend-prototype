@@ -1,88 +1,45 @@
-
+import type { MouseEvent } from "react";
+import type { PriceCurrency } from "@/contracts/api";
+import { ArrowRightIcon } from "@/components/brand/IconsSVG";
 import { Button } from "@/components/ui/button";
-import { formatMoney } from "@/lib/money";
+import { formatCartMoney } from "@/lib/format-cart-money";
 import { useCurrentExchangeRate } from "@/features/exchange-rates/useCurrentExchangeRate";
+import { isUsableExchangeRate } from "@/features/exchange-rates/rate-validation";
 import { useCartStore } from "../store";
-import { getEstimatedCartTotals } from "../cartTotals";
 import type { CartItem } from "../store";
-import { WhatsAppSVG } from "@/components/brand/IconsSVG";
+import { getEstimatedCartTotals } from "../cartTotals";
+import styles from "./CartDrawer.module.css";
 
 type CartDrawerFooterProps = {
   items: CartItem[];
-  onClose: () => void;
+  currency: PriceCurrency;
+  onNavigate: (event: MouseEvent<HTMLAnchorElement>, href: string) => void;
 };
 
-export function CartDrawerFooter({ items, onClose }: CartDrawerFooterProps) {
-  const { rate, status } = useCurrentExchangeRate();
-  const catalogStatus = useCartStore((state) => state.catalogStatus);
-  const retryCatalog = useCartStore((state) => state.retryCatalog);
-  const totals = getEstimatedCartTotals(items, rate, catalogStatus === "ready");
+export function CartDrawerFooter({ items, currency, onNavigate }: CartDrawerFooterProps) {
+  const { rate, status, retry } = useCurrentExchangeRate();
+  const catalogReady = useCartStore(state => state.catalogStatus === "ready");
+  const totals = getEstimatedCartTotals(items, rate, catalogReady);
+  const currencyMismatch = items.some(item => item.unitPriceCurrencySnapshot !== currency);
+  const pending = totals.missingSnapshots || currencyMismatch;
+  const baseAmount = currency === "EUR" ? totals.subtotalEur : totals.subtotalUsd;
+  const subtotal = pending ? "Por confirmar" : formatCartMoney(baseAmount ?? "0.00", currency);
+  const validConversion = !pending && !totals.conversionPending && isUsableExchangeRate(rate, currency);
+  const equivalent = validConversion ? formatCartMoney(totals.totalVes ?? "0.00", "VES") : "Bs. por confirmar";
+  const rateMessage = status === "loading" ? "Consultando tasa…"
+    : status === "error" ? "No pudimos consultar la tasa. El importe en Bs. queda por confirmar."
+    : !isUsableExchangeRate(rate, currency) ? "La tasa disponible no es válida para este pedido. El importe en Bs. queda por confirmar."
+    : rate.warning ?? `Tasa referencial: ${rate.rate} Bs./${currency}.`;
 
-  const subtotalLabel =
-    [
-      totals.subtotalUsd ? formatMoney(totals.subtotalUsd, "USD") : null,
-      totals.subtotalEur ? formatMoney(totals.subtotalEur, "EUR") : null,
-    ]
-      .filter(Boolean)
-      .join(" + ") || "Por calcular";
-
-  return (
-    <footer className="shrink-0 border-t border-soky-blue/15 bg-soky-white px-5 py-4">
-      <div className="rounded-3xl bg-soky-paper p-4 ring-1 ring-soky-blue/10">
-        <div className="flex items-center justify-between gap-4 text-sm">
-          <span className="text-soky-muted">Subtotal estimado</span>
-          <span className="font-bold text-soky-navy">{subtotalLabel}</span>
-        </div>
-
-        <div className="mt-3 border-t border-soky-blue/10 pt-3">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-base font-black text-soky-navy">
-                Total estimado
-              </p>
-              <p className="mt-1 text-xs text-soky-muted">
-                {status === "loading" ? "Consultando tasa…" : "Conversión referencial a Bs."}
-              </p>
-            </div>
-
-            <p className="text-right text-lg font-black text-soky-orange-deep">
-              {totals.totalVes
-                ? formatMoney(totals.totalVes, "VES")
-                : "Por confirmar"}
-            </p>
-          </div>
-        </div>
-
-        {rate?.warning ? (
-          <p className="mt-3 text-xs leading-5 text-soky-muted">{rate.warning}</p>
-        ) : null}
-        {totals.conversionPending ? (
-          <p role="status" className="mt-3 text-xs leading-5 text-soky-muted">
-            {status === "error" ? "No pudimos consultar la tasa. El importe en Bs. queda por confirmar." : "El importe en Bs. requiere una tasa válida para la moneda de todos los productos."}
-          </p>
-        ) : null}
-        {totals.missingSnapshots ? (
-          <p className="mt-3 text-xs leading-5 text-soky-muted">
-            {catalogStatus === "error" ? "No pudimos actualizar tu carrito." : catalogStatus !== "ready" ? "Verificando productos y precios…" : "Revisa los productos que ya no están disponibles."}
-          </p>
-        ) : null}
-      </div>
-
-      {catalogStatus === "error" ? (
-        <Button variant="tertiary" type="button" onClick={retryCatalog} className="mt-3">Reintentar actualización</Button>
-      ) : null}
-      <div className="mt-4 grid gap-3">
-        <Button variant="secondary"
-          href="/cart"
-          onClick={onClose}
-          className="inline-flex w-full"
-        >
-          <span className="inline-flex items-center justify-center gap-2">
-            Continuar pedido
-            <WhatsAppSVG width={20} />
-          </span>
-        </Button>
-      </div>
-    </footer>
-  );
+  return <footer className={styles.footer}>
+    <div className={styles.subtotal}><span>Subtotal estimado</span><strong className={pending ? styles.pendingSubtotal : undefined}>{subtotal}</strong></div>
+    <div className={styles.equivalent}><span>Equivalente referencial</span><strong>{equivalent}</strong></div>
+    <p className={styles.rateNote} role={status === "ready" ? undefined : "status"}>{rateMessage}</p>
+    {status === "error" || (status === "ready" && !isUsableExchangeRate(rate, currency)) ?
+      <Button type="button" variant="tertiary" className={styles.retryRate} onClick={retry}>Actualizar tasa</Button> : null}
+    <Button href="/cart" variant="primary" className={styles.continue} onClick={event => onNavigate(event, "/cart")}>
+      Continuar pedido <ArrowRightIcon aria-hidden="true" />
+    </Button>
+    <p className={styles.nextStep}>Entrega, datos y WhatsApp en el siguiente paso.</p>
+  </footer>;
 }

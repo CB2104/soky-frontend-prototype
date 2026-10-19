@@ -10,7 +10,7 @@ import { getCategories } from "@/features/categories/api";
 import { ProductRecommendations } from "@/features/products/components/ProductRecommendations";
 import { ProductDetailContent } from "@/features/products/components/ProductDetailContent";
 import { ProductDetailLoadError } from "@/features/products/components/ProductDetailLoadError";
-import { getFeaturedProducts } from "@/features/products/api";
+import { getAllProducts } from "@/features/products/api";
 import { mapProductToCard } from "@/features/products/mappers";
 import { loadProductDetail } from "@/features/products/detail-loader";
 import { getProductDetailMetadata } from "@/features/products/detail-metadata";
@@ -18,7 +18,9 @@ import {
   mapProductToDetail,
   serializeProductJsonLd,
 } from "@/features/products/detail-mapper";
-import { siteUrl } from "@/lib/env";
+import { selectDetailRecommendations } from "@/features/products/detail-recommendations";
+import { apiMode, siteUrl } from "@/lib/env";
+import styles from "./ProductPage.module.css";
 
 export const dynamic = "force-dynamic";
 
@@ -37,24 +39,27 @@ export async function generateMetadata({
 
 async function RelatedProducts({
   products,
-  productId,
+  current,
 }: {
   products: Promise<ProductDto[]>;
-  productId: string;
+  current: ProductDto;
 }) {
-  const related = (await products)
-    .filter((item) => item.status === "ACTIVE" && item.id !== productId)
-    .slice(0, 2)
+  const related = selectDetailRecommendations(current, await products)
     .map(mapProductToCard);
 
   if (!related.length) return null;
 
-  return <ProductRecommendations products={related} presentation="detail" />;
+  return (
+    <div className={styles.recommendations}>
+      <ProductRecommendations products={related} presentation="compact" />
+    </div>
+  );
 }
 
 export default async function ProductPage({ params, searchParams }: Props) {
   const [{ slug }, query] = await Promise.all([params, searchParams]);
-  const featuredPromise = getFeaturedProducts(3).catch(() => []);
+  const catalogScenario = apiMode === "mock" ? query?.scenario : undefined;
+  const catalogPromise = getAllProducts({ scenario: catalogScenario }).catch(() => []);
   const [result, categories] = await Promise.all([
     loadProductDetail(slug, query?.scenario),
     getCategories().catch(() => []),
@@ -64,24 +69,20 @@ export default async function ProductPage({ params, searchParams }: Props) {
 
   if (result.status === "unavailable") {
     return (
-      <main className="bg-soky-paper text-soky-ink">
-        <Container className="py-10">
+      <main className={styles.page}>
+        <Container className={styles.content}>
           <ProductDetailLoadError />
         </Container>
         <SiteReadySignal />
-    </main>
+      </main>
     );
   }
 
   const product = mapProductToDetail(result.product, categories);
 
   return (
-    <main className="relative isolate bg-soky-paper text-soky-ink">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 bg-[url('/images/patterns/soky-cloud-wave-pattern.svg')] bg-size-[420px_auto] bg-repeat opacity-[0.035]"
-      />
-      <Container className="py-8 md:py-12">
+    <main className={styles.page}>
+      <Container className={styles.content}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -91,16 +92,13 @@ export default async function ProductPage({ params, searchParams }: Props) {
         <Button
           href={product.categoryHref}
           variant="tertiary"
-          className="mb-6"
+          className={styles.back}
         >
           ← Volver al menú
         </Button>
-        <ProductDetailContent product={product} />
+        <ProductDetailContent product={product} presentation="page" />
         <Suspense fallback={<SiteLoadingPending />}>
-          <RelatedProducts
-            products={featuredPromise}
-            productId={product.card.id}
-          />
+          <RelatedProducts products={catalogPromise} current={result.product} />
         </Suspense>
       </Container>
       <SiteReadySignal />

@@ -28,6 +28,7 @@ export function CartButton({ className, variant = "full" }: CartButtonProps) {
     <PillActionButton
       icon={<CartSVG />}
       badge={count}
+      data-navbar-cart-button=""
       className={className}
       isActive={isOpen}
       variant={variant}

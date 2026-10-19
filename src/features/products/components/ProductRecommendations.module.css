@@ -12,3 +12,22 @@
 .productTitle:focus-visible{outline:3px solid var(--color-soky-focus);outline-offset:3px}
 @container(max-width:380px){.product{grid-template-columns:64px minmax(0,1fr);gap:10px}.photo{width:64px;height:64px;grid-row:span 2}.add{grid-column:2;justify-self:start}.list{padding:12px}}
 @media(max-width:639.98px){.cardGrid{grid-template-columns:minmax(0,1fr);gap:1.25rem;padding-right:.75rem;padding-bottom:.875rem}}
+
+.cardRecommendations{container-name:product-card-recommendations;container-type:inline-size}
+.cardGrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),21.25rem))}
+@container product-card-recommendations (min-width:34.5rem){.cardGrid{grid-template-columns:repeat(2,minmax(min(100%,16.25rem),21.25rem))}}
+@container product-card-recommendations (min-width:52rem){.cardGrid{grid-template-columns:repeat(3,minmax(min(100%,16.25rem),21.25rem))}}
+@container product-card-recommendations (min-width:89.5rem){.cardGrid{grid-template-columns:repeat(4,minmax(min(100%,16.25rem),21.25rem))}}
+@media(min-width:640px) and (max-width:1023.98px){.cardGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container product-card-recommendations (max-width:34.49rem){.cardGrid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:639.98px){.cardGrid{grid-template-columns:minmax(0,1fr)}}
+/* R7: centrar filas incompletas solo con capacidad para tres o más cards. */
+@media (min-width: 1024px) {
+  @container product-card-recommendations (min-width: 52rem) {
+    .cardGrid { display: flex; flex-wrap: wrap; justify-content: center; }
+    .cardGrid > article { flex: 0 0 clamp(16.25rem, calc((100% - 2.5rem) / 3), 21.25rem); min-width: 0; height: auto; }
+  }
+  @container product-card-recommendations (min-width: 89.5rem) {
+    .cardGrid > article { flex-basis: clamp(16.25rem, calc((100% - 3.75rem) / 4), 21.25rem); }
+  }
+}

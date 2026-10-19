@@ -41,6 +41,7 @@ export default async function InterceptedProductPage({
     <ProductDetailContent
       product={mapProductToDetail(result.product, categories)}
       headingTag="h2"
+      presentation="dialog"
       imageSizes="(min-width: 768px) 624px, calc(100vw - 2rem)"
     />
   );

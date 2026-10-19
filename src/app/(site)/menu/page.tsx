@@ -1,19 +1,14 @@
-import Image from "next/image";
 import type { Metadata } from "next";
 import { SiteReadySignal } from "@/providers/SiteLoadingProvider";
 import { Container } from "@/components/ui/container";
 import { EmptyState } from "@/components/ui/states";
-import { getCategories } from "@/features/categories/api";
-import { getCurrentExchangeRate } from "@/features/exchange-rates/api";
 import { isUsableExchangeRate } from "@/features/exchange-rates/rate-validation";
 import { MenuCatalog } from "@/features/menu/components/MenuCatalog";
+import { MenuSushiCutout } from "@/features/menu/components/MenuSushiCutout";
 import { MenuRecoveryFallback } from "@/features/menu/components/MenuRecoveryFallback";
 import { buildMenuSections, getMenuDestination } from "@/features/menu/menu-sections";
-import { getAllProducts } from "@/features/products/api";
-import { getPublicSettings } from "@/features/settings/api";
+import { getMenuPageData } from "@/features/menu/menu-page-data";
 import styles from "./MenuPage.module.css";
-
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Menú",
@@ -38,21 +33,15 @@ type Props = {
 
 export default async function MenuPage({ searchParams }: Props) {
   const params = await searchParams;
-  const data = await Promise.all([
-    getCategories(),
-    getAllProducts({ scenario: params?.scenario }),
-    getCurrentExchangeRate().catch(() => null),
-    getPublicSettings(),
-  ]).then(([categories, products, rate, settings]) => ({
-    sections: buildMenuSections(categories, products),
-    products,
-    rate,
-    settings,
-  })).catch(() => null);
+  const data = await getMenuPageData(params?.scenario)
+    .then(({ categories, products, rate, settings }) => ({
+      sections: buildMenuSections(categories, products), products, rate, settings,
+    }))
+    .catch(() => null);
 
   if (!data) {
     return (
-      <main className={styles.main}>
+      <main className={styles.main} data-media-preparation="critical">
         <Container className={styles.state}>
           <MenuRecoveryFallback />
         </Container>
@@ -64,19 +53,11 @@ export default async function MenuPage({ searchParams }: Props) {
   const initialDestination = getMenuDestination(data.sections, params?.category);
 
   return (
-    <main className={styles.main}>
-      <header className={styles.masthead} aria-labelledby="menu-title">
+    <main className={styles.main} data-media-preparation="critical">
+      <header className={styles.masthead} aria-labelledby="menu-title" data-site-media-critical>
         <div className={styles.artboard} aria-hidden="true">
           <div className={styles.arc} />
-          <Image
-            src="/images/hero/soky-slide4-sushi-cutout.webp"
-            alt=""
-            width={1448}
-            height={1086}
-            sizes="(max-width: 767px) 112px, (max-width: 1023px) 184px, 280px"
-            loading="eager"
-            className={styles.sushi}
-          />
+          <MenuSushiCutout />
         </div>
         <Container className={styles.heroInner}>
           <div className={styles.heroContent}>

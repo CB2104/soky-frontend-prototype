@@ -1,133 +1,42 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { CartItem } from "../store";
+import type { MouseEvent } from "react";
+import { motion, useIsPresent, useReducedMotion } from "motion/react";
+import type { CartItemViewModel } from "../mappers";
 import { CartQuantityStepper } from "./CartQuantityStepper";
-import { motion } from "motion/react";
-import { cn } from "@/lib/cn";
 import { CartRemoveButton } from "./CartRemoveButton";
-
-type CartItemAccent = "blue" | "orange";
+import styles from "./CartDrawer.module.css";
 
 type CartItemRowProps = {
-  accent: CartItemAccent;
-  item: CartItem;
-  isVerified: boolean;
-  onClose: () => void;
+  item: CartItemViewModel;
+  description?: string;
+  onNavigate: (event: MouseEvent<HTMLAnchorElement>, href: string) => void;
   onDecrease: () => void;
   onIncrease: () => void;
   onRemove: () => void;
 };
 
-const accentClasses = {
-  blue: {
-    stripe: "bg-soky-blue",
-    gradient: "from-soky-blue/90",
-  },
-  orange: {
-    stripe: "bg-soky-orange",
-    gradient: "from-soky-orange/90",
-  },
-} satisfies Record<CartItemAccent, { stripe: string; gradient: string }>;
-
-export const CartItemRow = ({
-  accent,
-  item,
-  isVerified,
-  onClose,
-  onDecrease,
-  onIncrease,
-  onRemove,
-}: CartItemRowProps) => {
-  const accentClass = accentClasses[accent];
-
-  return (
-    <motion.li
-      layout="position"
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, x: 16 }}
-      transition={{
-        duration: 0.18,
-        ease: "easeOut",
-        layout: {
-          duration: 0.2,
-          ease: "easeOut",
-        },
-      }}
-      className="relative grid min-h-30 grid-cols-[96px_minmax(0,1fr)] overflow-hidden rounded-2xl border border-soky-blue/10 bg-soky-white shadow-[0_10px_30px_rgb(7_5_74/0.08)]"
-    >
-      <span
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute inset-y-0 left-0 z-20 w-2",
-          accentClass.stripe,
-        )}
-      />
-
-      <span
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute inset-y-0 left-2 z-10 w-10 bg-linear-to-r to-transparent",
-          accentClass.gradient,
-        )}
-      />
-      <div className="relative h-full min-h-0 overflow-hidden bg-soky-paper">
-        {item.imageUrlSnapshot ? (
-          <Image
-            src={item.imageUrlSnapshot}
-            alt=""
-            fill
-            sizes="96px"
-            className="object-cover"
-          />
-        ) : null}
+export function CartItemRow({ item, description, onNavigate, onDecrease, onIncrease, onRemove }: CartItemRowProps) {
+  const reduceMotion = useReducedMotion() ?? false;
+  const isPresent = useIsPresent();
+  return <motion.li className={styles.item} data-cart-item={item.id} inert={!isPresent}
+    aria-hidden={!isPresent ? true : undefined} layout={reduceMotion ? false : "position"}
+    initial={reduceMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+    exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: 12 }} transition={{ duration: reduceMotion ? 0 : .18 }}>
+    <div className={styles.photo}><Image src={item.imageUrl} alt="" fill sizes="(max-width: 767px) and (orientation: portrait) 52px, (max-width: 359px) 64px, 72px" className={styles.productImage} /></div>
+    <div className={styles.itemInfo}>
+      <div className={styles.itemText}>
+        <h3><Link href={item.href} scroll={false} data-transition-ignore="true" onClick={event => onNavigate(event, item.href)}>{item.title}</Link></h3>
+        {description ? <p className={styles.description}>{description}</p> : null}
+        <p className={styles.unitPrice}>{item.unitPrice}{item.unitPrice !== "Por confirmar" ? " / unidad" : ""}</p>
+        {item.issue ? <p className={styles.issue} role="status">{item.issue}</p> : null}
       </div>
-
-      <div className="flex min-w-0 flex-col p-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <Link
-              href={`/menu/${encodeURIComponent(item.slug)}`}
-              scroll={false}
-              data-transition-ignore="true"
-              className="group block"
-              onClick={onClose}
-            >
-              <span className="line-clamp-1 text-[1.35rem] font-black leading-[1.05] tracking-[-0.02em] text-soky-navy transition-colors group-hover:text-soky-blue">
-                {item.titleSnapshot}
-              </span>
-            </Link>
-
-            {item.descriptionSnapshot ? (
-              <p className="mt-1 line-clamp-1 text-xs leading-4 text-soky-muted">
-                {item.descriptionSnapshot}
-              </p>
-            ) : null}
-
-            <p className="mt-1 text-base font-black leading-none text-soky-orange-deep">
-              {isVerified && !item.catalogIssue && item.priceLabelSnapshot
-                ? item.priceLabelSnapshot
-                : "Por confirmar"}
-            </p>
-          </div>
-          <CartRemoveButton label={item.titleSnapshot} onRemove={onRemove} />
-        </div>
-
-        {isVerified && item.catalogIssue ? (
-          <p role="status" className="text-xs font-bold text-japan-seal">
-            {item.catalogIssue === "UNAVAILABLE" ? "Agotado" : "Producto por revisar"}
-          </p>
-        ) : null}
-        <div className="mt-auto flex justify-end">
-        <CartQuantityStepper
-          label={item.titleSnapshot}
-          quantity={item.quantity}
-          disabledIncrease={!isVerified || !!item.catalogIssue}
-          onDecrease={onDecrease}
-          onIncrease={onIncrease}
-        />
-        </div>
-      </div>
-    </motion.li>
-  );
-};
+      <div className={styles.remove} data-cart-remove><CartRemoveButton label={item.title} onRemove={onRemove} /></div>
+    </div>
+    <div className={styles.itemActions}>
+      <strong className={item.lineTotal === "Por confirmar" ? styles.pendingLine : styles.lineTotal}>{item.lineTotal}</strong>
+      <CartQuantityStepper label={item.title} quantity={item.quantity} disabledIncrease={!item.canIncrease}
+        onDecrease={onDecrease} onIncrease={onIncrease} />
+    </div>
+  </motion.li>;
+}

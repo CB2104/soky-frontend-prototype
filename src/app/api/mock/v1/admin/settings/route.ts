@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import type { AdminSettingsUpdateDto } from "@/contracts/api";
 import { mockSettings } from "@/mock/db";
@@ -24,6 +25,7 @@ export async function PATCH(request: Request) {
 
   if (body) {
     Object.assign(mockSettings, body);
+    revalidateTag("soky-menu-settings", { expire: 0 });
   }
 
   return NextResponse.json(mockSettings);

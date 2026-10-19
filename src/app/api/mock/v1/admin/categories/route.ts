@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import type { AdminCategoryCreateDto, CategoryDto } from "@/contracts/api";
 import { mockCategories } from "@/mock/db";
@@ -41,5 +42,7 @@ export async function POST(request: Request) {
   };
 
   mockCategories.push(category);
+  revalidateTag("soky-menu-categories", { expire: 0 });
+
   return NextResponse.json(category, { status: 201 });
 }

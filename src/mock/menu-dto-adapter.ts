@@ -1,6 +1,7 @@
 import type { CategoryDto, CategoryGroup, ProductDto } from "@/contracts/api";
 import type { Catalog } from "./menu-source.types";
 import { menuCatalog } from "./menu-catalog";
+import productPhotoIds from "./menu-product-photo-ids.json";
 import {
   defaultProductAvailability,
   pendingProductPhoto,
@@ -8,6 +9,8 @@ import {
   type ProductEditorial,
 } from "./menu-editorial";
 import { existingProductIdentity } from "./menu-product-identity";
+
+const productPhotoIdSet = new Set<string>(productPhotoIds);
 
 function getCategoryGroup(slug: string): CategoryGroup {
   if (slug === "combo-boxs") return "COMBO";
@@ -34,7 +37,12 @@ export function buildMenuDtoData(
   const products: ProductDto[] = catalog.products.map((product) => {
     const presentation = editorial[product.sourceId] ?? {};
     const identity = existingProductIdentity[product.sourceId];
-    const hasPhoto = Boolean(presentation.imageUrl);
+    const imageUrl = presentation.imageUrl ?? (
+      productPhotoIdSet.has(product.sourceId)
+        ? `/images/products/${product.sourceId}.webp`
+        : undefined
+    );
+    const hasPhoto = Boolean(imageUrl);
     const imageStatus = hasPhoto ? presentation.imageStatus ?? "PROVISIONAL" : "PENDING";
 
     return {
@@ -56,8 +64,12 @@ export function buildMenuDtoData(
       sortOrder: (categoryOrders.get(product.categorySlug) ?? 0) * 1000 + product.sortOrder,
       priceCurrency: product.priceCurrency,
       priceAmount: product.priceAmount,
-      imageUrl: presentation.imageUrl ?? pendingProductPhoto,
-      imageAlt: presentation.imageAlt ?? ("Fotografía pendiente de " + product.title + "."),
+      imageUrl: imageUrl ?? pendingProductPhoto,
+      imageAlt: presentation.imageAlt ?? (
+        hasPhoto
+          ? "Imagen referencial de " + product.title + "."
+          : "Fotografía pendiente de " + product.title + "."
+      ),
       imageStatus,
       featured: presentation.featured ?? false,
       tags: [...product.labels],

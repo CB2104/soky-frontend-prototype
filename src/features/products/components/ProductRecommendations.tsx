@@ -3,7 +3,6 @@ import type { ProductCardViewModel } from "../mappers";
 import { PRODUCT_CARD_IMAGE_SIZES } from "./ProductCard.constants";
 import { ProductCard } from "./ProductCard";
 import styles from "./ProductRecommendations.module.css";
-import detailStyles from "./ProductDetailContent.module.css";
 
 export function ProductRecommendations({
   products,
@@ -11,35 +10,16 @@ export function ProductRecommendations({
   onAdd,
 }: {
   products: ProductCardViewModel[];
-  presentation?: "card" | "compact" | "detail";
+  presentation?: "card" | "compact";
   onAdd?: (product: ProductCardViewModel) => void;
 }) {
   if (!products.length) return null;
-  if (presentation === "detail") {
-    return (
-      <section
-        className={detailStyles.related}
-        aria-labelledby="related-products-title"
-      >
-        <h2 id="related-products-title" className={detailStyles.relatedTitle}>
-          También puede gustarte
-        </h2>
-        <div className={detailStyles.relatedGrid}>
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              imageSizes={PRODUCT_CARD_IMAGE_SIZES}
-            />
-          ))}
-        </div>
-      </section>
-    );
-  }
-
   if (presentation === "card") {
     return (
-      <section aria-label="También puede gustarte">
+      <section
+        className={styles.cardRecommendations}
+        aria-label="También puede gustarte"
+      >
         <h2 className="text-2xl font-black">También puede gustarte</h2>
         <div className={`${styles.cardGrid} mt-5`}>
           {products.map((product) => (

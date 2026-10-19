@@ -30,7 +30,14 @@ export function ProductDetailImage({
       >
         {pending || failed ? (
           <div className={styles.placeholder}>
-            {pending ? "Fotografía por confirmar" : "Imagen no disponible"}
+            <Image
+              src="/images/products/detail-photo-pending-icon.svg"
+              alt=""
+              aria-hidden="true"
+              width={58}
+              height={48}
+            />
+            <span>{pending ? "Fotografía por confirmar" : "Imagen no disponible"}</span>
           </div>
         ) : (
           <Image

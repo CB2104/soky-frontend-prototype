@@ -48,7 +48,7 @@ export function ProductDetailActions({ product, hasValidPrice }: Props) {
           ? "Agotado"
           : !hasValidPrice
             ? "Precio por confirmar"
-            : "Agregar al pedido"}
+            : "Añadir al carrito"}
       </Button>
       <Button variant="tertiary"
         href="/cart"

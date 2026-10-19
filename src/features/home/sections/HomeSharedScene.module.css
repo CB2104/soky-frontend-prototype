@@ -7,6 +7,8 @@
   position: relative;
   isolation: isolate;
   background: var(--home-scene-white);
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .scene :global(.brand-strip-motion-root) {
@@ -66,6 +68,7 @@
 
 .headingFrame {
   --scene-gutter: max(1rem, calc((100vw - 1180px) / 2));
+  --scene-accent-bleed: 0px;
 
   position: relative;
   isolation: isolate;
@@ -79,7 +82,7 @@
 
 .ornament {
   position: absolute;
-  inset-block: 0;
+  inset-block: calc(-1 * var(--scene-accent-bleed)) 0;
   inset-inline: calc(-1 * var(--scene-gutter));
   z-index: 0;
   overflow: hidden;
@@ -107,7 +110,11 @@
 .photoOrder {
   --accent-width: clamp(200px, 18vw, 280px);
   top: -2rem;
-  right: calc(var(--accent-width) * -0.4);
+  right: calc(var(--accent-width) * -0.15);
+}
+
+.photoOrder .photo {
+  transform: scaleX(-1);
 }
 
 .photoBottle {
@@ -137,6 +144,10 @@
 }
 
 @media (min-width: 1440px) {
+  .headingOrder .ornament {
+    inset-block-end: -5rem;
+  }
+
   .bottleStage {
     display: block;
   }
@@ -144,7 +155,8 @@
 
 @media (max-width: 1439.98px) {
   .headingFrame {
-    padding-block-start: 10rem;
+    --scene-accent-bleed: var(--scene-section-space, 2rem);
+    padding-block-start: 7.5rem;
   }
 
   .photoProducts {
@@ -173,12 +185,12 @@
   }
 
   .headingProducts {
-    padding-block-start: 7rem;
+    padding-block-start: 4.5rem;
   }
 
   .headingCategories,
   .headingOrder {
-    padding-block-start: 8rem;
+    padding-block-start: 6rem;
   }
 
   .photoProducts {
@@ -200,5 +212,53 @@
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     transform: none !important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 600px) and (min-width: 480px) and (max-width: 1439.98px) {
+  .headingFrame {
+    --scene-accent-bleed: 0px;
+    --scene-landscape-rail: clamp(7.5rem, 18vw, 11rem);
+
+    padding-block-start: 0;
+    min-block-size: var(--scene-landscape-height);
+  }
+
+  .headingProducts {
+    --scene-landscape-width: clamp(128px, 16vw, 176px);
+    --scene-landscape-height: calc(var(--scene-landscape-width) * 0.75);
+  }
+
+  .headingCategories {
+    --scene-landscape-width: clamp(88px, 11vw, 128px);
+    --scene-landscape-height: var(--scene-landscape-width);
+  }
+
+  .headingOrder {
+    --scene-landscape-width: clamp(136px, 17vw, 184px);
+    --scene-landscape-height: calc(var(--scene-landscape-width) * 870 / 1106);
+  }
+
+  .headingCopy {
+    padding-inline-end: var(--scene-landscape-rail);
+  }
+
+  .ornament {
+    inset-block: 0;
+    inset-inline-start: auto;
+    inset-inline-end: calc(-1 * var(--scene-gutter));
+    width: calc(var(--scene-landscape-rail) + var(--scene-gutter));
+  }
+
+  .photoProducts,
+  .photoCategories,
+  .photoOrder {
+    --accent-width: var(--scene-landscape-width);
+    top: 0;
+  }
+
+  .photoCategories {
+    left: auto;
+    right: calc(var(--accent-width) * -0.25);
   }
 }

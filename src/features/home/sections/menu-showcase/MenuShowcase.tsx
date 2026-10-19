@@ -7,7 +7,7 @@ import type { ProductCardViewModel } from "@/features/products/mappers";
 import styles from "./MenuShowcase.module.css";
 import { MenuShowcaseHeading } from "./MenuShowcaseHeading";
 import { ProductCard } from "@/features/products/components/ProductCard";
-import { PRODUCT_CARD_IMAGE_SIZES } from "@/features/products/components/ProductCard.constants";
+import { HOME_PRODUCT_CARD_IMAGE_SIZES } from "@/features/products/components/ProductCard.constants";
 
 type MenuShowcaseProps = {
   products: readonly ProductCardViewModel[];
@@ -41,7 +41,7 @@ export function MenuShowcase({ products, categories }: MenuShowcaseProps) {
                 <ProductCard
                   key={product.id}
                   product={product}
-                  imageSizes={PRODUCT_CARD_IMAGE_SIZES}
+                  imageSizes={HOME_PRODUCT_CARD_IMAGE_SIZES}
                 />
               ))}
             </div>

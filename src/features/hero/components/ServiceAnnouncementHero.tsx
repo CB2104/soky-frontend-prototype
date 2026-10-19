@@ -501,10 +501,7 @@ export default function ServiceAnnouncementHero({
             <div
               aria-label="Acciones para pedir/visitar SOKY"
               data-slide4-actions
-              className={cn(
-                "mt-4 flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:gap-3 md:mt-5 max-md:portrait:relative max-md:portrait:left-0 max-md:portrait:!grid max-md:portrait:!w-[clamp(8rem,45vw,10rem)] max-md:portrait:justify-self-start max-md:portrait:!grid-cols-1 max-md:portrait:items-stretch max-md:portrait:gap-2 [@media(max-height:500px)_and_(orientation:landscape)]:!mt-1 [@media(max-height:500px)_and_(orientation:landscape)]:!flex-nowrap [@media(max-height:500px)_and_(orientation:landscape)]:!gap-2 max-[350px]:portrait:!grid-cols-1 max-[350px]:portrait:!gap-1.5",
-                serviceStyles.compactLandscapeActions,
-              )}
+              className={serviceStyles.actions}
               role="group"
             >
               {primaryCta && primaryHref ? (
