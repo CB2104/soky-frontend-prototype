@@ -1,0 +1,137 @@
+.skeleton {
+  --skeleton-fill: rgb(23 41 166 / 9%);
+}
+
+.visual {
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+.shape {
+  display: block;
+  max-width: 100%;
+  border-radius: 0.5rem;
+  background: var(--skeleton-fill);
+}
+
+.skeleton .media {
+  background: var(--skeleton-fill);
+  box-shadow: none;
+}
+
+.skeleton .media::after {
+  display: none;
+}
+
+.category {
+  width: 30%;
+  height: 0.8125rem;
+}
+
+.title {
+  width: 82%;
+  height: clamp(2.25rem, 5.5cqi, 4.25rem);
+  margin-top: 1rem;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: 0.75rem;
+}
+
+.badge {
+  width: 6rem;
+  height: 2rem;
+  border-radius: 999px;
+}
+
+.metadata {
+  width: 4.5rem;
+  height: 0.9375rem;
+}
+
+.groupTitle {
+  width: 35%;
+  height: 0.8125rem;
+}
+
+.groupRows {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.875rem;
+}
+
+.groupRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.line {
+  width: 58%;
+  height: 0.875rem;
+}
+
+.shortLine {
+  width: 43%;
+  height: 0.875rem;
+}
+
+.price {
+  width: 10rem;
+  height: clamp(1.75rem, 4cqi, 2.5rem);
+  margin-top: 1.75rem;
+}
+
+.button {
+  width: 11.5rem;
+  height: 2.75rem;
+  border-radius: 999px;
+}
+
+.cartLink {
+  width: 4.75rem;
+  height: 0.9375rem;
+}
+
+.note {
+  width: 70%;
+  height: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+@container soky-product-detail (max-width: 26rem) {
+  .button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visual {
+    animation: none;
+  }
+}
