@@ -591,7 +591,7 @@ export const mockSettings: PublicSettingsDto = {
 export const mockExchangeRate: ExchangeRateDto = {
   baseCurrency: "EUR",
   targetCurrency: "VES",
-  rate: "980.61",
+  rate: "991.16",
   mode: "MANUAL",
   source: "MANUAL",
   fetchedAt: new Date().toISOString(),
