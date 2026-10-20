@@ -19,7 +19,38 @@ import { getPromoProducts } from "@/features/products/api";
 
 export const dynamic = "force-dynamic";
 
+const homeTitle = "SOKY Sushi | Rolls, boxes y promos para compartir";
+const homeDescription =
+  "Explora rolls, boxes y promos de SOKY. Elige tus favoritos y envía tu pedido por WhatsApp.";
+const homeImage = "/images/social/soky-home-og.png";
+
 export const metadata: Metadata = {
+  title: { absolute: homeTitle },
+  description: homeDescription,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "es_VE",
+    url: "/",
+    siteName: "SOKY",
+    title: homeTitle,
+    description: homeDescription,
+    images: [
+      {
+        url: homeImage,
+        width: 1200,
+        height: 630,
+        alt: "Slide de Box Osaka de SOKY con 34 piezas de sushi frío y tempura",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    creator: "@soky_ve",
+    title: homeTitle,
+    description: homeDescription,
+    images: [homeImage],
+  },
   robots: {
     index: true,
     follow: true,

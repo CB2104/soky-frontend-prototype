@@ -7,7 +7,11 @@ type ContainerProps = {
   size?: "default" | "wide";
 };
 
-export function Container({ children, className, size = "default" }: ContainerProps) {
+export function Container({
+  children,
+  className,
+  size = "default",
+}: ContainerProps) {
   return (
     <div
       className={cn(

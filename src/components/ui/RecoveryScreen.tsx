@@ -23,10 +23,11 @@ type RecoveryScreenBaseProps = {
   titleId?: string;
 };
 
-type RecoveryScreenProps = RecoveryScreenBaseProps & (
-  | { onPrimaryAction?: never; primaryActionHref: string }
-  | { onPrimaryAction: () => void; primaryActionHref?: never }
-);
+type RecoveryScreenProps = RecoveryScreenBaseProps &
+  (
+    | { onPrimaryAction?: never; primaryActionHref: string }
+    | { onPrimaryAction: () => void; primaryActionHref?: never }
+  );
 
 export function RecoveryScreen({
   as = "main",
@@ -60,16 +61,26 @@ export function RecoveryScreen({
       aria-labelledby={titleId}
       aria-busy={isPending || undefined}
     >
-      <div className={`${styles.patternFade} ${styles.patternFadeTop}`} aria-hidden="true">
+      <div
+        className={`${styles.patternFade} ${styles.patternFadeTop}`}
+        aria-hidden="true"
+      >
         <span className={styles.patternMask} />
       </div>
-      <div className={`${styles.patternFade} ${styles.patternFadeBottom}`} aria-hidden="true">
+      <div
+        className={`${styles.patternFade} ${styles.patternFadeBottom}`}
+        aria-hidden="true"
+      >
         <span className={styles.patternMask} />
       </div>
 
       {showLogo ? (
         <header className={styles.header}>
-          <Link className={styles.logoLink} href="/" aria-label="SOKY, ir al inicio">
+          <Link
+            className={styles.logoLink}
+            href="/"
+            aria-label="SOKY, ir al inicio"
+          >
             <SokyLogo title="" className={styles.logo} />
           </Link>
         </header>
@@ -105,7 +116,8 @@ export function RecoveryScreen({
                 {primaryActionLabel}
               </Button>
             ) : (
-              <Button aria-busy={isPending}
+              <Button
+                aria-busy={isPending}
                 type="button"
                 className={styles.primaryAction}
                 size="lg"
@@ -124,7 +136,12 @@ export function RecoveryScreen({
               {secondaryActionLabel}
             </Button>
           </div>
-          <span className={styles.status} role="status" aria-live="polite" aria-atomic="true">
+          <span
+            className={styles.status}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {isPending ? "Reintentando la página." : ""}
           </span>
         </div>

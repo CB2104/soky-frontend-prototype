@@ -1,7 +1,13 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
-type BadgeVariant = "promo" | "tempura" | "cold" | "featured" | "neutral" | "success";
+type BadgeVariant =
+  | "promo"
+  | "tempura"
+  | "cold"
+  | "featured"
+  | "neutral"
+  | "success";
 
 const badgeClass: Record<BadgeVariant, string> = {
   promo: "bg-soky-orange-deep text-soky-white",
@@ -18,7 +24,11 @@ type BadgeProps = {
   variant?: BadgeVariant;
 };
 
-export function Badge({ children, className, variant = "neutral" }: BadgeProps) {
+export function Badge({
+  children,
+  className,
+  variant = "neutral",
+}: BadgeProps) {
   return (
     <span
       className={cn(

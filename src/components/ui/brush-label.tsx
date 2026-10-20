@@ -22,7 +22,11 @@ type BrushLabelProps = {
   color?: BrushColor;
 };
 
-export function BrushLabel({ children, className, color = "orange" }: BrushLabelProps) {
+export function BrushLabel({
+  children,
+  className,
+  color = "orange",
+}: BrushLabelProps) {
   return (
     <span
       className={cn(

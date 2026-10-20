@@ -16,14 +16,25 @@ type WaveDividerProps = {
   tone?: WaveTone;
 };
 
-export function WaveDivider({ className, flip = false, tone = "paper" }: WaveDividerProps) {
+export function WaveDivider({
+  className,
+  flip = false,
+  tone = "paper",
+}: WaveDividerProps) {
   return (
     <div
       aria-hidden="true"
-      className={cn("pointer-events-none overflow-hidden leading-none", flip && "rotate-180", className)}
+      className={cn(
+        "pointer-events-none overflow-hidden leading-none",
+        flip && "rotate-180",
+        className,
+      )}
     >
       <svg
-        className={cn("block h-10 w-[140%] -translate-x-[15%]", toneClass[tone])}
+        className={cn(
+          "block h-10 w-[140%] -translate-x-[15%]",
+          toneClass[tone],
+        )}
         viewBox="0 0 1440 96"
         preserveAspectRatio="none"
       >

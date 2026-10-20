@@ -17,7 +17,12 @@ type SectionProps = {
   tone?: SectionTone;
 };
 
-export function Section({ children, className, id, tone = "paper" }: SectionProps) {
+export function Section({
+  children,
+  className,
+  id,
+  tone = "paper",
+}: SectionProps) {
   return (
     <section id={id} className={cn("soky-section", toneClass[tone], className)}>
       {children}

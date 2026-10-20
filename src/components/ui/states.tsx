@@ -18,11 +18,18 @@ export function LoadingState({ title = "Cargando" }: Partial<StateProps>) {
   );
 }
 
-export function EmptyState({ actionHref, actionLabel, description, title }: StateProps) {
+export function EmptyState({
+  actionHref,
+  actionLabel,
+  description,
+  title,
+}: StateProps) {
   return (
     <div className="rounded-2xl border border-dashed border-soky-border bg-soky-white p-6 text-center text-soky-ink">
       <h2 className="text-xl font-black">{title}</h2>
-      <p className="mx-auto mt-2 max-w-md text-sm text-soky-muted">{description}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-soky-muted">
+        {description}
+      </p>
       {actionHref && actionLabel ? (
         <Button href={actionHref} className="mt-5" variant="secondary">
           {actionLabel}
@@ -32,11 +39,18 @@ export function EmptyState({ actionHref, actionLabel, description, title }: Stat
   );
 }
 
-export function ErrorState({ actionHref, actionLabel, description, title }: StateProps) {
+export function ErrorState({
+  actionHref,
+  actionLabel,
+  description,
+  title,
+}: StateProps) {
   return (
     <div className="rounded-2xl border border-japan-seal/30 bg-soky-white p-6 text-center text-soky-ink">
       <h2 className="text-xl font-black text-japan-seal">{title}</h2>
-      <p className="mx-auto mt-2 max-w-md text-sm text-soky-muted">{description}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-soky-muted">
+        {description}
+      </p>
       {actionHref && actionLabel ? (
         <Button href={actionHref} className="mt-5" variant="primary">
           {actionLabel}

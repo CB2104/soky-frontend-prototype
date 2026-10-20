@@ -14,14 +14,23 @@ type CommonProps = {
   variant?: ButtonVariant;
   secondaryTone?: ButtonSecondaryTone;
 };
-type ButtonAsButton = CommonProps & ComponentPropsWithRef<"button"> & { href?: never };
-type ButtonAsLink = CommonProps & ComponentPropsWithRef<"a"> & {
-  href: string;
-  scroll?: boolean;
-};
+type ButtonAsButton = CommonProps &
+  ComponentPropsWithRef<"button"> & { href?: never };
+type ButtonAsLink = CommonProps &
+  ComponentPropsWithRef<"a"> & {
+    href: string;
+    scroll?: boolean;
+  };
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
 
-export function Button({ children, className, size = "md", variant = "primary", secondaryTone = "standard", ...props }: ButtonProps) {
+export function Button({
+  children,
+  className,
+  size = "md",
+  variant = "primary",
+  secondaryTone = "standard",
+  ...props
+}: ButtonProps) {
   const appearance = {
     className: cn(styles.button, className),
     "data-variant": variant,
@@ -33,12 +42,30 @@ export function Button({ children, className, size = "md", variant = "primary", 
   if ("href" in props && props.href) {
     const { href, scroll, ...anchorProps } = props;
     // Native anchors keep hash/external navigation behavior; Next handles routes.
-    if (href.startsWith("#") || href.startsWith("/#") || !href.startsWith("/") || href.startsWith("//")) {
-      return <a href={href} {...anchorProps} {...appearance}>{content}</a>;
+    if (
+      href.startsWith("#") ||
+      href.startsWith("/#") ||
+      !href.startsWith("/") ||
+      href.startsWith("//")
+    ) {
+      return (
+        <a href={href} {...anchorProps} {...appearance}>
+          {content}
+        </a>
+      );
     }
-    return <Link href={href} scroll={scroll} {...anchorProps} {...appearance}>{content}</Link>;
+    return (
+      <Link href={href} scroll={scroll} {...anchorProps} {...appearance}>
+        {content}
+      </Link>
+    );
   }
 
-  const { type = "button", ...buttonProps } = props as ComponentPropsWithRef<"button">;
-  return <button type={type} {...buttonProps} {...appearance}>{content}</button>;
+  const { type = "button", ...buttonProps } =
+    props as ComponentPropsWithRef<"button">;
+  return (
+    <button type={type} {...buttonProps} {...appearance}>
+      {content}
+    </button>
+  );
 }

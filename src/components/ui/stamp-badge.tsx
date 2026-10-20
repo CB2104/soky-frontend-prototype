@@ -16,7 +16,11 @@ type StampBadgeProps = {
   tone?: StampTone;
 };
 
-export function StampBadge({ children, className, tone = "promo" }: StampBadgeProps) {
+export function StampBadge({
+  children,
+  className,
+  tone = "promo",
+}: StampBadgeProps) {
   return (
     <span
       className={cn(
