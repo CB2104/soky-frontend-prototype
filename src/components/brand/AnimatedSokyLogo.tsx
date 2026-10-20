@@ -17,8 +17,8 @@ type SokyLogoProps = Omit<SVGProps<SVGSVGElement>, "children"> & {
 
 export function AnimatedSokyLogo({
   title = "SOKY",
-  white = "#F7F7F2",
-  orange = "#FF5A00",
+  white = "#FFFDF7",
+  orange = "#FE6402",
   wrapperClassName,
   ...props
 }: SokyLogoProps) {

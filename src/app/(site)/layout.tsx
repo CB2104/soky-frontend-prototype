@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { getPublicSettings } from "@/features/settings/api";
 import { SiteFooter } from "@/components/layout/footer/SiteFooter";
@@ -23,6 +23,11 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+};
+
+export const viewport: Viewport = {
+  colorScheme: "only light",
+  themeColor: "#1729A6",
 };
 
 type SiteLayoutProps = {

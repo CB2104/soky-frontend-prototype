@@ -53,11 +53,11 @@ const Navbar = ({ whatsappUrl }: NavbarProps) => {
           : isCartPage ? "border-white/10 bg-soky-navy shadow-lg shadow-soky-navy/20" : "border-white/10 bg-soky-blue shadow-lg shadow-soky-navy/20",
       )}
     >
-      <div className="soky-container flex h-full items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+      <div className="soky-container flex h-full items-center justify-between gap-4 max-[359px]:!w-[calc(100%-24px)] max-[359px]:gap-2 max-[359px]:pr-3">
+        <div className="flex min-w-0 items-center gap-2 max-[359px]:gap-1">
           {!isCartPage ? <MobileNavDrawer items={navLinks} whatsappUrl={whatsappUrl} /> : null}
           <Link href="/" aria-label="Ir al inicio">
-            <AnimatedSokyLogo className="h-12 w-auto [@media(max-height:500px)_and_(orientation:landscape)]:h-10" />
+            <AnimatedSokyLogo className="h-12 w-auto max-[359px]:h-[40px] [@media(max-height:500px)_and_(orientation:landscape)]:h-10" />
           </Link>
         </div>
         {!isCartPage ? <nav

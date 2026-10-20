@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Container } from "@/components/ui/container";
 import { getPublicSettings } from "@/features/settings/api";
 import { getAllProducts } from "@/features/products/api";
@@ -6,7 +6,18 @@ import { mapProductToCard } from "@/features/products/mappers";
 import { mapSettingsToCart } from "@/features/cart/mappers";
 import { CartPageContent } from "@/features/cart/components/page/CartPageContent";
 
-export const metadata:Metadata = {title:"Carrito",description:"Revisa tu pedido SOKY, consulta el importe referencial y continúa por WhatsApp.",robots:{index:false,follow:false}};
+export const metadata: Metadata = {
+  title: "Carrito",
+  description:
+    "Revisa tu pedido SOKY, consulta el importe referencial y continúa por WhatsApp.",
+  robots: { index: false, follow: false },
+};
+
+export const viewport: Viewport = {
+  colorScheme: "only light",
+  themeColor: "#07054A",
+};
+
 export default async function CartPage() {
   const [settings,groups] = await Promise.all([getPublicSettings(),Promise.allSettled([getAllProducts({categorySlug:"entradas"}),getAllProducts({categorySlug:"bebidas"})])]);
   const categories = groups.map(result=>result.status === "fulfilled" ? result.value : []);
