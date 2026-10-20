@@ -958,3 +958,15 @@
     }
   }
 }
+
+/* R9: el contenido rellena la altura asignada por la fila del grid. */
+@media (max-width: 1023.98px) {
+  .card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .link {
+    flex: 1;
+  }
+}
