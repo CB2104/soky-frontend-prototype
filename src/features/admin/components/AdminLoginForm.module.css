@@ -1,0 +1,99 @@
+.panel {
+  display: grid;
+  width: min(100%, 440px);
+  gap: 18px;
+  padding: clamp(22px, 5vw, 34px);
+  border: 1px solid #e0e2ea;
+  border-radius: 18px;
+  background: #fffdf7;
+  box-shadow: 0 12px 36px rgb(7 5 74 / 0.08);
+}
+
+.logo {
+  display: block;
+  width: 92px;
+  height: auto;
+  margin-bottom: 1px;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #b43c00;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 5px 0 0;
+  color: #07054a;
+  font-size: clamp(1.75rem, 6vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+}
+
+.description {
+  margin: 8px 0 0;
+  color: #59515c;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.demoNotice {
+  display: grid;
+  gap: 4px;
+  padding: 13px 14px;
+  border: 1px solid #f0d0b5;
+  border-radius: 11px;
+  background: #fff6ec;
+  color: #713211;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.demoNotice strong {
+  color: #55240c;
+  font-weight: 700;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+  color: #282332;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.input {
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 13px;
+  border: 1px solid #b8bdce;
+  border-radius: 9px;
+  background: #fffdf7;
+  color: #141118;
+  font: 500 16px/1.4 var(--font-montserrat), "Segoe UI", Arial, sans-serif;
+}
+
+.input:focus-visible {
+  border-color: #1729a6;
+  outline: 3px solid rgb(23 41 166 / 0.2);
+  outline-offset: 1px;
+}
+
+.error {
+  margin: -4px 0 0;
+  color: #8b2c23;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.panel button:focus-visible {
+  outline: 3px solid #1729a6;
+  outline-offset: 4px;
+}

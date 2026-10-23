@@ -1,0 +1,7 @@
+.dialog { width: min(560px, calc(100% - 32px)); max-height: calc(100dvh - 48px); margin: auto; overflow: auto; padding: 24px; border: 1px solid #d7dced; border-radius: 14px; background: #fffdf7; color: #141118; }
+.dialog::backdrop { background: rgb(7 5 74 / .5); }
+.dialog h2 { color: #07054a; font-size: 1.35rem; font-weight: 700; }
+.dialog p { margin: 16px 0; line-height: 1.6; }
+.choice { display: flex; align-items: start; gap: 12px; margin: 20px 0; line-height: 1.5; }
+.choice input { flex: 0 0 auto; margin-top: 5px; }
+.actions { display: flex; flex-wrap: wrap; justify-content: end; gap: 12px; margin-top: 24px; }

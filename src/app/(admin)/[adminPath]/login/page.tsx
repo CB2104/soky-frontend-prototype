@@ -6,9 +6,5 @@ type AdminLoginPageProps = {
 
 export default async function AdminLoginPage({ params }: AdminLoginPageProps) {
   const { adminPath } = await params;
-  return (
-    <div className="grid min-h-[calc(100dvh-6rem)] place-items-center">
-      <AdminLoginForm adminPath={adminPath} />
-    </div>
-  );
+  return <AdminLoginForm adminPath={adminPath} />;
 }
