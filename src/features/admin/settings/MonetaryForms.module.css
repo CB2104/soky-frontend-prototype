@@ -1,0 +1,14 @@
+.stack { display:grid; gap:20px; min-width:0; }
+.actions { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+.preview { padding:16px; background:#E5EAFA; border-radius:12px; display:grid; gap:12px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.error { color:#A63A2F; font-weight:600; overflow-wrap:anywhere; }
+.notice { padding:12px; border-left:4px solid #B43C00; background:#FFF3E2; overflow-wrap:anywhere; }
+.check { display:flex; align-items:flex-start; gap:12px; line-height:1.6; padding:10px 0; }
+.check input { width:22px; height:22px; margin-top:2px; flex-shrink:0; accent-color:#1729A6; }
+.fieldset { border:0; padding:0; margin:0; min-width:0; display:grid; gap:20px; }
+.prices { display:grid; gap:12px; padding:0; list-style:none; }
+.price { display:grid; gap:8px; padding:12px 0; border-bottom:1px solid #b9becf; }
+.price small { display:block; color:#59515C; }
+.summary { max-height:400px; overflow:auto; padding:12px 20px; border:1px solid #b9becf; border-radius:8px; }
+.summary li { margin:8px 0; }
+@media(min-width:768px) { .price { grid-template-columns:minmax(0,1fr) minmax(150px,220px) minmax(130px,180px); align-items:center; gap:16px; } }
