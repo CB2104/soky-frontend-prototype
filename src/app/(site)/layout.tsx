@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import "lenis/dist/lenis.css";
 import { getPublicSettings } from "@/features/settings/api";
 import { SiteFooter } from "@/components/layout/footer/SiteFooter";
 import Navbar from "@/components/layout/Navbar";
@@ -7,6 +8,7 @@ import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import CartDrawer from "@/features/cart/components/CartDrawer";
 import { CartCatalogSync } from "@/features/cart/components/CartCatalogSync";
 import { ContactSpeedDial } from "@/features/contact/components/ContactSpeedDial";
+import { SmoothScroll } from "@/providers/SmoothScroll";
 import TransitionProvider from "@/providers/TransitionProvider";
 import { DemoRevisionSync } from "@/features/demo/DemoRevisionSync";
 
@@ -47,6 +49,7 @@ export default async function SiteLayout({ children, product }: SiteLayoutProps)
   return (
     <TransitionProvider>
       <div data-site-loading-root className="min-h-dvh bg-soky-paper text-soky-ink">
+        <SmoothScroll />
         <DemoRevisionSync enabled={!!settings.demoPreview} />
         <Navbar whatsappUrl={whatsappUrl} />
         {children}
