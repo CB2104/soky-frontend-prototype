@@ -80,12 +80,18 @@ export function getProductBySlug(slug: string, scenario?: string) {
 export async function getAllProducts(
   params: Omit<GetProductsParams, "page" | "limit"> = {},
 ): Promise<ProductDto[]> {
-  const first = await getProducts({ ...params, page: 1, limit: 48 });
-  const remaining = await Promise.all(
-    Array.from({ length: Math.max(0, first.meta.pageCount - 1) }, (_, index) =>
-      getProducts({ ...params, page: index + 2, limit: 48 }),
-    ),
-  );
-
-  return first.data.concat(...remaining.map((response) => response.data));
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const first = await getProducts({ ...params, page: 1, limit: 48 });
+    const remaining = await Promise.all(
+      Array.from({ length: Math.max(0, first.meta.pageCount - 1) }, (_, index) =>
+        getProducts({ ...params, page: index + 2, limit: 48 }),
+      ),
+    );
+    // A currency/catalog transaction may happen between paginated requests.
+    // Never publish an assembled list containing snapshots from two revisions.
+    if (first.meta.revision === undefined || remaining.every(page => page.meta.revision === first.meta.revision)) {
+      return first.data.concat(...remaining.map(response => response.data));
+    }
+  }
+  throw new Error("El catálogo está cambiando. Vuelve a cargar los productos.");
 }

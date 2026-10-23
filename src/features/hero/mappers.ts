@@ -346,6 +346,8 @@ function mapRotatorImages(
         alt,
         name: image.name?.trim() || null,
         priceLabel: image.priceLabel?.trim() || null,
+        priceAmount: image.priceAmount,
+        priceCurrency: image.priceCurrency,
       },
     ];
   });

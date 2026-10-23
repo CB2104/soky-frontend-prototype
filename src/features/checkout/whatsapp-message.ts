@@ -1,5 +1,6 @@
 import type { CartQuoteResponseDto, CreateOrderIntentRequestDto } from "@/contracts/api";
 import { formatCartMoney } from "@/lib/format-cart-money";
+import { formatRateDate } from "@/features/exchange-rates/manual-rate";
 
 export function buildCheckoutMessage(quote: CartQuoteResponseDto, request: CreateOrderIntentRequestDto): string {
   const currency = quote.rateSnapshot.baseCurrency;
@@ -14,7 +15,7 @@ export function buildCheckoutMessage(quote: CartQuoteResponseDto, request: Creat
   lines.push("", `Subtotal de productos: ${formatCartMoney(subtotal ?? "0",currency)}`,
     `Equivalente referencial: ${formatCartMoney(quote.totals.totalVes,"VES")}`,
     `Tasa utilizada: ${quote.rateSnapshot.rate} Bs./${currency}`);
-  if (quote.rateSnapshot.source === "MANUAL") lines.push("Tasa manual; fecha efectiva por confirmar.");
+  if (quote.rateSnapshot.source === "MANUAL") lines.push(`Tasa manual. Referencia: ${formatRateDate(quote.rateSnapshot.fetchedAt)} (Caracas).`);
   if (quote.rateSnapshot.warning) lines.push(quote.rateSnapshot.warning);
   lines.push("", `Modalidad: ${request.fulfillmentType === "DELIVERY" ? "Delivery" : "Retiro en el local"}`);
   if (request.customerName?.trim()) lines.push(`Nombre: ${request.customerName.trim()}`);

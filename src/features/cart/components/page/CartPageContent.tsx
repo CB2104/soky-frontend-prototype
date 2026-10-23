@@ -12,6 +12,8 @@ import { useCartStore } from "../../store";
 import { formatCartMoney, mapCartItem } from "../../mappers";
 import type { CartSettingsViewModel } from "../../mappers";
 import { formatMoneyCents } from "@/lib/money";
+import { getEstimatedCartTotals } from "../../cartTotals";
+import { formatRateDate } from "@/features/exchange-rates/manual-rate";
 import { CartPageItemRow } from "./CartPageItemRow";
 import { CartCheckoutForm } from "./CartCheckoutForm";
 import { CartOrderSummary } from "./CartOrderSummary";
@@ -39,8 +41,10 @@ export function CartPageContent({settings,recommendations}:{settings:CartSetting
   const units = items.reduce((total,item)=>total+item.quantity,0);
   const selected = new Set(items.map(item=>item.id));
   const availableRecommendations = recommendations.filter(product=>product.isAvailable && product.priceCurrency === settings.currency && !selected.has(product.id)).slice(0,4);
-  const subtotal = settings.currency === "EUR" ? quote?.totals.subtotalEur : quote?.totals.subtotalUsd;
-  const rateDate = quote && Number.isFinite(Date.parse(quote.rateSnapshot.fetchedAt)) ? new Intl.DateTimeFormat("es-VE",{dateStyle:"short",timeStyle:"short"}).format(new Date(quote.rateSnapshot.fetchedAt)) : "Fecha de consulta no disponible";
+  const estimated = getEstimatedCartTotals(checkout.items, checkout.rate, checkout.catalogStatus === "ready");
+  const baseTotals = quote?.totals ?? estimated;
+  const subtotal = settings.currency === "EUR" ? baseTotals.subtotalEur : baseTotals.subtotalUsd;
+  const rateDate = quote ? formatRateDate(quote.rateSnapshot.fetchedAt) : "Fecha de referencia no disponible";
   let status:React.ReactNode;
   if (checkout.catalogStatus !== "ready") status = <>Verificando productos y precios…{checkout.catalogStatus === "error" ? <Button variant="tertiary" type="button" onClick={retryCatalog}>Reintentar productos</Button> : null}</>;
   else if (items.some(item=>!!item.issue)) status = <>Revisa o elimina los productos marcados para continuar.<Button variant="tertiary" type="button" onClick={retryCatalog}>Actualizar productos</Button></>;
@@ -63,8 +67,8 @@ export function CartPageContent({settings,recommendations}:{settings:CartSetting
         <p className={styles.feedback} ref={feedbackRef} role="status" aria-live="polite" tabIndex={-1}>{feedback?.message}</p>
         <CartCheckoutForm settings={settings} form={checkout.form} onChange={checkout.updateForm} addressError={checkout.addressError}/>
       </div>
-      <CartOrderSummary summary={{subtotal:subtotal ? formatCartMoney(subtotal,settings.currency) : "Por confirmar",equivalent:quote ? formatCartMoney(quote.totals.totalVes,"VES") : "Por confirmar",units,rate:quote ? `${quote.rateSnapshot.rate} Bs./${settings.currency} · Consulta: ${rateDate}` : "Tasa por confirmar",source:quote?.rateSnapshot.source === "MANUAL" ? "TASA MANUAL" : quote ? "TASA DE REFERENCIA" : "",warnings:[...new Set([...(quote?.warnings ?? []),...(quote?.rateSnapshot.source === "MANUAL" ? ["Tasa manual; fecha efectiva por confirmar."] : [])])],delivery:checkout.form.fulfillmentType === "DELIVERY"}}
-        status={status} preview={checkout.preview} canSubmit={checkout.canSubmit} pending={checkout.isSubmitting} onSubmit={()=>void checkout.submit()} error={checkout.intentError} fallbackUrl={checkout.intentResponse?.whatsappUrl} finalMessage={checkout.intentResponse?.whatsappMessage} onFallback={()=>{if (checkout.intentResponse) checkout.recordWhatsapp(checkout.intentResponse.id);}}/>
+      <CartOrderSummary summary={{subtotal:subtotal ? formatCartMoney(subtotal,settings.currency) : "Por confirmar",equivalent:quote ? formatCartMoney(quote.totals.totalVes,"VES") : "Por confirmar",units,rate:quote ? `${quote.rateSnapshot.rate} Bs./${settings.currency} · Referencia: ${rateDate} (Caracas)` : "Tasa por confirmar",source:quote?.rateSnapshot.source === "MANUAL" ? "TASA MANUAL" : quote ? "TASA DE REFERENCIA" : "",warnings:[...new Set(quote?.warnings ?? [])],delivery:checkout.form.fulfillmentType === "DELIVERY"}}
+        demoPreview={settings.demoPreview} status={status} preview={checkout.preview} canSubmit={checkout.canSubmit} pending={checkout.isSubmitting} onSubmit={()=>void checkout.submit()} error={checkout.intentError} fallbackUrl={checkout.intentResponse?.whatsappUrl} finalMessage={checkout.intentResponse?.whatsappMessage} onFallback={()=>{if (checkout.intentResponse) checkout.recordWhatsapp(checkout.intentResponse.id);}}/>
     </div>}
   </div>;
 }

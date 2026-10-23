@@ -1,32 +1,11 @@
-import { revalidateTag } from "next/cache";
-import { NextResponse } from "next/server";
-import type { AdminSettingsUpdateDto } from "@/contracts/api";
-import { mockSettings } from "@/mock/db";
-import { errorResponse } from "@/mock/helpers";
+import { handleDemoRequest } from "@/mock/demo-api";
 
-function requireAuth(request: Request) {
-  return request.headers.get("authorization")?.startsWith("Bearer ");
-}
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  if (!requireAuth(request)) {
-    return errorResponse("UNAUTHORIZED", "Sesión requerida.", 401);
-  }
-
-  return NextResponse.json(mockSettings);
+  return handleDemoRequest(request, "admin/settings");
 }
-
 export async function PATCH(request: Request) {
-  if (!requireAuth(request)) {
-    return errorResponse("UNAUTHORIZED", "Sesión requerida.", 401);
-  }
-
-  const body = (await request.json().catch(() => null)) as AdminSettingsUpdateDto | null;
-
-  if (body) {
-    Object.assign(mockSettings, body);
-    revalidateTag("soky-menu-settings", { expire: 0 });
-  }
-
-  return NextResponse.json(mockSettings);
+  return handleDemoRequest(request, "admin/settings");
 }

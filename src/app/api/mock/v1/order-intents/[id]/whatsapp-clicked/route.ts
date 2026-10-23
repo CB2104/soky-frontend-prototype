@@ -1,30 +1,9 @@
-import { NextResponse } from "next/server";
-import type { WhatsappClickedResponseDto } from "@/contracts/api";
-import { mockOrderIntents } from "@/mock/db";
-import { applyScenarioDelay, errorResponse, getScenario } from "@/mock/helpers";
+import { handleDemoRequest } from "@/mock/demo-api";
 
-type RouteContext = {
-  params: Promise<{ id: string }>;
-};
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-export async function POST(request: Request, context: RouteContext) {
-  const scenario = getScenario(request);
-  await applyScenarioDelay(scenario);
-
-  const { id } = await context.params;
-  const order = mockOrderIntents.find((item) => item.id === id);
-
-  if (!order) {
-    return errorResponse("NOT_FOUND", "Pedido no encontrado.", 404);
-  }
-
-  order.whatsappClickedAt = new Date().toISOString();
-
-  const response: WhatsappClickedResponseDto = {
-    id: order.id,
-    status: order.status,
-    whatsappClickedAt: order.whatsappClickedAt,
-  };
-
-  return NextResponse.json(response);
+export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
+  const params = await context.params;
+  return handleDemoRequest(request, `order-intents/${encodeURIComponent(params.id)}/whatsapp-clicked`);
 }

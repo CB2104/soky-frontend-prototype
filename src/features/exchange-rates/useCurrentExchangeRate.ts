@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import type { ExchangeRateDto } from "@/contracts/api";
 import { getCurrentExchangeRate } from "./api";
+import { subscribeMonetaryChange } from "./change-events";
+import { RATE_REVIEW_MS } from "./manual-rate";
 
 type RateState = {
   rate: ExchangeRateDto | null;
@@ -21,12 +23,18 @@ export function useCurrentExchangeRate(): RateState & { retry: () => void } {
   useEffect(() => {
     let disposed = false;
     let requestId = 0;
+    let expiryTimer: ReturnType<typeof setTimeout> | undefined;
 
     function refresh() {
       const currentId = ++requestId;
       void getCurrentExchangeRate().then(
         (rate) => {
-          if (!disposed && currentId === requestId) setState({ rate, status: "ready" });
+          if (!disposed && currentId === requestId) {
+            clearTimeout(expiryTimer);
+            setState({ rate, status: "ready" });
+            const remaining = Date.parse(rate.fetchedAt) + RATE_REVIEW_MS - Date.now();
+            if (!rate.stale && remaining > 0) expiryTimer = setTimeout(onFocus, remaining);
+          }
         },
         () => {
           if (!disposed && currentId === requestId) setState({ rate: null, status: "error" });
@@ -41,8 +49,11 @@ export function useCurrentExchangeRate(): RateState & { retry: () => void } {
 
     refresh();
     window.addEventListener("focus", onFocus);
+    const unsubscribe = subscribeMonetaryChange(onFocus);
     return () => {
       disposed = true;
+      clearTimeout(expiryTimer);
+      unsubscribe();
       window.removeEventListener("focus", onFocus);
     };
   }, [refreshVersion]);

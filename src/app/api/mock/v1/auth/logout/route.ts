@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { handleDemoRequest } from "@/mock/demo-api";
 
-export async function POST() {
-  const response = new NextResponse(null, { status: 204 });
-  response.cookies.delete("soky_refresh");
-  return response;
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+export async function POST(request: Request) {
+  return handleDemoRequest(request, "auth/logout");
 }

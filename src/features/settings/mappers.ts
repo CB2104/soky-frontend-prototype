@@ -91,10 +91,11 @@ export function mapPublicSettingsToContact(
         ? embed.href
         : undefined,
     whatsappUrl:
-      /^\d{10,15}$/.test(phone)
+      /^\d{8,15}$/.test(phone)
         ? buildWhatsAppUrl(
             phone,
             "Hola SOKY, quiero hacer un pedido para delivery o retiro.",
+            settings.demoPreview,
           )
         : undefined,
     instagramUrl: instagramIsValid ? instagram?.href : undefined,

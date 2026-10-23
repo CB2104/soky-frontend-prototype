@@ -80,6 +80,7 @@ export default async function HomePage() {
   const whatsappUrl = buildWhatsAppUrl(
     settings.whatsappPhone,
     "Hola SOKY, quiero ver las promos disponibles.",
+    settings.demoPreview,
   );
 
   const heroFallbackDescription =

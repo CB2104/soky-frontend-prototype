@@ -6,6 +6,7 @@ export { formatCartMoney } from "@/lib/format-cart-money";
 import { formatCartMoney } from "@/lib/format-cart-money";
 
 export type CartSettingsViewModel = {
+  demoPreview?: boolean;
   currency: PriceCurrency;
   pickupEnabled: boolean;
   deliveryEnabled: boolean;
@@ -13,7 +14,7 @@ export type CartSettingsViewModel = {
 };
 
 export function mapSettingsToCart(settings: PublicSettingsDto): CartSettingsViewModel {
-  return {currency:settings.defaultCurrency,pickupEnabled:settings.pickupEnabled,
+  return {demoPreview:settings.demoPreview,currency:settings.defaultCurrency,pickupEnabled:settings.pickupEnabled,
     deliveryEnabled:settings.deliveryEnabled,minimumOrderCents:parseMoneyCents(settings.minimumOrderAmount ?? "0") ?? 0};
 }
 

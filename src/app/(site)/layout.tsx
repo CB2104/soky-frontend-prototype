@@ -8,6 +8,7 @@ import CartDrawer from "@/features/cart/components/CartDrawer";
 import { CartCatalogSync } from "@/features/cart/components/CartCatalogSync";
 import { ContactSpeedDial } from "@/features/contact/components/ContactSpeedDial";
 import TransitionProvider from "@/providers/TransitionProvider";
+import { DemoRevisionSync } from "@/features/demo/DemoRevisionSync";
 
 export const dynamic = "force-dynamic";
 
@@ -40,11 +41,13 @@ export default async function SiteLayout({ children, product }: SiteLayoutProps)
   const whatsappUrl = buildWhatsAppUrl(
     settings.whatsappPhone,
     "Hola SOKY, quiero hacer un pedido.",
+    settings.demoPreview,
   );
 
   return (
     <TransitionProvider>
       <div data-site-loading-root className="min-h-dvh bg-soky-paper text-soky-ink">
+        <DemoRevisionSync enabled={!!settings.demoPreview} />
         <Navbar whatsappUrl={whatsappUrl} />
         {children}
         {product}

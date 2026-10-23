@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { getAllProducts } from "@/features/products/api";
 import { useCartStore } from "../store";
 import { useCartHydration } from "../useCartHydration";
+import { subscribeMonetaryChange } from "@/features/exchange-rates/change-events";
 
 export function CartCatalogSync() {
   const hydrated = useCartHydration();
@@ -36,8 +37,10 @@ export function CartCatalogSync() {
 
     refresh();
     window.addEventListener("focus", refresh);
+    const unsubscribe = subscribeMonetaryChange(refresh);
     return () => {
       disposed = true;
+      unsubscribe();
       window.removeEventListener("focus", refresh);
     };
   }, [hydrated, ids, isOpen, refreshKey]);

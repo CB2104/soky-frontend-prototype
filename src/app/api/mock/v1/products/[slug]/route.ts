@@ -1,24 +1,9 @@
-import { NextResponse } from "next/server";
-import { applyScenarioDelay, errorResponse, getProductBySlug, getScenario } from "@/mock/helpers";
+import { handleDemoRequest } from "@/mock/demo-api";
 
-type RouteContext = {
-  params: Promise<{ slug: string }>;
-};
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-export async function GET(request: Request, context: RouteContext) {
-  const scenario = getScenario(request);
-  await applyScenarioDelay(scenario);
-
-  if (scenario === "error") {
-    return errorResponse("INTERNAL_ERROR", "No se pudo cargar el producto.", 500);
-  }
-
-  const { slug } = await context.params;
-  const product = getProductBySlug(slug);
-
-  if (!product || scenario === "empty") {
-    return errorResponse("PRODUCT_NOT_FOUND", "Producto no encontrado.", 404);
-  }
-
-  return NextResponse.json(product);
+export async function GET(request: Request, context: { params: Promise<{ slug: string }> }) {
+  const params = await context.params;
+  return handleDemoRequest(request, `products/${encodeURIComponent(params.slug)}`);
 }

@@ -88,6 +88,9 @@ export type SliderRotatorImageSourcesDto =
   | LegacyHeroRotatorImageSources;
 
 export type SliderRotatorImageDto = SliderRotatorImageSourcesDto & {
+  productId?: string;
+  priceAmount?: string;
+  priceCurrency?: PriceCurrency;
   alt: string;
   name?: string;
   priceLabel?: string;
@@ -214,6 +217,7 @@ export type SliderFramedMediaDto = SliderBaseMediaDto & {
 export type SliderMediaDto = SliderCutoutMediaDto | SliderFramedMediaDto;
 
 type PublicSliderItemBaseDto = {
+  productId?: string;
   id: string;
   title: string;
   description?: string;
@@ -279,6 +283,7 @@ export type ApiErrorResponse = {
 export type PaginatedResponse<T> = {
   data: T[];
   meta: {
+    revision?: number;
     page: number;
     limit: number;
     total: number;
@@ -380,6 +385,7 @@ export type LegacySliderItemDto = {
 export type SliderItemDto = LegacySliderItemDto;
 
 export type PublicSettingsDto = {
+  demoPreview?: boolean;
   businessName: string;
   slogan?: string;
   whatsappPhone: string;
@@ -400,11 +406,15 @@ export type PublicSettingsDto = {
 };
 
 export type ExchangeRateDto = {
+  id?: string;
+  recordedAt?: string;
+  pendingValidation?: boolean;
   baseCurrency: PriceCurrency;
   targetCurrency: "VES";
   rate: string;
   mode: ExchangeRateMode;
   source: ExchangeRateSource;
+  /** Reference time in UTC for manual rates; does not imply a provider fetch. */
   fetchedAt: string;
   stale: boolean;
   warning?: string;
@@ -442,6 +452,8 @@ export type CartQuoteResponseDto = {
 };
 
 export type CreateOrderIntentRequestDto = {
+  expectedRate?: ExchangeRateDto;
+  expectedTotalVes?: string;
   items: { productId: string; quantity: number; notes?: string }[];
   customerName?: string;
   customerPhone?: string;
@@ -451,6 +463,7 @@ export type CreateOrderIntentRequestDto = {
 };
 
 export type CreateOrderIntentResponseDto = {
+  demoPreview?: boolean;
   id: string;
   publicCode: string;
   status: "PENDING_WHATSAPP";
@@ -547,6 +560,7 @@ export type AdminProductCreateDto = {
   featured: boolean;
   tags: string[];
   allergens: string[];
+  details?: ProductDetailsDto;
 };
 
 export type AdminProductUpdateDto = Partial<AdminProductCreateDto>;

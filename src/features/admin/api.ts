@@ -1,142 +1,36 @@
-import type {
-  AdminAnalyticsProductDto,
-  AdminAnalyticsSliderDto,
-  AdminAnalyticsSummaryDto,
-  AdminSliderItemDto,
-  CategoryDto,
-  ExchangeRateDto,
-  OrderIntentConfirmViewDto,
-  PaginatedResponse,
-  ProductDto,
-  PublicSettingsDto,
-  SliderCtaDto,
-  SliderItemDto,
-} from "@/contracts/api";
+import type { DemoSnapshot } from "@/contracts/demo";
 import { apiClient } from "@/lib/api/client";
+import { cookies } from "next/headers";
+import type { AdminAnalyticsProductDto, AdminAnalyticsSliderDto, AdminAnalyticsSummaryDto, AdminSliderItemDto, CategoryDto, ExchangeRateDto, OrderIntentConfirmViewDto, PaginatedResponse, ProductDto, PublicSettingsDto, SliderItemDto } from "@/contracts/api";
+import { requirePageSession, SESSION_COOKIE } from "@/mock/demo-auth";
 
-const adminHeaders = {
-  Authorization: "Bearer mock-access-token",
-};
-
-function getSafeInternalPath(target?: string) {
-  return target?.startsWith("/") ? target : undefined;
+async function adminGet<T>(path: string) {
+  await requirePageSession();
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  return apiClient.get<T>(path, { headers: { Cookie: `${SESSION_COOKIE}=${token}` } });
 }
-
-function getLegacyCtaType(cta?: SliderCtaDto): SliderItemDto["ctaType"] {
-  if (!cta || cta.type === "NONE" || cta.type === "WHATSAPP") {
-    return "NONE";
-  }
-
-  if (cta.type === "PRODUCT" || cta.type === "CATEGORY") {
-    return cta.type;
-  }
-
-  return "CUSTOM_URL";
+export function getAdminProducts(query = "") { return adminGet<PaginatedResponse<ProductDto>>(`/admin/products${query}`); }
+export function getAdminCategories(query = "") { return adminGet<PaginatedResponse<CategoryDto>>(`/admin/categories${query}`); }
+export function getAdminHero() { return adminGet<PaginatedResponse<AdminSliderItemDto>>("/admin/sliders"); }
+// Compatibility for the existing read-only screen. New editors must use getAdminHero.
+export async function getAdminSliders(): Promise<PaginatedResponse<SliderItemDto>> {
+  const source = await getAdminHero();
+  return { ...source, data: source.data.map(slide => ({ id: slide.id, title: slide.title, description: slide.description, imageUrl: slide.desktopImageUrl, imageAlt: slide.imageAlt, ctaLabel: slide.primaryCta?.label, ctaType: slide.primaryCta?.type === "PRODUCT" ? "PRODUCT" : slide.primaryCta?.type === "CATEGORY" ? "CATEGORY" : "NONE", ctaTarget: slide.primaryCta?.target, isActive: slide.status === "ACTIVE", sortOrder: slide.sortOrder })) };
 }
+export function getAdminSettings() { return adminGet<PublicSettingsDto>("/admin/settings"); }
+export function getAdminExchangeRate() { return adminGet<ExchangeRateDto>("/admin/exchange-rates/current"); }
+export function getAdminExchangeRateHistory() { return adminGet<ExchangeRateDto[]>("/admin/exchange-rates/history"); }
+export function getAdminAnalyticsSummary() { return adminGet<AdminAnalyticsSummaryDto>("/admin/analytics/summary"); }
+export function getAdminAnalyticsProducts() { return adminGet<AdminAnalyticsProductDto[]>("/admin/analytics/products"); }
+export function getAdminAnalyticsSliders() { return adminGet<AdminAnalyticsSliderDto[]>("/admin/analytics/sliders"); }
+export function getAdminOrderIntents(query = "") { return adminGet<PaginatedResponse<OrderIntentConfirmViewDto>>(`/admin/order-intents${query}`); }
+export function getAdminOrderIntent(id: string) { return adminGet<OrderIntentConfirmViewDto & { createdAt?: string }>(`/admin/order-intents/${encodeURIComponent(id)}`); }
 
-function getLegacyCtaTarget(cta?: SliderCtaDto) {
-  if (!cta || cta.type === "NONE" || cta.type === "WHATSAPP") {
-    return undefined;
-  }
-
-  if (cta.type === "PRODUCT" || cta.type === "CATEGORY") {
-    return cta.target;
-  }
-
-  if (cta.type === "MENU") {
-    return "/menu";
-  }
-
-  if (cta.type === "CART") {
-    return "/cart";
-  }
-
-  if (cta.type === "LOCATION") {
-    return getSafeInternalPath(cta.target) ?? "/#ubicacion";
-  }
-
-  return getSafeInternalPath(cta.target);
-}
-
-/** @deprecated Temporary adapter until admin UI consumes AdminSliderItemDto directly. */
-export function mapAdminSliderToLegacySlider(slider: AdminSliderItemDto): SliderItemDto {
-  return {
-    id: slider.id,
-    title: slider.title,
-    description: slider.description,
-    imageUrl: slider.desktopImageUrl,
-    imageAlt: slider.imageAlt,
-    ctaLabel: slider.primaryCta?.label,
-    ctaType: getLegacyCtaType(slider.primaryCta),
-    ctaTarget: getLegacyCtaTarget(slider.primaryCta),
-    isActive: slider.status === "ACTIVE",
-    sortOrder: slider.sortOrder,
-    createdAt: slider.createdAt,
-    updatedAt: slider.updatedAt,
-  };
-}
-
-export function getAdminProducts() {
-  return apiClient.get<PaginatedResponse<ProductDto>>("/admin/products", {
-    headers: adminHeaders,
-  });
-}
-
-export function getAdminCategories() {
-  return apiClient.get<PaginatedResponse<CategoryDto>>("/admin/categories", {
-    headers: adminHeaders,
-  });
-}
-
-export async function getAdminSliders() {
-  const response = await apiClient.get<PaginatedResponse<AdminSliderItemDto>>("/admin/sliders", {
-    headers: adminHeaders,
-  });
-
-  return {
-    ...response,
-    data: response.data.map(mapAdminSliderToLegacySlider),
-  };
-}
-
-export function getAdminSettings() {
-  return apiClient.get<PublicSettingsDto>("/admin/settings", {
-    headers: adminHeaders,
-  });
-}
-
-export function getAdminExchangeRate() {
-  return apiClient.get<ExchangeRateDto>("/admin/exchange-rates/current", {
-    headers: adminHeaders,
-  });
-}
-
-export function getAdminExchangeRateHistory() {
-  return apiClient.get<ExchangeRateDto[]>("/admin/exchange-rates/history", {
-    headers: adminHeaders,
-  });
-}
-
-export function getAdminAnalyticsSummary() {
-  return apiClient.get<AdminAnalyticsSummaryDto>("/admin/analytics/summary", {
-    headers: adminHeaders,
-  });
-}
-
-export function getAdminAnalyticsProducts() {
-  return apiClient.get<AdminAnalyticsProductDto[]>("/admin/analytics/products", {
-    headers: adminHeaders,
-  });
-}
-
-export function getAdminAnalyticsSliders() {
-  return apiClient.get<AdminAnalyticsSliderDto[]>("/admin/analytics/sliders", {
-    headers: adminHeaders,
-  });
-}
-
-export function getAdminOrderIntents() {
-  return apiClient.get<PaginatedResponse<OrderIntentConfirmViewDto>>("/admin/order-intents", {
-    headers: adminHeaders,
-  });
+export function getAdminWorkspace() { return adminGet<DemoSnapshot>("/admin/demo/workspace"); }
+export async function saveAdmin(path: string, body: Record<string, unknown>, revision: number, method: "POST" | "PATCH" | "DELETE" = "PATCH") {
+  const headers = { "If-Match": String(revision) };
+  if (method === "DELETE") return apiClient.delete(path, { headers });
+  const payload = { ...body, expectedRevision: revision };
+  if (method === "POST") return apiClient.post(path, payload);
+  return apiClient.patch(path, payload);
 }

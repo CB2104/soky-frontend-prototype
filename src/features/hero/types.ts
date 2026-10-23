@@ -1,4 +1,5 @@
 import type {
+  PriceCurrency,
   HeroResponsiveSources,
   SliderBackgroundBleed,
   SliderBackgroundColorToken,
@@ -28,6 +29,8 @@ export type HeroBadgeTone = "promo" | "new" | "cold" | "neutral";
 export type HeroMediaMode = SliderMediaMode;
 
 export type HeroRotatorImage = {
+  priceAmount?: string;
+  priceCurrency?: PriceCurrency;
   src: string;
   alt: string;
   name: string | null;

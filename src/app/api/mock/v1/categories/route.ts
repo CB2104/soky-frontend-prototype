@@ -1,21 +1,8 @@
-import { NextResponse } from "next/server";
-import { mockCategories } from "@/mock/db";
-import { applyScenarioDelay, errorResponse, getScenario } from "@/mock/helpers";
+import { handleDemoRequest } from "@/mock/demo-api";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const scenario = getScenario(request);
-  await applyScenarioDelay(scenario);
-
-  if (scenario === "error") {
-    return errorResponse("INTERNAL_ERROR", "No se pudieron cargar las categorías.", 500);
-  }
-
-  const categories =
-    scenario === "empty"
-      ? []
-      : mockCategories
-          .filter((category) => category.isActive)
-          .toSorted((a, b) => a.sortOrder - b.sortOrder);
-
-  return NextResponse.json(categories);
+  return handleDemoRequest(request, "categories");
 }

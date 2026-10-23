@@ -58,7 +58,8 @@ export function useCheckout(settings:CartSettingsViewModel) {
     const timer = window.setTimeout(()=>{
       void quoteCart({items:quoteItems,fulfillmentType:form.fulfillmentType}).then(response=>{
         if (disposed || currentKeys.current.quoteKey !== requestedKey) return;
-        if (!isUsableExchangeRate(response.rateSnapshot,settings.currency) || response.rateSnapshot.rate !== rate?.rate) {
+        if (!isUsableExchangeRate(response.rateSnapshot,settings.currency) || response.rateSnapshot.rate !== rate?.rate
+          || response.rateSnapshot.id !== rate?.id || response.rateSnapshot.fetchedAt !== rate?.fetchedAt) {
           setQuoteRecord({key:requestedKey,error:"La tasa cambió. Actualiza la tasa para calcular de nuevo."});
           return;
         }
@@ -68,14 +69,14 @@ export function useCheckout(settings:CartSettingsViewModel) {
       });
     },180);
     return ()=>{disposed = true;window.clearTimeout(timer);};
-  },[canQuote,quoteKey,quoteItems,form.fulfillmentType,settings.currency,rate?.rate]);
+  },[canQuote,quoteKey,quoteItems,form.fulfillmentType,settings.currency,rate?.rate,rate?.id,rate?.fetchedAt]);
 
   const quote = canQuote && quoteRecord?.key === quoteKey ? quoteRecord.quote ?? null : null;
   const quoteError = quoteRecord?.key === quoteKey ? quoteRecord.error : undefined;
   const subtotal = quote ? parseMoneyCents((settings.currency === "EUR" ? quote.totals.subtotalEur : quote.totals.subtotalUsd) ?? "") : null;
   const belowMinimum = subtotal !== null && subtotal < settings.minimumOrderCents;
   const canSubmit = !!quote && quote.invalidItems.length === 0 && subtotal !== null && !belowMinimum && modeEnabled;
-  const request:CreateOrderIntentRequestDto = {items:quoteItems,fulfillmentType:form.fulfillmentType,
+  const request:CreateOrderIntentRequestDto = {items:quoteItems,fulfillmentType:form.fulfillmentType,expectedRate:quote?.rateSnapshot,expectedTotalVes:quote?.totals.totalVes,
     customerName:form.customerName.trim() || undefined,deliveryAddress:form.fulfillmentType === "DELIVERY" ? form.deliveryAddress.trim() : undefined,notes:form.notes.trim() || undefined};
   const preview = quote ? buildCheckoutMessage(quote,request) : "El mensaje estará disponible cuando terminemos de verificar el pedido.";
   const intent = intentRecord?.key === intentKey ? intentRecord : null;
@@ -103,7 +104,9 @@ export function useCheckout(settings:CartSettingsViewModel) {
     const submittedRevision = cartRevision;
     const submittedCatalogRevision = catalogRevision;
     let popup:Window|null = null;
-    try { popup = window.open("about:blank","_blank"); if (popup) {popup.opener = null;popup.document.body.textContent = "Preparando tu pedido SOKY…";} } catch { popup = null; }
+    if (!settings.demoPreview) {
+      try { popup = window.open("about:blank","_blank"); if (popup) {popup.opener = null;popup.document.body.textContent = "Preparando tu pedido SOKY…";} } catch { popup = null; }
+    }
     activePopup.current = popup;
     setIntentRecord({key:submittedKey,pending:true});
     safeTrack("checkout_started");
@@ -112,6 +115,12 @@ export function useCheckout(settings:CartSettingsViewModel) {
       const current = useCartStore.getState();
       if (requestId !== intentId.current || currentKeys.current.intentKey !== submittedKey
         || current.cartRevision !== submittedRevision || current.catalogRevision !== submittedCatalogRevision) {popup?.close();return;}
+      if (response.demoPreview) {
+        popup?.close();
+        activePopup.current = null;
+        setIntentRecord({key:submittedKey,response});
+        return;
+      }
       const url = new URL(response.whatsappUrl);
       if (url.protocol !== "https:" || url.hostname !== "wa.me") throw new Error("El enlace de WhatsApp no es válido.");
       setIntentRecord({key:submittedKey,response});

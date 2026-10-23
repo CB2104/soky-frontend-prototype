@@ -11,6 +11,8 @@ import type {
 import { isUsableExchangeRate } from "@/features/exchange-rates/rate-validation";
 import { convertMoneyCents, formatMoneyCents, parseMoneyCents } from "@/lib/money";
 import { mockExchangeRate, mockProducts, mockSettings } from "./db";
+import type { DemoState } from "@/contracts/demo";
+import { currentRate } from "./demo-validation";
 
 export type MockScenario =
   | "default"
@@ -59,8 +61,8 @@ export function errorResponse(
 }
 
 export function paginate<T>(items: T[], page: number, limit: number): PaginatedResponse<T> {
-  const safePage = Math.max(1, page);
-  const safeLimit = Math.max(1, limit);
+  const safePage = Number.isSafeInteger(page) ? Math.max(1, page) : 1;
+  const safeLimit = Number.isSafeInteger(limit) ? Math.max(1, Math.min(100, limit)) : 20;
   const start = (safePage - 1) * safeLimit;
   const data = items.slice(start, start + safeLimit);
 
@@ -75,34 +77,36 @@ export function paginate<T>(items: T[], page: number, limit: number): PaginatedR
   };
 }
 
-export function getPublicProducts() {
-  return mockProducts
-    .filter((product) => product.status === "ACTIVE")
-    .toSorted((a, b) => a.sortOrder - b.sortOrder);
+export function getPublicProducts(state?: DemoState) {
+  return (state?.products ?? mockProducts)
+    .filter((product) => product.status === "ACTIVE" && (!state || state.categories.some(category => category.id === product.categoryId && category.isActive)))
+    .toSorted((a, b) => a.sortOrder - b.sortOrder || a.id.localeCompare(b.id));
 }
 
-export function getScenarioRate(scenario: MockScenario): ExchangeRateDto {
+export function getScenarioRate(scenario: MockScenario, state?: DemoState): ExchangeRateDto {
+  const baseRate = state ? currentRate(state) : mockExchangeRate;
   if (scenario === "stale-rate") {
     return {
-      ...mockExchangeRate,
+      ...baseRate,
       stale: true,
       warning: "La tasa debe validarse antes de confirmar el pedido.",
     };
   }
 
-  return mockExchangeRate;
+  return baseRate;
 }
 
 export function getQuoteRateError(
   request: CartQuoteRequestDto,
   scenario: MockScenario = "default",
+  state?: DemoState,
 ): string | null {
-  const rate = getScenarioRate(scenario);
-  if (!isUsableExchangeRate(rate, mockSettings.defaultCurrency)) {
+  const rate = getScenarioRate(scenario, state);
+  if (!isUsableExchangeRate(rate, (state?.settings ?? mockSettings).defaultCurrency)) {
     return "La tasa no está disponible o requiere validación.";
   }
   const mismatch = request.items.some((item) => {
-    const product = mockProducts.find((candidate) => candidate.id === item.productId);
+    const product = (state?.products ?? mockProducts).find((candidate) => candidate.id === item.productId);
     return product?.status === "ACTIVE" && product.isAvailable
       && product.priceCurrency !== rate.baseCurrency;
   });
@@ -112,15 +116,16 @@ export function getQuoteRateError(
 export function buildCartQuote(
   request: CartQuoteRequestDto,
   scenario: MockScenario = "default",
+  state?: DemoState,
 ): CartQuoteResponseDto {
-  const rateError = getQuoteRateError(request, scenario);
+  const rateError = getQuoteRateError(request, scenario, state);
   if (rateError) throw new Error(rateError);
-  const rate = getScenarioRate(scenario);
+  const rate = getScenarioRate(scenario, state);
   const invalidItems: CartQuoteResponseDto["invalidItems"] = [];
   const validItems: CartQuoteResponseDto["items"] = [];
 
   for (const item of request.items) {
-    const product = mockProducts.find((candidate) => candidate.id === item.productId);
+    const product = (state?.products ?? mockProducts).find((candidate) => candidate.id === item.productId);
 
     if (!product) {
       invalidItems.push({ productId: item.productId, reason: "NOT_FOUND" });
@@ -132,7 +137,7 @@ export function buildCartQuote(
       continue;
     }
 
-    if (product.status !== "ACTIVE") {
+    if (product.status !== "ACTIVE" || (state && !state.categories.some(category => category.id === product.categoryId && category.isActive))) {
       invalidItems.push({ productId: item.productId, reason: "INACTIVE" });
       continue;
     }
@@ -170,6 +175,7 @@ export function buildCartQuote(
     .filter((item) => item.lineTotalCurrency === "EUR")
     .reduce((sum, item) => sum + (parseMoneyCents(item.lineTotalAmount) ?? 0), 0);
   const totalVes = validItems.reduce((sum, item) => sum + (parseMoneyCents(item.lineTotalVes) ?? 0), 0);
+  if (![subtotalUsd, subtotalEur, totalVes].every(Number.isSafeInteger)) throw new Error("El total supera el rango seguro.");
 
   return {
     items: validItems,

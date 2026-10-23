@@ -1,22 +1,9 @@
-import { NextResponse } from "next/server";
-import { mockOrderIntents } from "@/mock/db";
-import { errorResponse } from "@/mock/helpers";
+import { handleDemoRequest } from "@/mock/demo-api";
 
-type RouteContext = {
-  params: Promise<{ id: string }>;
-};
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-export async function GET(request: Request, context: RouteContext) {
-  if (!request.headers.get("authorization")?.startsWith("Bearer ")) {
-    return errorResponse("UNAUTHORIZED", "Sesión requerida.", 401);
-  }
-
-  const { id } = await context.params;
-  const order = mockOrderIntents.find((item) => item.id === id);
-
-  if (!order) {
-    return errorResponse("NOT_FOUND", "Pedido no encontrado.", 404);
-  }
-
-  return NextResponse.json(order);
+export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+  const params = await context.params;
+  return handleDemoRequest(request, `admin/order-intents/${encodeURIComponent(params.id)}`);
 }

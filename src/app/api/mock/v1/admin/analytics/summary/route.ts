@@ -1,11 +1,8 @@
-import { NextResponse } from "next/server";
-import { adminAnalyticsSummary } from "@/mock/db";
-import { errorResponse } from "@/mock/helpers";
+import { handleDemoRequest } from "@/mock/demo-api";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  if (!request.headers.get("authorization")?.startsWith("Bearer ")) {
-    return errorResponse("UNAUTHORIZED", "Sesión requerida.", 401);
-  }
-
-  return NextResponse.json(adminAnalyticsSummary);
+  return handleDemoRequest(request, "admin/analytics/summary");
 }

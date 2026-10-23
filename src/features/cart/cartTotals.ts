@@ -40,6 +40,8 @@ export function getEstimatedCartTotals(
     else totalVes += converted;
   }
 
+  if (![subtotalUsd, subtotalEur].every(Number.isSafeInteger)) missingSnapshots = true;
+  if (!Number.isSafeInteger(totalVes)) conversionPending = true;
   return {
     subtotalUsd: !missingSnapshots && subtotalUsd > 0 ? formatMoneyCents(subtotalUsd) : undefined,
     subtotalEur: !missingSnapshots && subtotalEur > 0 ? formatMoneyCents(subtotalEur) : undefined,

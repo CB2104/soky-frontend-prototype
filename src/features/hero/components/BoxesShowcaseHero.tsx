@@ -49,7 +49,7 @@ function getCtaHref(slide: HeroSlideViewModel, whatsappUrl: string) {
   return cta.href ?? "/menu?category=boxes";
 }
 
-function getShowcaseItems(slide: HeroSlideViewModel) {
+function getShowcaseItems(slide: HeroSlideViewModel): HeroResponsiveRotatorImage[] {
   if (slide.rotatorImages?.length) {
     return slide.rotatorImages;
   }
@@ -265,7 +265,8 @@ export function BoxesShowcaseHero({
 
   if (!activeItem) return null;
 
-  const priceAmount = activeItem.priceLabel?.replace("€", "").trim();
+  const priceAmount = activeItem.priceAmount === undefined ? activeItem.priceLabel : new Intl.NumberFormat("es-VE", { maximumFractionDigits: 2, useGrouping: false }).format(Number(activeItem.priceAmount));
+  const priceSymbol = activeItem.priceCurrency === "USD" ? "$" : activeItem.priceCurrency === "EUR" ? "€" : "";
   const titleLines = slide.title.split(/\s+(?=para\b|cada\b)/i);
 
   let badgeWordIndex = 0;
@@ -677,7 +678,7 @@ export function BoxesShowcaseHero({
                       </span>
 
                       <span className="text-[2rem] md:text-[2.75rem] [@media(max-height:500px)_and_(orientation:landscape)]:!text-[1.4rem]">
-                        €
+                        {priceSymbol}
                       </span>
                     </span>
                   </p>
