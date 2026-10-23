@@ -1,0 +1,16 @@
+.scene,
+.empty {
+  width: 100%;
+  min-height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+  background: #fffdf7;
+}
+
+.empty {
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  color: #59515c;
+  font: 500 14px/1.5 var(--font-montserrat), "Segoe UI", Arial, sans-serif;
+}
