@@ -1,5 +1,9 @@
 
 # dependencies
+/.soky-demo/
+/.next-admin-demo/
+/.next-s1-*/
+/.next*/
 /node_modules
 /.pnp
 .pnp.*

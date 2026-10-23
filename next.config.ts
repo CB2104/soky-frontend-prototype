@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  distDir: process.env.SOKY_NEXT_DIST_DIR ?? ".next",
   allowedDevOrigins: ["192.168.0.2"],
   images: {
     remotePatterns: [
