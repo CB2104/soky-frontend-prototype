@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Container } from "@/components/ui/container";
-import { getPublicSettings } from "@/features/settings/api";
-import { getAllProducts } from "@/features/products/api";
+import { getPublicSettings } from "@/mock/demo-server-queries";
+import { getAllProducts } from "@/mock/demo-server-queries";
 import { mapProductToCard } from "@/features/products/mappers";
 import { mapSettingsToCart } from "@/features/cart/mappers";
 import { CartPageContent } from "@/features/cart/components/page/CartPageContent";

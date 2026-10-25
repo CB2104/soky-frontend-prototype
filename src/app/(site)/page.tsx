@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { HomeSharedScene } from "@/features/home/sections/HomeSharedScene";
 import { HomeReadySignal } from "@/features/home/loading/HomeLoadingBoundary";
-import { getCategories } from "@/features/categories/api";
+import { getCategories } from "@/mock/demo-server-queries";
 import { mapProductToCard } from "@/features/products/mappers";
-import { getPublicSettings } from "@/features/settings/api";
+import { getPublicSettings } from "@/mock/demo-server-queries";
 import { mapPublicSettingsToLocation } from "@/features/settings/mappers";
 import { siteUrl } from "@/lib/env";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
-import { getActivePublicSliders } from "@/features/sliders/api";
+import { getActivePublicSliders } from "@/mock/demo-server-queries";
 import { mapPublicSlidersToHeroSlides } from "@/features/hero/mappers";
 import { HeroSlider } from "@/features/hero/components/HeroSlider";
 import { BrandStripSection } from "@/features/hero/components/BrandStripSection";
@@ -15,7 +15,7 @@ import { MenuShowcase } from "@/features/home/sections/menu-showcase/MenuShowcas
 import { selectHomeCategoryCards } from "@/features/home/sections/menu-showcase/category-card-data";
 import { HowToOrderSection } from "@/features/home/sections/how-to-order/HowToOrderSection";
 import { LocationSection } from "@/features/home/sections/location/LocationSection";
-import { getPromoProducts } from "@/features/products/api";
+import { getPromoProducts } from "@/mock/demo-server-queries";
 
 export const dynamic = "force-dynamic";
 

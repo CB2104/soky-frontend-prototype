@@ -11,7 +11,11 @@ import { getMenuCategorySlugs } from "@/features/categories/menu-category-select
 import { parseMoneyCents } from "@/lib/money";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { mockCategories, mockProducts, mockSettings, mockSliderItems, mockExchangeRate } from "./db";
-import { checkOrigin, requireSession } from "./demo-auth";
+import { checkOrigin, requireSession, loadRequestSession } from "./demo-auth";
+import { currentDemoSession, withDemoSession } from "./demo-context";
+import { demoStorageMode } from "./demo-config";
+import { redisDemoStore } from "./demo-redis";
+import { demoRequestBody } from "./demo-request-body";
 import { handleDemoSessionRequest } from "./demo-session-api";
 import { DemoError, invalid } from "./demo-errors";
 import { buildDemoAnalytics, buildDemoDashboardSummary, sortDemoIntents } from "./demo-reporting";
@@ -103,7 +107,7 @@ function sliderPatch(slide: AdminSliderItemDto, body: Record<string, unknown>, s
 }
 
 async function admin(request: Request, resource: string) {
-  requireSession(request);
+  await requireSession(request);
   const url = new URL(request.url);
   const parts = resource.split("/");
   const id = parts[2];
@@ -140,7 +144,7 @@ async function admin(request: Request, resource: string) {
     throw new DemoError("NOT_FOUND", "Consulta no disponible.", 404);
   }
   checkOrigin(request);
-  const body = request.method === "DELETE" ? { expectedRevision: Number(request.headers.get("if-match")) } : objectBody(await request.json().catch(() => null));
+  const body = request.method === "DELETE" ? { expectedRevision: Number(request.headers.get("if-match")) } : objectBody(await demoRequestBody(request));
   if (resource === "admin/sliders/preview" && request.method === "POST") {
     const state = await readDemoState();
     allowedFields(body, ["slideId", "patch"]);
@@ -151,8 +155,8 @@ async function admin(request: Request, resource: string) {
   }
   if (resource === "admin/exchange-rates/refresh") throw new DemoError("VALIDATION_ERROR", "Introduce y guarda una tasa manual. Recargar no actualiza su fecha.");
   if (parts[1] === "order-intents") throw new DemoError("FORBIDDEN", "Las intenciones son de solo lectura.", 403);
-  const { result, state } = await mutateDemo(body.expectedRevision, draft => {
-    requireSession(request); checkOrigin(request);
+  const { result, state } = await mutateDemo(body.expectedRevision, async draft => {
+    await requireSession(request); checkOrigin(request);
     if (parts[1] === "products") {
       if (request.method === "DELETE") {
         find(draft.products, id);
@@ -250,7 +254,7 @@ async function publicApi(request: Request, resource: string) {
   if (resource === "analytics/events") return response({ accepted: true }, undefined, 202); // Deliberately fixed fixtures; no visit-dependent claims.
   if (request.method === "POST") checkOrigin(request);
   if (resource === "cart/quote" || resource === "order-intents") {
-    const body = objectBody(await request.json().catch(() => null)); validateItems(body);
+    const body = objectBody(await demoRequestBody(request)); validateItems(body);
     const makeQuote = (snapshot: DemoState) => {
       const rateError = getQuoteRateError(body, scenario, snapshot);
       if (rateError) throw new DemoError("EXCHANGE_RATE_UNAVAILABLE", rateError, 503);
@@ -291,9 +295,19 @@ async function publicApi(request: Request, resource: string) {
 
 export async function handleDemoRequest(request: Request, resource: string) {
   try {
-    if (resource.startsWith("auth/") || resource === "admin/demo/status" || resource === "admin/demo/reset") return await handleDemoSessionRequest(request, resource);
-    if (resource.startsWith("admin/")) return await admin(request, resource);
-    return await publicApi(request, resource);
+    return await withDemoSession(await loadRequestSession(request), async () => {
+      if (request.method !== "GET" && demoEnabled && demoStorageMode() === "redis"
+        && !resource.startsWith("auth/") && !["cart/quote", "analytics/events"].includes(resource)) {
+        checkOrigin(request);
+        await requireSession(request);
+        const session = currentDemoSession();
+        if (!session) throw new DemoError("UNAUTHORIZED", "Entra al admin demo para crear tu copia temporal.", 401);
+        await redisDemoStore().limit("write", session.datasetId, 60, 60);
+      }
+      if (resource.startsWith("auth/") || resource === "admin/demo/status" || resource === "admin/demo/reset") return handleDemoSessionRequest(request, resource);
+      if (resource.startsWith("admin/")) return admin(request, resource);
+      return publicApi(request, resource);
+    });
   } catch (error) {
     if (error instanceof DemoError) return response({ code: error.code, message: error.message, details: error.fields ? { fields: error.fields } : undefined }, undefined, error.status);
     if (error instanceof SyntaxError) return response({ code: "VALIDATION_ERROR", message: "Revisa los datos del formulario." }, undefined, 422);

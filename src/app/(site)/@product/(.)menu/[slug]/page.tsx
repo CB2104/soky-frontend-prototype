@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getCategories } from "@/features/categories/api";
+import { getCategories } from "@/mock/demo-server-queries";
 import { ProductDetailContent } from "@/features/products/components/ProductDetailContent";
 import { ProductDetailLoadError } from "@/features/products/components/ProductDetailLoadError";
 import { loadProductDetail } from "@/features/products/detail-loader";

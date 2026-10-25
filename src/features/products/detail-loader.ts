@@ -1,7 +1,7 @@
 import { cache } from "react";
 import type { ProductDto } from "@/contracts/api";
 import { isApiError } from "@/lib/api/errors";
-import { getProductBySlug } from "./api";
+import { getProductBySlug } from "@/mock/demo-server-queries";
 
 export type ProductDetailResult =
   | { status: "ready"; product: ProductDto }

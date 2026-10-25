@@ -24,7 +24,7 @@ registerHooks({
     if (url.endsWith('.ts') || /\.ts\?/.test(url)) {
       return { format: 'module', source: ts.transpileModule(readFileSync(new URL(url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022, esModuleInterop: true } }).outputText, shortCircuit: true };
     }
-    if (url.endsWith('.json')) return { format: 'module', source: `export default ${readFileSync(new URL(url), 'utf8')}`, shortCircuit: true };
+    if (url.endsWith('.json') && url.startsWith(pathToFileURL(root + path.sep).href)) return { format: 'module', source: `export default ${readFileSync(new URL(url), 'utf8')}`, shortCircuit: true };
     return nextLoad(url, context);
   },
 });

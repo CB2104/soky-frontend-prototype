@@ -6,7 +6,7 @@ import type {
 import { apiClient } from "@/lib/api/client";
 import { apiMode } from "@/lib/env";
 
-type GetProductsParams = {
+export type GetProductsParams = {
   categorySlug?: string;
   featured?: boolean;
   type?: ProductType;
@@ -47,17 +47,17 @@ function toQuery(params: GetProductsParams = {}) {
   return value ? `?${value}` : "";
 }
 
-export function getProducts(params: GetProductsParams = {}) {
-  return apiClient.get<PaginatedResponse<ProductDto>>(
+export function getProducts(params: GetProductsParams = {}, client: Pick<typeof apiClient, "get"> = apiClient) {
+  return client.get<PaginatedResponse<ProductDto>>(
     `/products${toQuery(params)}`,
   );
 }
 
-export async function getPromoProducts(limit = 6) {
+export async function getPromoProducts(limit = 6, client: Pick<typeof apiClient, "get"> = apiClient) {
   const response = await getProducts({
     type: "PROMO",
     limit,
-  });
+  }, client);
 
   return response.data;
 }
@@ -66,12 +66,12 @@ export function getFeaturedProducts(limit = 6) {
   return apiClient.get<ProductDto[]>(`/products/featured?limit=${limit}`);
 }
 
-export function getProductBySlug(slug: string, scenario?: string) {
+export function getProductBySlug(slug: string, scenario?: string, client: Pick<typeof apiClient, "get"> = apiClient) {
   const query = apiMode === "mock" && scenario
     ? "?scenario=" + encodeURIComponent(scenario)
     : "";
 
-  return apiClient.get<ProductDto>(
+  return client.get<ProductDto>(
     `/products/${encodeURIComponent(slug)}${query}`,
   );
 }
@@ -79,12 +79,13 @@ export function getProductBySlug(slug: string, scenario?: string) {
 // El menú público consume todas las páginas del contrato, sin límite total fijo.
 export async function getAllProducts(
   params: Omit<GetProductsParams, "page" | "limit"> = {},
+  client: Pick<typeof apiClient, "get"> = apiClient,
 ): Promise<ProductDto[]> {
   for (let attempt = 0; attempt < 3; attempt++) {
-    const first = await getProducts({ ...params, page: 1, limit: 48 });
+    const first = await getProducts({ ...params, page: 1, limit: 48 }, client);
     const remaining = await Promise.all(
       Array.from({ length: Math.max(0, first.meta.pageCount - 1) }, (_, index) =>
-        getProducts({ ...params, page: index + 2, limit: 48 }),
+        getProducts({ ...params, page: index + 2, limit: 48 }, client),
       ),
     );
     // A currency/catalog transaction may happen between paginated requests.

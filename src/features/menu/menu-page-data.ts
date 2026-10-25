@@ -1,10 +1,7 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
-import { getCategories } from "@/features/categories/api";
-import { getAllProducts } from "@/features/products/api";
-import { getPublicSettings } from "@/features/settings/api";
-import { getCurrentExchangeRate } from "@/features/exchange-rates/api";
+import { getCategories, getAllProducts, getPublicSettings, getCurrentExchangeRate } from "@/mock/demo-server-queries";
 import { apiMode, getApiBaseUrl } from "@/lib/env";
 
 // Public data only. The API origin/mode are part of each persistent cache key.
@@ -22,7 +19,7 @@ const readSettings = unstable_cache(getPublicSettings,
 
 export async function getMenuPageData(scenario?: string) {
   // All explicit test scenarios bypass public caches, including settings/categories.
-  const bypass = Boolean(scenario);
+  const bypass = apiMode === "mock" || Boolean(scenario);
   const [categories, products, rate, settings] = await Promise.all([
     bypass ? getCategories() : readCategories(),
     bypass ? getAllProducts({ scenario }) : readProducts(),

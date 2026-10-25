@@ -1,14 +1,13 @@
 import type { DemoSnapshot } from "@/contracts/demo";
 import type { AdminAnalyticsProduct, AdminAnalyticsPromotion, AdminAnalyticsSummary, AdminDashboardSummary, AdminOrderIntent } from "@/contracts/admin-reporting";
 import { apiClient } from "@/lib/api/client";
-import { cookies } from "next/headers";
+import { serverApiGet } from "@/lib/api/server";
 import type { AdminSliderItemDto, CategoryDto, ExchangeRateDto, PaginatedResponse, ProductDto, PublicSettingsDto, SliderItemDto } from "@/contracts/api";
-import { requirePageSession, SESSION_COOKIE } from "@/mock/demo-auth";
+import { requirePageSession } from "@/mock/demo-auth";
 
 async function adminGet<T>(path: string) {
   await requirePageSession();
-  const token = (await cookies()).get(SESSION_COOKIE)?.value;
-  return apiClient.get<T>(path, { headers: { Cookie: `${SESSION_COOKIE}=${token}` } });
+  return serverApiGet<T>(path);
 }
 export function getAdminProducts(query = "") { return adminGet<PaginatedResponse<ProductDto>>(`/admin/products${query}`); }
 export function getAdminCategories(query = "") { return adminGet<PaginatedResponse<CategoryDto>>(`/admin/categories${query}`); }

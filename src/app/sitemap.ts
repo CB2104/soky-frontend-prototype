@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getProducts } from "@/features/products/api";
+import { getProducts } from "@/mock/demo-server-queries";
 import { siteUrl } from "@/lib/env";
 
 export const dynamic = "force-dynamic";

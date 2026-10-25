@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "lenis/dist/lenis.css";
-import { getPublicSettings } from "@/features/settings/api";
+import { getPublicSettings } from "@/mock/demo-server-queries";
 import { SiteFooter } from "@/components/layout/footer/SiteFooter";
 import Navbar from "@/components/layout/Navbar";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
