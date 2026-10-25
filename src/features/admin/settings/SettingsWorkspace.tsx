@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { PublicSettingsDto } from "@/contracts/api";
 import type { DemoSnapshot } from "@/contracts/demo";
@@ -35,7 +36,7 @@ export function SettingsWorkspace() {
     {notice ? <p role="status">{notice}</p> : null}
     {editing ? <SettingsEditor snapshot={snapshot} onSaved={(settings, revision) => { setSnapshot(previous => previous ? { ...previous, settings, revision } : previous); setNotice("Cambios guardados"); }} onClose={() => setEditing(false)} /> : <>
       <section className={`${styles.panel} ${styles.panelPadding}`} aria-labelledby="business-summary">
-        <div className={styles.toolbar}><h2 id="business-summary" className={styles.panelTitle}>{snapshot.settings.businessName}</h2><button className={styles.primaryButton} onClick={async () => { const current = await workspace.reload(); if (current) { setNotice(""); setEditing(true); } }}>Editar configuración</button></div>
+        <div className={styles.toolbar}><h2 id="business-summary" className={styles.panelTitle}>{snapshot.settings.businessName}</h2><Button size="sm" className={styles.adminPrimaryButton} data-admin-primary="true" onClick={async () => { const current = await workspace.reload(); if (current) { setNotice(""); setEditing(true); } }}>Editar configuración</Button></div>
         <p>{snapshot.settings.slogan}</p>
         <dl className={styles.comparison}><div><dt>Contacto</dt><dd>{snapshot.settings.whatsappPhone}</dd><dd>{snapshot.settings.address}</dd></div><div><dt>Horarios</dt>{snapshot.settings.openingHoursDisplay.map((line, index) => <dd key={index}>{line}</dd>)}</div><div><dt>Modalidades</dt><dd>Retiro: {snapshot.settings.pickupEnabled ? "activo" : "inactivo"} · Entrega a domicilio: {snapshot.settings.deliveryEnabled ? "activa" : "inactiva"}</dd></div><div><dt>Pedido mínimo</dt><dd>{formatAdminAmount(snapshot.settings.minimumOrderAmount ?? "0.00")} {snapshot.settings.defaultCurrency}</dd></div></dl>
       </section>
@@ -66,7 +67,7 @@ function SettingsEditor({ snapshot, onSaved, onClose }: { snapshot: DemoSnapshot
   }}>
     <div className={styles.toolbar}><h2 id="settings-editor-title" className={styles.sectionTitle}>Editar configuración</h2><button className={styles.secondaryButton} type="button" onClick={async () => { if (await discard()) { form.clearStorage(); onClose(); } }}>Cerrar editor</button></div>
     <p className={styles.fieldHint}>{form.dirty ? "Cambios sin guardar" : "Sin cambios pendientes"}. * Campo obligatorio.</p>
-    <EditorStatus mutation={mutation} onCompare={compare} comparison={latest ? comparisonRows(editableSettings(latest.settings), draft, labels) : null} onUseCurrent={() => { if (latest) { form.reset(editableSettings(latest.settings), latest.revision); mutation.clear(); } }} onKeepChanges={() => { if (latest) { form.rebase(editableSettings(latest.settings), latest.revision); mutation.clear(); } }} />
+    <EditorStatus mutation={mutation} recovery={form} onCompare={compare} comparison={latest ? comparisonRows(editableSettings(latest.settings), draft, labels) : null} onUseCurrent={() => { if (latest) { form.reset(editableSettings(latest.settings), latest.revision); mutation.clear(); } }} onKeepChanges={() => { if (latest) { form.rebase(editableSettings(latest.settings), latest.revision); mutation.clear(); } }} />
     <fieldset className={styles.editorFields} disabled={mutation.saving || mutation.unauthorized}>
       <FormSection title="Negocio">
         <FormField name="businessName" label="Nombre del negocio" required value={draft.businessName} maxLength={120} onChange={value => update("businessName", value)} errors={mutation.errors} />
@@ -88,7 +89,7 @@ function SettingsEditor({ snapshot, onSaved, onClose }: { snapshot: DemoSnapshot
         <FormField name="deliveryNotes" label="Nota de delivery" type="textarea" value={draft.deliveryNotes ?? ""} maxLength={600} onChange={value => update("deliveryNotes", value)} errors={mutation.errors} />
         <FormField name="minimumOrderAmount" label={`Pedido mínimo en ${(latest?.settings ?? snapshot.settings).defaultCurrency}`} type="decimal" value={draft.minimumOrderAmount ?? "0.00"} onChange={value => update("minimumOrderAmount", value)} errors={mutation.errors} hint="Importe explícito en moneda base; no cambia al editar precios de productos." required />
       </FormSection>
-      <div className={styles.actions}><button className={styles.primaryButton} type="submit" disabled={mutation.conflict || !form.dirty}>{mutation.saving ? "Guardando…" : "Guardar configuración"}</button><button className={styles.secondaryButton} type="button" onClick={async () => { if (await discard()) { form.clearStorage(); onClose(); } }}>Cancelar</button></div>
+      <div className={styles.actions}><Button size="sm" className={styles.adminPrimaryButton} data-admin-primary="true" type="submit" disabled={mutation.conflict || !form.dirty}>{mutation.saving ? "Guardando…" : "Guardar configuración"}</Button><button className={styles.secondaryButton} type="button" onClick={async () => { if (await discard()) { form.clearStorage(); onClose(); } }}>Cancelar</button></div>
     </fieldset>{confirmation}
   </form>;
 }

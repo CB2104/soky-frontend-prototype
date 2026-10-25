@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { AdminCategoryCreateDto, CategoryDto } from "@/contracts/api";
 import type { DemoSnapshot } from "@/contracts/demo";
@@ -39,7 +40,7 @@ export function CategoriesWorkspace() {
     if (result) { if ("deleted" in result.data) setSnapshot(previous => previous ? { ...previous, revision: result.revision, categories: previous.categories.filter(row => row.id !== category.id) } : previous); else update(result.data, result.revision); }
   }
   return <div className={styles.page} onChange={() => setNotice("")}>
-    <div className={styles.toolbar}><AdminPageHeader title="Categorías" description="Organiza el catálogo y controla qué grupos se pueden vender." />{editing === null ? <button className={styles.primaryButton} onClick={() => { setNotice(""); mutation.clear(); setEditing("new"); }}>Agregar categoría</button> : null}</div>
+    <div className={styles.toolbar}><AdminPageHeader title="Categorías" description="Organiza el catálogo y controla qué grupos se pueden vender." />{editing === null ? <Button size="sm" className={styles.adminPrimaryButton} data-admin-primary="true" onClick={() => { setNotice(""); mutation.clear(); setEditing("new"); }}>Agregar categoría</Button> : null}</div>
     {notice ? <p role="status">{notice}</p> : null}
     {editing !== null ? <CategoryEditor key={editing} category={snapshot.categories.find(row => row.id === editing)} snapshot={snapshot} count={count(editing)} onClose={() => setEditing(null)} onSaved={(category, revision) => { update(category, revision); setNotice("Cambios guardados"); if (editing === "new") setEditing(category.id); }} /> : <>
       <EditorStatus mutation={mutation} onCompare={async () => { if (await workspace.reload()) mutation.clear(); }} />
@@ -79,7 +80,7 @@ function CategoryEditor({ category, snapshot, count, onSaved, onClose }: { categ
   }}>
     <div className={styles.toolbar}><h2 id="category-editor-title" className={styles.sectionTitle}>{category ? `Editar ${category.name}` : "Agregar categoría"}</h2><button type="button" className={styles.secondaryButton} onClick={async () => { if (await discard()) { form.clearStorage(); onClose(); } }}>Cerrar editor</button></div>
     <p className={styles.fieldHint}>{form.dirty ? "Cambios sin guardar" : "Sin cambios pendientes"}. * Campo obligatorio.</p>
-    <EditorStatus mutation={mutation} onCompare={compare} comparison={latest ? comparisonRows(latest.category, draft, labels) : null} onUseCurrent={() => { if (latest) { form.reset(latest.category, latest.revision); setLatest(null); mutation.clear(); } }} onKeepChanges={() => { if (latest) { form.rebase(latest.category, latest.revision); setLatest(null); mutation.clear(); } }} />
+    <EditorStatus mutation={mutation} recovery={form} onCompare={compare} comparison={latest ? comparisonRows(latest.category, draft, labels) : null} onUseCurrent={() => { if (latest) { form.reset(latest.category, latest.revision); setLatest(null); mutation.clear(); } }} onKeepChanges={() => { if (latest) { form.rebase(latest.category, latest.revision); setLatest(null); mutation.clear(); } }} />
     <fieldset className={styles.editorFields} disabled={mutation.saving || mutation.unauthorized}>
       <div className={`${styles.formGrid} ${styles.formGridTwo}`}>
         <FormField name="name" label="Nombre" required maxLength={100} value={draft.name} onChange={value => { update("name", value); if (!category && (!draft.slug || draft.slug === safeSlug(draft.name))) update("slug", safeSlug(value)); if (!category && (!draft.key || draft.key === safeSlug(draft.name))) update("key", safeSlug(value)); }} errors={mutation.errors} />
@@ -92,7 +93,7 @@ function CategoryEditor({ category, snapshot, count, onSaved, onClose }: { categ
         <ImagePreview src={draft.imageUrl ?? ""} alt={`Categoría ${draft.name}`} onBroken={broken => setBrokenSrc(broken ? draft.imageUrl ?? null : null)} />
         <CheckField label="Categoría activa" checked={draft.isActive} onChange={value => update("isActive", value)} error={mutation.errors.isActive} />
       </div>
-      <div className={styles.actions}><button type="submit" className={styles.primaryButton} disabled={mutation.conflict || !form.dirty}>{mutation.saving ? "Guardando…" : "Guardar categoría"}</button><button type="button" className={styles.secondaryButton} onClick={async () => { if (await discard()) { form.clearStorage(); onClose(); } }}>Cancelar</button></div>
+      <div className={styles.actions}><Button size="sm" className={styles.adminPrimaryButton} data-admin-primary="true" type="submit" disabled={mutation.conflict || !form.dirty}>{mutation.saving ? "Guardando…" : "Guardar categoría"}</Button><button type="button" className={styles.secondaryButton} onClick={async () => { if (await discard()) { form.clearStorage(); onClose(); } }}>Cancelar</button></div>
     </fieldset>{confirmation}
   </form>;
 }

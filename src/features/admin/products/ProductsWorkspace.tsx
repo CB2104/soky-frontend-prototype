@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { ProductDto } from "@/contracts/api";
 import { adminPath } from "@/lib/env";
@@ -53,7 +54,7 @@ export function ProductsWorkspace() {
     }
   }
   return <div className={styles.page} onChange={() => setNotice("")}>
-    <div className={styles.toolbar}><AdminPageHeader title="Productos" description={`${snapshot.products.length} productos en el catálogo de demostración.`} />{editing === null ? <button className={styles.primaryButton} onClick={() => { mutation.clear(); setEditing("new"); }}>Agregar producto</button> : null}</div>
+    <div className={styles.toolbar}><AdminPageHeader title="Productos" description={`${snapshot.products.length} productos en el catálogo de demostración.`} />{editing === null ? <Button size="sm" className={styles.adminPrimaryButton} data-admin-primary="true" onClick={() => { mutation.clear(); setEditing("new"); }}>Agregar producto</Button> : null}</div>
     {notice ? <p role="status">{notice}</p> : null}
     {editing !== null ? <ProductEditor key={editing} product={snapshot.products.find(product => product.id === editing)} snapshot={snapshot} onSaved={(product, revision) => { updateSnapshot(product, revision); setNotice("Cambios guardados"); if (editing === "new") setEditing(product.id); }} onClose={() => setEditing(null)} /> : <>
       <EditorStatus mutation={mutation} onCompare={async () => { if (await workspace.reload()) mutation.clear(); }}><Link className={styles.link} href={`/${adminPath}/sliders`}>Revisar referencias del Hero</Link></EditorStatus>

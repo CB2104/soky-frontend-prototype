@@ -115,7 +115,7 @@
 }
 
 .fieldError {
-  color: #8b2c23;
+  color: #a63a2f;
   font-weight: 600;
 }
 
@@ -465,7 +465,7 @@
 .status[data-tone="negative"] {
   border-color: #e4c0ba;
   background: #fff2ef;
-  color: #7c2922;
+  color: #a63a2f;
 }
 
 .link {
@@ -545,14 +545,14 @@
 }
 
 .dangerButton {
-  border-color: #8b2c23;
-  background: #8b2c23;
+  border-color: #a63a2f;
+  background: #a63a2f;
   color: #fffdf7;
 }
 
 .dangerButton:hover:not(:disabled) {
-  border-color: #68201a;
-  background: #68201a;
+  border-color: #7a2923;
+  background: #7a2923;
 }
 
 .primaryButton:focus-visible,
@@ -918,5 +918,57 @@
   .secondaryButton,
   .dangerButton {
     transition: none;
+  }
+}
+
+/* Admin-local wrapper keeps the shared SOKY Button compact in dense workflows. */
+.adminPrimaryButton[data-admin-primary="true"][data-variant="primary"] {
+  min-height: 44px;
+  padding: 9px 14px;
+  border: 1px solid #1729a6;
+  border-radius: 9px;
+  background: #1729a6;
+  color: #fffdf7;
+  box-shadow: none;
+  font: 700 0.8125rem/1.35 var(--font-montserrat), "Segoe UI", Arial, sans-serif;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.adminPrimaryButton[data-admin-primary="true"][data-variant="primary"]:hover:not(:disabled) {
+  border-color: #07054a;
+  background: #07054a;
+  box-shadow: 0 3px 0 #fe6402;
+}
+
+.adminPrimaryButton[data-admin-primary="true"][data-variant="primary"]:focus-visible {
+  outline: 3px solid rgb(23 41 166 / 0.3);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px #fffdf7;
+}
+
+.adminPrimaryButton[data-admin-primary="true"][data-variant="primary"]:disabled {
+  cursor: progress;
+  opacity: 0.6;
+  box-shadow: none;
+  translate: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adminPrimaryButton[data-admin-primary="true"][data-variant="primary"] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .adminPrimaryButton[data-admin-primary="true"][data-variant="primary"] {
+    border-color: ButtonText;
+  }
+
+  .adminPrimaryButton[data-admin-primary="true"][data-variant="primary"]:focus-visible {
+    outline-color: Highlight;
   }
 }
