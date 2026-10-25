@@ -66,7 +66,7 @@ export function mutateDemo<T>(expectedRevision: unknown, mutation: (draft: DemoS
 }
 
 export function appendDemoIntent<T>(mutation: (draft: DemoState) => T | Promise<T>) {
-  if (!demoEnabled) return Promise.resolve(mutation(originalState()));
+  if (!demoEnabled) throw new DemoError("DEMO_DISABLED", "La demo está desactivada. Puedes consultar el catálogo y calcular el pedido, pero no crear intenciones ni abrir WhatsApp desde el checkout.", 403);
   return serial(async () => {
     const draft = structuredClone(await readUnlocked());
     const result = await mutation(draft);
