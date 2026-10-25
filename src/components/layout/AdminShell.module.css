@@ -244,7 +244,7 @@
   border: 1px solid transparent;
   border-radius: 8px;
   background: transparent;
-  color: #8b2f0a;
+  color: #b43c00;
   font: 700 12px/1.3 var(--font-montserrat), "Segoe UI", Arial, sans-serif;
   cursor: pointer;
 }
@@ -265,7 +265,7 @@
   padding: 10px 24px;
   border-bottom: 1px solid #e4c0ba;
   background: #fff2ef;
-  color: #7c2922;
+  color: #a63a2f;
   font-size: 12px;
   font-weight: 600;
   line-height: 1.5;
@@ -339,7 +339,7 @@
 }
 
 .content {
-  width: min(100%, 1488px);
+  width: min(100%, 1440px);
   min-width: 0;
   margin-inline: auto;
   padding: 22px 16px 40px;

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SokyLogo } from "@/components/brand/SokyLogo";
 import { logoutDemo } from "@/features/admin/demo-client";
+import { requestAdminLeave, useAdminHistory } from "@/features/admin/components/AdminConfirmDialog";
 import styles from "./AdminShell.module.css";
 
 type AdminShellProps = {
@@ -25,6 +26,7 @@ const navigation = [
 ];
 
 export function AdminShell({ adminPath, children }: AdminShellProps) {
+  useAdminHistory();
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpenPath, setMenuOpenPath] = useState<string | null>(null);
@@ -76,6 +78,7 @@ export function AdminShell({ adminPath, children }: AdminShellProps) {
   }
 
   async function handleLogout() {
+    if (!await requestAdminLeave()) return;
     setLogoutError(false);
     setLogoutPending(true);
     try {

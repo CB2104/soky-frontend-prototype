@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getAdminWorkspace } from "@/features/admin/api";
-import { AdminMetricCard, AdminPageHeader } from "@/features/admin/components/admin-table";
+import { getAdminAnalyticsProducts, getAdminDashboardSummary } from "@/features/admin/api";
+import { AdminIntegrationNotice, AdminMetricCard, AdminPageHeader } from "@/features/admin/components/admin-table";
 import styles from "@/features/admin/components/AdminWorkspace.module.css";
 
 export const dynamic = "force-dynamic";
@@ -11,19 +11,12 @@ export default async function AdminDashboardPage({
   params: Promise<{ adminPath: string }>;
 }) {
   const { adminPath } = await params;
-  const workspace = await getAdminWorkspace();
-  const activeCategories = new Set(
-    workspace.categories.filter((category) => category.isActive).map((category) => category.id),
-  );
-  const publishedProducts = workspace.products.filter(
-    (product) => product.status === "ACTIVE" && activeCategories.has(product.categoryId),
-  );
-  const unavailable = publishedProducts.filter((product) => !product.isAvailable).length;
-  const whatsappClicked = workspace.orderIntents.filter((intent) => intent.whatsappClickedAt).length;
-  const rate = workspace.currentRate;
-  const leadingProducts = [...workspace.analytics.products]
-    .sort((left, right) => right.views - left.views || right.addToCart - left.addToCart || left.title.localeCompare(right.title, "es"))
-    .slice(0, 3);
+  const [summary, products] = await Promise.all([
+    getAdminDashboardSummary(),
+    getAdminAnalyticsProducts(),
+  ]);
+  const rate = summary.rate;
+  const leadingProducts = products.slice(0, 3);
   const rateNumber = Number(rate.rate);
   const formattedRate = Number.isFinite(rateNumber)
     ? new Intl.NumberFormat("es-VE", {
@@ -49,16 +42,28 @@ export default async function AdminDashboardPage({
         description="Una lectura rápida del catálogo y la actividad de esta demo."
       />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        <AdminMetricCard label="Productos del catálogo" value={workspace.products.length} />
-        <AdminMetricCard label="Productos publicados" value={publishedProducts.length} />
-        <AdminMetricCard label="No disponibles · publicados" value={unavailable} />
-        <AdminMetricCard label="Intenciones de pedido" value={workspace.orderIntents.length} />
-        <AdminMetricCard label="Salidas a WhatsApp" value={whatsappClicked} />
+        <AdminMetricCard label="Productos del catálogo" value={summary.total} />
+        <AdminMetricCard label="Productos publicados" value={summary.published} />
+        <AdminMetricCard label="No disponibles · publicados" value={summary.unavailable} />
+        <AdminMetricCard label="Intenciones de pedido" value={summary.intents} />
+        <AdminMetricCard label="Salidas a WhatsApp" value={summary.whatsappClicked} />
       </div>
+      <AdminIntegrationNotice>
+        El catálogo incluye todos los registros. Publicados: estado activo y categoría activa.
+        No disponibles: publicados con disponibilidad apagada; los borradores quedan fuera de ese conteo.
+        Las intenciones son registros creados en la demo; las salidas cuentan intenciones con clic a WhatsApp registrado.
+        Abrir una vista previa no registra una salida. <Link className={styles.link} href={`/${adminPath}/order-intents`}>Consultar intenciones</Link>
+      </AdminIntegrationNotice>
+      {summary.total === 0 ? (
+        <section className={`${styles.panel} ${styles.panelPadding}`}>
+          <p className={styles.emptyState}>El catálogo demo está vacío.</p>
+          <Link className={styles.link} href={`/${adminPath}/products`}>Agrega tu primer producto</Link>
+        </section>
+      ) : null}
       <section className={`${styles.panel} ${styles.panelPadding}`} aria-labelledby="current-rate-title">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className={styles.metricLabel}>Tasa manual · catálogo en {workspace.settings.defaultCurrency}</p>
+            <p className={styles.metricLabel}>Tasa manual · catálogo en {rate.baseCurrency}</p>
             <h2 id="current-rate-title" className={styles.rateValue}>
               1 {rate.baseCurrency} = {formattedRate} Bs
             </h2>
@@ -91,7 +96,7 @@ export default async function AdminDashboardPage({
             {leadingProducts.map((product, index) => (
               <li key={product.productId} className={styles.rankingItem}>
                 <span className={styles.rankingPosition} aria-label={`Puesto ${index + 1}`}>{index + 1}</span>
-                <span className={styles.rankingProduct}><strong>{product.title}</strong><span>{product.views} vistas de ejemplo</span></span>
+                <span className={styles.rankingProduct}><strong>{product.title}</strong><span>{product.views} vistas de ejemplo{product.historical ? ` · Registro histórico (${product.productId})` : ""}</span></span>
                 <span className={styles.rankingAdds}>{product.addToCart} al carrito</span>
               </li>
             ))}

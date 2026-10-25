@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Button } from "@/components/ui/button";
 import type { AdminProductCreateDto, ProductDetailsDto, ProductDto } from "@/contracts/api";
 import type { DemoSnapshot } from "@/contracts/demo";
 import { CATALOG_LIMITS as limits, normalizeAmount, productErrors, safeSlug } from "@/lib/catalog-validation";
@@ -54,7 +55,7 @@ export function ProductEditor({ product, snapshot, onSaved, onClose }: { product
   return <form className={`${styles.panel} ${styles.panelPadding}`} onSubmit={submit} onChange={() => { if (mutation.message === "Cambios guardados") mutation.setMessage(""); }} noValidate aria-labelledby="product-editor-title">
     <div className={styles.toolbar}><h2 id="product-editor-title" className={styles.sectionTitle}>{product ? `Editar ${product.title}` : "Agregar producto"}</h2><button type="button" className={styles.secondaryButton} onClick={async () => { if (await discard()) { form.clearStorage(); onClose(); } }}>Cerrar editor</button></div>
     <p className={styles.fieldHint}>{form.dirty ? "Cambios sin guardar" : "Sin cambios pendientes"}. * Campo obligatorio. Archivar retira el producto de la venta; agotado conserva su ficha.</p>
-    <EditorStatus mutation={mutation} onCompare={compare} comparison={latest ? comparisonRows(latest.product, draft, labels) : null} onUseCurrent={() => { if (latest) { form.reset(latest.product, latest.revision); setLatest(null); mutation.clear(); } }} onKeepChanges={() => { if (latest) { form.rebase(latest.product, latest.revision); setLatest(null); mutation.clear(); } }} />
+    <EditorStatus mutation={mutation} recovery={form} onCompare={compare} comparison={latest ? comparisonRows(latest.product, draft, labels) : null} onUseCurrent={() => { if (latest) { form.reset(latest.product, latest.revision); setLatest(null); mutation.clear(); } }} onKeepChanges={() => { if (latest) { form.rebase(latest.product, latest.revision); setLatest(null); mutation.clear(); } }} />
     <fieldset disabled={mutation.saving || mutation.unauthorized} className={styles.editorFields}>
       <FormSection title="Identidad">
         <FormField name="title" label="Nombre" value={draft.title} onChange={value => { update("title", value); if (!product && (!draft.slug || draft.slug === safeSlug(draft.title))) update("slug", safeSlug(value)); }} errors={errors} maxLength={limits.title} required />
@@ -93,7 +94,7 @@ export function ProductEditor({ product, snapshot, onSaved, onClose }: { product
           {errors.details ? <p className={styles.fieldError} role="alert">{errors.details}</p> : null}
         </div>
       </FormSection>
-      <div className={styles.actions}><button type="submit" className={styles.primaryButton} disabled={mutation.conflict || !form.dirty}>{mutation.saving ? "Guardando…" : draft.status === "DRAFT" ? "Guardar borrador" : "Guardar cambios"}</button><button type="button" className={styles.secondaryButton} onClick={async () => { if (await discard()) { form.clearStorage(); onClose(); } }}>Cancelar</button></div>
+      <div className={styles.actions}><Button size="sm" className={styles.adminPrimaryButton} data-admin-primary="true" type="submit" disabled={mutation.conflict || !form.dirty}>{mutation.saving ? "Guardando…" : draft.status === "DRAFT" ? "Guardar borrador" : "Guardar cambios"}</Button><button type="button" className={styles.secondaryButton} onClick={async () => { if (await discard()) { form.clearStorage(); onClose(); } }}>Cancelar</button></div>
     </fieldset>
     {confirmation}
   </form>;

@@ -1,7 +1,8 @@
 import type { DemoSnapshot } from "@/contracts/demo";
+import type { AdminAnalyticsProduct, AdminAnalyticsPromotion, AdminAnalyticsSummary, AdminDashboardSummary, AdminOrderIntent } from "@/contracts/admin-reporting";
 import { apiClient } from "@/lib/api/client";
 import { cookies } from "next/headers";
-import type { AdminAnalyticsProductDto, AdminAnalyticsSliderDto, AdminAnalyticsSummaryDto, AdminSliderItemDto, CategoryDto, ExchangeRateDto, OrderIntentConfirmViewDto, PaginatedResponse, ProductDto, PublicSettingsDto, SliderItemDto } from "@/contracts/api";
+import type { AdminSliderItemDto, CategoryDto, ExchangeRateDto, PaginatedResponse, ProductDto, PublicSettingsDto, SliderItemDto } from "@/contracts/api";
 import { requirePageSession, SESSION_COOKIE } from "@/mock/demo-auth";
 
 async function adminGet<T>(path: string) {
@@ -20,11 +21,12 @@ export async function getAdminSliders(): Promise<PaginatedResponse<SliderItemDto
 export function getAdminSettings() { return adminGet<PublicSettingsDto>("/admin/settings"); }
 export function getAdminExchangeRate() { return adminGet<ExchangeRateDto>("/admin/exchange-rates/current"); }
 export function getAdminExchangeRateHistory() { return adminGet<ExchangeRateDto[]>("/admin/exchange-rates/history"); }
-export function getAdminAnalyticsSummary() { return adminGet<AdminAnalyticsSummaryDto>("/admin/analytics/summary"); }
-export function getAdminAnalyticsProducts() { return adminGet<AdminAnalyticsProductDto[]>("/admin/analytics/products"); }
-export function getAdminAnalyticsSliders() { return adminGet<AdminAnalyticsSliderDto[]>("/admin/analytics/sliders"); }
-export function getAdminOrderIntents(query = "") { return adminGet<PaginatedResponse<OrderIntentConfirmViewDto>>(`/admin/order-intents${query}`); }
-export function getAdminOrderIntent(id: string) { return adminGet<OrderIntentConfirmViewDto & { createdAt?: string }>(`/admin/order-intents/${encodeURIComponent(id)}`); }
+export function getAdminDashboardSummary() { return adminGet<AdminDashboardSummary>("/admin/dashboard/summary"); }
+export function getAdminAnalyticsSummary() { return adminGet<AdminAnalyticsSummary>("/admin/analytics/summary"); }
+export function getAdminAnalyticsProducts() { return adminGet<AdminAnalyticsProduct[]>("/admin/analytics/products"); }
+export function getAdminAnalyticsSliders() { return adminGet<AdminAnalyticsPromotion[]>("/admin/analytics/sliders"); }
+export function getAdminOrderIntents(query = "") { return adminGet<PaginatedResponse<AdminOrderIntent>>(`/admin/order-intents${query}`); }
+export function getAdminOrderIntent(id: string) { return adminGet<AdminOrderIntent>(`/admin/order-intents/${encodeURIComponent(id)}`); }
 
 export function getAdminWorkspace() { return adminGet<DemoSnapshot>("/admin/demo/workspace"); }
 export async function saveAdmin(path: string, body: Record<string, unknown>, revision: number, method: "POST" | "PATCH" | "DELETE" = "PATCH") {

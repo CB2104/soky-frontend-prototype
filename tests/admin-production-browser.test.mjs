@@ -12,7 +12,17 @@ const browser = await chromium.launch({ headless: true, channel: 'msedge' });
 const results = [], errors = [];
 const pending = new Set();
 let context, page;
-async function test(name, run) { await run(); results.push({ name, result: 'PASS' }); console.log('PASS', name); }
+async function test(name, run) {
+  const startedAt = Date.now();
+  try {
+    await run();
+    results.push({ name, result: 'PASS', durationMs: Date.now() - startedAt });
+    console.log('PASS', name);
+  } catch (error) {
+    results.push({ name, result: 'FAIL', durationMs: Date.now() - startedAt, error: error.message });
+    throw error;
+  }
+}
 async function api(route, method = 'GET', body) {
   const response = await context.request.fetch(`${base}/api/mock/v1/${route}`, { method, headers: { Origin: base }, data: body });
   const data = await response.json();
@@ -51,7 +61,10 @@ try {
     await page.screenshot({ path: path.join(output, 'production-hero-draft-desktop.png') });
     await Promise.all([
       page.waitForResponse(response => response.url().endsWith('/admin/sliders/slider-boxes') && response.request().method() === 'PATCH' && response.status() === 200),
-      page.getByRole('button', { name: 'Guardar cambios', exact: true }).click(),
+      (async () => {
+        await page.getByRole('button', { name: 'Guardar cambios', exact: true }).click();
+        await page.getByRole('dialog').getByRole('button', { name: 'Guardar cambios', exact: true }).click();
+      })(),
     ]);
     assert.equal((await snapshot()).sliders.find(slide => slide.id === 'slider-boxes').title, 'Un box para tu demo');
     await page.reload({ waitUntil: 'networkidle' });
@@ -77,7 +90,7 @@ try {
   await test('global USD migration reaches the public Hero without a euro symbol', async () => {
     const state = await snapshot();
     await api('admin/currency-change', 'POST', { expectedRevision: state.revision, currency: 'USD', prices: Object.fromEntries(state.products.map(product => [product.id, product.priceAmount])), minimumOrderAmount: '1.00', serviceFeeAmount: '0.00', rate: '2', fetchedAt: new Date().toISOString(), confirmed: true });
-    await page.goto(base, { waitUntil: 'networkidle', timeout: 120000 });
+    await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 120000 });
     const controls = page.locator('[aria-label="Slides del hero"] button');
     await controls.nth(1).click();
     await page.getByText('$', { exact: true }).first().waitFor({ state: 'visible' });
@@ -87,7 +100,7 @@ try {
   });
   await test('mobile Hero and admin remain within the document width', async () => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(base, { waitUntil: 'networkidle', timeout: 120000 });
+    await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 120000 });
     await page.locator('[aria-label="Slides del hero"] button').nth(1).click();
     await page.getByText('$', { exact: true }).first().waitFor({ state: 'visible' });
     await page.screenshot({ path: path.join(output, 'production-home-usd-390.png') });

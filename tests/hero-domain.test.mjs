@@ -44,14 +44,37 @@ async function test(name, run) { await run(); results.push({ name, result: 'PASS
 async function main() {
   await test('four roles retain identity/order and original composition', async () => {
     const initial = await readDemoState();
-    const slides = (await call('admin/sliders')).data;
+    const listed = (await call('admin/sliders')).data;
+    const slides = listed.slice(0, HERO_ROLES.length);
     assert.deepEqual(slides.map(slide => slide.id), HERO_ROLES.map(role => role.id));
+    assert.deepEqual(new Set(listed.map(slide => slide.id)), new Set(initial.sliders.map(slide => slide.id)));
+    assert(listed.some(slide => slide.placement === 'menu_banner'));
     for (const slide of slides) {
       await call(`admin/sliders/${slide.id}`, slide.id === 'slider-kiyomi' ? { primaryCta: { type: 'MENU', label: 'Explorar sabores' } } : { title: `Texto ${slide.id}` });
       const changed = (await readDemoState()).sliders.find(row => row.id === slide.id);
       for (const field of ['intent', 'layoutHint', 'background', 'colorLayer', 'patternOverlay', 'sortOrder', 'headlineParts']) assert.deepEqual(changed[field], slide[field]);
     }
     assert.equal(initial.sliders.filter(slide => slide.placement === 'home_hero' && slide.status === 'ACTIVE').length, 4);
+  });
+  await test('other placements remain read-only and cannot become a fifth editable role', async () => {
+    const before = fs.readFileSync(stateFile, 'utf8');
+    await call('admin/sliders/slider-menu-banner', { title: 'No editar aquí' }, 403);
+    await call('admin/sliders/preview', { slideId: 'slider-menu-banner', patch: {} }, 422);
+    assert.equal(fs.readFileSync(stateFile, 'utf8'), before);
+  });
+  await test('connected fields survive storage and the existing public mapper for each role', async () => {
+    for (const role of HERO_ROLES) {
+      const patch = { primaryCta: { type: 'MENU', label: `Ver ${role.role}` } };
+      if (role.fields.includes('description')) patch.description = `Descripción ${role.role}`;
+      if (role.fields.includes('eyebrow')) patch.eyebrow = `Texto ${role.role}`;
+      await call(`admin/sliders/${role.id}`, patch);
+      const publicSlide = (await call('sliders/active')).find(slide => slide.id === role.id);
+      const mapped = mapPublicSliderToHeroSlide(publicSlide, 0);
+      assert.equal(mapped.primaryCta.label, patch.primaryCta.label);
+      if (patch.description) assert.equal(mapped.description, patch.description);
+      if (patch.eyebrow) assert.equal(mapped.eyebrow, patch.eyebrow);
+      assert.equal((await readDemoState()).sliders.find(slide => slide.id === role.id).primaryCta.label, patch.primaryCta.label);
+    }
   });
   await test('preview validates every role without publishing or changing file bytes', async () => {
     for (const role of HERO_ROLES) {
