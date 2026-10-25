@@ -1,10 +1,13 @@
 .scene,
 .empty {
-  width: 100%;
+  box-sizing: border-box;
   min-height: 100dvh;
   margin: 0;
-  overflow: hidden;
+  padding: 20px;
   background: #fffdf7;
+  color: #141118;
+  font: 500 14px/1.5 var(--font-montserrat), "Segoe UI", Arial, sans-serif;
+  overflow-wrap: anywhere;
 }
 
 .empty {
@@ -13,4 +16,48 @@
   padding: 20px;
   color: #59515c;
   font: 500 14px/1.5 var(--font-montserrat), "Segoe UI", Arial, sans-serif;
+}
+
+.scene {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.scene h1,
+.scene p {
+  margin: 0;
+}
+
+.scene h1 {
+  color: #07054a;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.scene img {
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.notice {
+  color: #59515c;
+  font-size: 12px;
+}
+
+.product,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.actions button {
+  padding: 10px 14px;
+  border: 1px solid #b8bdce;
+  border-radius: 8px;
+  background: #f0f2fa;
+  color: #1729a6;
+  font: inherit;
 }
