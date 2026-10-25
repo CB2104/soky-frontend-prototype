@@ -191,7 +191,8 @@ export function LocationSection({ location }: LocationSectionProps) {
           </div>
           {location.instagramUrl ? (
             <div className={styles.social}>
-              <Button variant="tertiary"
+              <Button
+                variant="tertiary"
                 href={location.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
