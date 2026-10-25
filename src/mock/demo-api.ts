@@ -14,6 +14,7 @@ import { mockCategories, mockProducts, mockSettings, mockSliderItems, mockExchan
 import { checkOrigin, requireSession } from "./demo-auth";
 import { handleDemoSessionRequest } from "./demo-session-api";
 import { DemoError, invalid } from "./demo-errors";
+import { buildDemoAnalytics, buildDemoDashboardSummary, sortDemoIntents } from "./demo-reporting";
 import { appendDemoIntent, demoEnabled, mutateDemo, readDemoState } from "./demo-repository";
 import { CATEGORY_FIELDS, HERO_IDS, PRODUCT_FIELDS, SETTINGS_FIELDS, allowedFields, currentRate, image, money, objectBody, validateCategory, validateProduct, validateRate, validateSettings } from "./demo-validation";
 import { applyScenarioDelay, buildCartQuote, getPublicProducts, getQuoteRateError, getScenario, paginate } from "./helpers";
@@ -121,15 +122,21 @@ async function admin(request: Request, resource: string) {
     }
     if (parts[1] === "categories") return response(id ? find(state.categories, id) : paginate(state.categories.toSorted((a, b) => a.sortOrder - b.sortOrder), page, limit), state.revision);
     if (parts[1] === "settings") return response(state.settings, state.revision);
-    if (parts[1] === "sliders") return response(id ? find(state.sliders, id) : paginate(HERO_IDS.map(id => find(state.sliders, id)), page, limit), state.revision);
+    if (parts[1] === "sliders") return response(id ? find(state.sliders, id) : paginate([
+      ...HERO_IDS.map(id => find(state.sliders, id)),
+      ...state.sliders.filter(slide => !HERO_IDS.some(id => id === slide.id)).toSorted((a, b) => a.sortOrder - b.sortOrder),
+    ], page, limit), state.revision);
     if (resource === "admin/exchange-rates/current") return response(currentRate(state), state.revision);
     if (resource === "admin/exchange-rates/history") return response(state.rateHistory, state.revision);
-    if (parts[1] === "order-intents") return response(id ? find(state.orderIntents, id) : paginate(state.orderIntents.toReversed(), page, limit), state.revision);
-    if (resource === "admin/dashboard/summary") {
-      const published = getPublicProducts(state);
-      return response({ total: state.products.length, published: published.length, unavailable: published.filter(product => !product.isAvailable).length, intents: state.orderIntents.length, whatsappClicked: state.orderIntents.filter(intent => intent.whatsappClickedAt).length, rate: currentRate(state) }, state.revision);
+    if (parts[1] === "order-intents") {
+      if (id) return response(find(state.orderIntents, id), state.revision);
+      const rows = sortDemoIntents(state.orderIntents);
+      const result = paginate(rows, page, limit);
+      return response(result.meta.page > result.meta.pageCount
+        ? paginate(rows, result.meta.pageCount, result.meta.limit) : result, state.revision);
     }
-    if (parts[1] === "analytics" && ["summary", "products", "sliders"].includes(id)) return response(state.analytics[id as keyof DemoState["analytics"]], state.revision);
+    if (resource === "admin/dashboard/summary") return response(buildDemoDashboardSummary(state), state.revision);
+    if (parts[1] === "analytics" && ["summary", "products", "sliders"].includes(id)) return response(buildDemoAnalytics(state)[id as keyof DemoState["analytics"]], state.revision);
     throw new DemoError("NOT_FOUND", "Consulta no disponible.", 404);
   }
   checkOrigin(request);

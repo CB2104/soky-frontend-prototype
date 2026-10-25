@@ -46,7 +46,7 @@ export default async function AdminOrderIntentsPage({ searchParams }: { searchPa
           Un registro de ejemplo combina un importe en USD con una tasa basada en EUR. Se muestra solo el importe original y no una equivalencia en Bs.
         </AdminIntegrationNotice>
       ) : null}
-      <div id="intenciones">
+      <div id="intenciones" className="min-w-0">
         <AdminTable
           caption="Intenciones de pedido de demostración"
           headers={["Código", "Fecha", "Estado", "Modalidad", "Total original", "Total Bs · snapshot", "Detalle"]}
@@ -72,11 +72,13 @@ export default async function AdminOrderIntentsPage({ searchParams }: { searchPa
           emptyMessage="Todavía no hay intenciones de pedido en la demo."
         />
       </div>
-      <nav className={styles.pagination} aria-label="Paginación de intenciones">
-        <Link className={styles.secondaryButton} aria-disabled={result.meta.page <= 1} href={`?page=${Math.max(1, result.meta.page - 1)}`} tabIndex={result.meta.page <= 1 ? -1 : undefined}>Anterior</Link>
-        <span>Página {result.meta.page} de {result.meta.pageCount}</span>
-        <Link className={styles.secondaryButton} aria-disabled={result.meta.page >= result.meta.pageCount} href={`?page=${Math.min(result.meta.pageCount, result.meta.page + 1)}`} tabIndex={result.meta.page >= result.meta.pageCount ? -1 : undefined}>Siguiente</Link>
-      </nav>
+      {result.meta.total > 0 ? (
+        <nav className={styles.pagination} aria-label="Paginación de intenciones">
+          <Link className={styles.secondaryButton} aria-disabled={result.meta.page <= 1} href={`?page=${Math.max(1, result.meta.page - 1)}`} tabIndex={result.meta.page <= 1 ? -1 : undefined}>Anterior</Link>
+          <span>Página {result.meta.page} de {result.meta.pageCount}</span>
+          <Link className={styles.secondaryButton} aria-disabled={result.meta.page >= result.meta.pageCount} href={`?page=${Math.min(result.meta.pageCount, result.meta.page + 1)}`} tabIndex={result.meta.page >= result.meta.pageCount ? -1 : undefined}>Siguiente</Link>
+        </nav>
+      ) : null}
       {selected ? (
         <section id="detalle" className={`${styles.panel} ${styles.panelPadding}`} aria-labelledby="intent-detail-title">
           <div className={styles.toolbar}>
