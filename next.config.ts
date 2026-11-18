@@ -1,8 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  deprecated: {
+    looseRouteMatching: true,
+  },
   distDir: process.env.SOKY_NEXT_DIST_DIR ?? ".next",
-  allowedDevOrigins: ["192.168.0.2"],
+  allowedDevOrigins: ["192.168.0.14"],
   images: {
     remotePatterns: [
       {

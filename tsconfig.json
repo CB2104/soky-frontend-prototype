@@ -10,6 +10,12 @@
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
+    "rootDir": ".",
+    "types": [
+      "node",
+      "react",
+      "react-dom"
+    ],
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
@@ -48,7 +54,13 @@
     ".next-integration-build/types/**/*.ts",
     ".next-integration-build/dev/types/**/*.ts",
     ".next-s5-review/types/**/*.ts",
-    ".next-s5-review/dev/types/**/*.ts"
+    ".next-s5-review/dev/types/**/*.ts",
+    ".next-test-on/types/**/*.ts",
+    ".next-test-on/dev/types/**/*.ts",
+    ".next-test-off/types/**/*.ts",
+    ".next-test-off/dev/types/**/*.ts",
+    ".next-s2-dev/types/**/*.ts",
+    ".next-s2-dev/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
